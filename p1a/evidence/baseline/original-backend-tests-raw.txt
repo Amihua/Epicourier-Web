@@ -1,0 +1,82 @@
+Using CPython 3.9.25
+Creating virtual environment at: .venv
+Downloading scipy (36.8MiB)
+Downloading pandas (12.2MiB)
+Downloading nvidia-nvjitlink-cu12 (37.4MiB)
+Downloading numpy (18.6MiB)
+Downloading sympy (6.0MiB)
+Downloading pygments (1.2MiB)
+Downloading nvidia-cuda-nvrtc-cu12 (84.0MiB)
+Downloading networkx (1.6MiB)
+Downloading nvidia-cufile-cu12 (1.1MiB)
+Downloading triton (148.2MiB)
+Downloading scikit-learn (12.9MiB)
+Downloading setuptools (1.1MiB)
+Downloading tokenizers (3.1MiB)
+Downloading transformers (11.4MiB)
+Downloading torch (846.9MiB)
+Downloading cryptography (4.3MiB)
+Downloading nvidia-cudnn-cu12 (674.0MiB)
+Downloading nvidia-cusolver-cu12 (255.1MiB)
+Downloading hf-xet (3.2MiB)
+Downloading nvidia-cusparselt-cu12 (273.9MiB)
+Downloading nvidia-cufft-cu12 (184.2MiB)
+Downloading nvidia-nccl-cu12 (307.4MiB)
+Downloading nvidia-cublas-cu12 (566.8MiB)
+Downloading ruff (13.4MiB)
+Downloading nvidia-cusparse-cu12 (274.9MiB)
+Downloading pydantic-core (2.0MiB)
+Downloading nvidia-cuda-cupti-cu12 (9.8MiB)
+Downloading pillow (6.3MiB)
+Downloading nvidia-curand-cu12 (60.7MiB)
+ Downloaded nvidia-cufile-cu12
+ Downloaded setuptools
+ Downloaded pygments
+ Downloaded networkx
+ Downloaded pydantic-core
+ Downloaded tokenizers
+ Downloaded hf-xet
+ Downloaded cryptography
+ Downloaded sympy
+ Downloaded pillow
+ Downloaded nvidia-cuda-cupti-cu12
+ Downloaded transformers
+ Downloaded pandas
+ Downloaded scikit-learn
+ Downloaded ruff
+ Downloaded numpy
+ Downloaded scipy
+ Downloaded nvidia-nvjitlink-cu12
+ Downloaded nvidia-curand-cu12
+ Downloaded nvidia-cuda-nvrtc-cu12
+ Downloaded triton
+ Downloaded nvidia-cufft-cu12
+ Downloaded nvidia-cusolver-cu12
+ Downloaded nvidia-cusparselt-cu12
+ Downloaded nvidia-cusparse-cu12
+ Downloaded nvidia-nccl-cu12
+ Downloaded nvidia-cublas-cu12
+ Downloaded nvidia-cudnn-cu12
+ Downloaded torch
+warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
+         If the cache and target directories are on different filesystems, hardlinking may not be supported.
+         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
+Installed 103 packages in 2.85s
+ImportError while loading conftest '/mnt/data1/sliu78/Epicourier-Web/backend/tests/conftest.py'.
+tests/conftest.py:11: in <module>
+    from api.index import app
+api/index.py:9: in <module>
+    from api.recommender import create_meal_plan
+api/recommender.py:121: in <module>
+    client = load_gemini_client()
+api/recommender.py:95: in load_gemini_client
+    return genai.Client(api_key=GEMINI_KEY)
+.venv/lib/python3.9/site-packages/google/genai/client.py:265: in __init__
+    self._api_client = self._get_api_client(
+.venv/lib/python3.9/site-packages/google/genai/client.py:311: in _get_api_client
+    return BaseApiClient(
+.venv/lib/python3.9/site-packages/google/genai/_api_client.py:676: in __init__
+    raise ValueError(
+E   ValueError: Missing key inputs argument! To use the Google AI API, provide (`api_key`) arguments. To use the Google Cloud API, provide (`vertexai`, `project` & `location`) arguments.
+Using device: cuda
+Initializing Gemini client ...
