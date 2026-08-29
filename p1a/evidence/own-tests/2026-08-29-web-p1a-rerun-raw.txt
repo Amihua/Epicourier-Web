@@ -1,0 +1,38 @@
+
+> epicourier@0.1.0 test
+> jest --config tests/p1a/jest.config.ts --runInBand
+
+FAIL tests/p1a/use-case-contracts.test.ts
+  ● P1a high-level use-case contracts › test_uc20_rejects_transfer_of_another_users_shopping_item
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: ".eq(\"user_id\", user.id)"
+    Received string:    "// Mark shopping item as checked
+            const { error: checkError } = await supabase
+              .from(\"shopping_list_items\")
+              .update({ is_checked: true })
+              .eq(\"id\", item.shopping_item_id);·
+            if (checkError) {
+              errors.push(`Failed to mark shopping item ${item.shopping_item_id} as checked`);
+              continue;
+            }·
+            "
+
+      103 |
+      104 |     // A shopping item must be scoped to the authenticated user before it is changed.
+    > 105 |     expect(ownershipSensitiveUpdate).toContain('.eq("user_id", user.id)');
+          |                                      ^
+      106 |   });
+      107 | });
+      108 |
+
+      at Object.toContain (tests/p1a/use-case-contracts.test.ts:105:38)
+
+PASS tests/p1a/inventory-behavior.test.ts
+
+Test Suites: 1 failed, 1 passed, 2 total
+Tests:       1 failed, 31 passed, 32 total
+Snapshots:   0 total
+Time:        0.236 s, estimated 1 s
+Ran all test suites.

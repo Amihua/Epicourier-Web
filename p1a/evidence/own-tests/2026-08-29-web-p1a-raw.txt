@@ -1,0 +1,5 @@
+Command: cd web && npm test -- --config tests/p1a/jest.config.ts --runInBand
+Date: 2026-08-29
+Exit code: 127
+
+/usr/bin/bash: line 1: npm: command not found
