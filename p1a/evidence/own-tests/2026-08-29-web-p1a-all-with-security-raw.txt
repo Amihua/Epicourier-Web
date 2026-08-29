@@ -1,0 +1,1142 @@
+
+> epicourier@0.1.0 test
+> jest --config tests/p1a/jest.config.ts --runInBand
+
+FAIL tests/p1a/security-attack-cases.test.ts
+  ● P1a non-destructive adversarial security contracts › attack_share_creation_requires_an_authenticated_user
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /auth\.getUser|getUserIdentity/
+    Received string:  "export async function POST(request: NextRequest) {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );·
+      try {
+        const { shoppingListId, expiryDays = 7 } = await request.json();·
+        // Generate unique share token
+        const shareToken = crypto.randomUUID();
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + expiryDays);·
+        // Create share record in database
+        const { error } = await supabase
+          .from(\"shopping_list_shares\")
+          .insert({
+            shopping_list_id: shoppingListId,
+            share_token: shareToken,
+            expires_at: expiryDate.toISOString(),
+            created_at: new Date().toISOString(),
+          })
+          .select();·
+        if (error) throw error;·
+        // Return shareable link
+        const shareLink = `${process.env.NEXT_PUBLIC_APP_URL}/share/shopping/${shareToken}`;·
+        return NextResponse.json({
+          success: true,
+          shareLink,
+          expiryDate,
+          token: shareToken,
+        });
+      } catch (error) {
+        console.error(\"Error generating share link:\", error);
+        return NextResponse.json({ error: \"Failed to generate share link\" }, { status: 500 });
+      }
+    }·
+    // Retrieve shared shopping list
+    "
+
+      20 |       "export async function GET"
+      21 |     );
+    > 22 |     expect(post).toMatch(/auth\.getUser|getUserIdentity/);
+         |                  ^
+      23 |     expect(post).toContain("status: 401");
+      24 |   });
+      25 |
+
+      at Object.toMatch (tests/p1a/security-attack-cases.test.ts:22:18)
+
+  ● P1a non-destructive adversarial security contracts › attack_share_creation_verifies_list_ownership
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: ".eq(\"user_id\", user.id)"
+    Received string:    "export async function POST(request: NextRequest) {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );·
+      try {
+        const { shoppingListId, expiryDays = 7 } = await request.json();·
+        // Generate unique share token
+        const shareToken = crypto.randomUUID();
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + expiryDays);·
+        // Create share record in database
+        const { error } = await supabase
+          .from(\"shopping_list_shares\")
+          .insert({
+            shopping_list_id: shoppingListId,
+            share_token: shareToken,
+            expires_at: expiryDate.toISOString(),
+            created_at: new Date().toISOString(),
+          })
+          .select();·
+        if (error) throw error;·
+        // Return shareable link
+        const shareLink = `${process.env.NEXT_PUBLIC_APP_URL}/share/shopping/${shareToken}`;·
+        return NextResponse.json({
+          success: true,
+          shareLink,
+          expiryDate,
+          token: shareToken,
+        });
+      } catch (error) {
+        console.error(\"Error generating share link:\", error);
+        return NextResponse.json({ error: \"Failed to generate share link\" }, { status: 500 });
+      }
+    }·
+    // Retrieve shared shopping list
+    "
+
+      30 |       "export async function GET"
+      31 |     );
+    > 32 |     expect(post).toContain('.eq("user_id", user.id)');
+         |                  ^
+      33 |   });
+      34 |
+      35 |   test("attack_share_creation_rejects_unbounded_expiry_days", () => {
+
+      at Object.toContain (tests/p1a/security-attack-cases.test.ts:32:18)
+
+  ● P1a non-destructive adversarial security contracts › attack_share_creation_rejects_unbounded_expiry_days
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /expiryDays\s*[<>]=?/
+    Received string:  "export async function POST(request: NextRequest) {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );·
+      try {
+        const { shoppingListId, expiryDays = 7 } = await request.json();·
+        // Generate unique share token
+        const shareToken = crypto.randomUUID();
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + expiryDays);·
+        // Create share record in database
+        const { error } = await supabase
+          .from(\"shopping_list_shares\")
+          .insert({
+            shopping_list_id: shoppingListId,
+            share_token: shareToken,
+            expires_at: expiryDate.toISOString(),
+            created_at: new Date().toISOString(),
+          })
+          .select();·
+        if (error) throw error;·
+        // Return shareable link
+        const shareLink = `${process.env.NEXT_PUBLIC_APP_URL}/share/shopping/${shareToken}`;·
+        return NextResponse.json({
+          success: true,
+          shareLink,
+          expiryDate,
+          token: shareToken,
+        });
+      } catch (error) {
+        console.error(\"Error generating share link:\", error);
+        return NextResponse.json({ error: \"Failed to generate share link\" }, { status: 500 });
+      }
+    }·
+    // Retrieve shared shopping list
+    "
+
+      39 |       "export async function GET"
+      40 |     );
+    > 41 |     expect(post).toMatch(/expiryDays\s*[<>]=?/);
+         |                  ^
+      42 |     expect(post).toContain("status: 400");
+      43 |   });
+      44 |
+
+      at Object.toMatch (tests/p1a/security-attack-cases.test.ts:41:18)
+
+  ● P1a non-destructive adversarial security contracts › attack_transfer_verifies_each_shopping_item_belongs_to_the_user
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: ".eq(\"user_id\", user.id)"
+    Received string:    "// Mark shopping item as checked
+            const { error: checkError } = await supabase
+              .from(\"shopping_list_items\")
+              .update({ is_checked: true })
+              .eq(\"id\", item.shopping_item_id);·
+            if (checkError) {
+              errors.push(`Failed to mark shopping item ${item.shopping_item_id} as checked`);
+              continue;
+            }·
+            "
+
+      50 |     );
+      51 |     const shoppingUpdate = between(post, "// Mark shopping item as checked", "transferredItems.push");
+    > 52 |     expect(shoppingUpdate).toContain('.eq("user_id", user.id)');
+         |                            ^
+      53 |   });
+      54 |
+      55 |   test("attack_transfer_undo_verifies_each_shopping_item_belongs_to_the_user", () => {
+
+      at Object.toContain (tests/p1a/security-attack-cases.test.ts:52:28)
+
+  ● P1a non-destructive adversarial security contracts › attack_transfer_undo_verifies_each_shopping_item_belongs_to_the_user
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: ".eq(\"user_id\", user.id)"
+    Received string:    "// Uncheck shopping item
+          await supabase
+            .from(\"shopping_list_items\")
+            .update({ is_checked: false })
+            .eq(\"id\", item.shopping_item_id);·
+          "
+
+      58 |     )[1];
+      59 |     const shoppingUpdate = between(undo, "// Uncheck shopping item", "// Delete or reduce inventory");
+    > 60 |     expect(shoppingUpdate).toContain('.eq("user_id", user.id)');
+         |                            ^
+      61 |   });
+      62 |
+      63 |   test("attack_transfer_rejects_zero_and_negative_quantities", () => {
+
+      at Object.toContain (tests/p1a/security-attack-cases.test.ts:60:28)
+
+  ● P1a non-destructive adversarial security contracts › attack_transfer_rejects_zero_and_negative_quantities
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /item\.quantity\s*<=\s*0/
+    Received string:  "import { createClient } from \"@/utils/supabase/server\";
+    import { NextRequest, NextResponse } from \"next/server\";·
+    import type { InventoryLocation, TransferToInventoryRequest } from \"@/types/data\";·
+    /**
+     * POST /api/inventory/transfer
+     * Transfer shopping list items to inventory
+     *
+     * Accepts an array of items to transfer:
+     * - Adds new items to inventory
+     * - Updates existing inventory quantities if item exists
+     * - Marks shopping items as checked
+     */
+    export async function POST(request: NextRequest) {
+      const supabase = await createClient();·
+      // Check authentication
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();·
+      if (authError || !user) {
+        return NextResponse.json({ error: \"Unauthorized\" }, { status: 401 });
+      }·
+      try {
+        const body = await request.json();
+        const { items } = body as { items: TransferToInventoryRequest[] };·
+        if (!items || !Array.isArray(items) || items.length === 0) {
+          return NextResponse.json({ error: \"Items array is required\" }, { status: 400 });
+        }·
+        // Validate each item
+        for (const item of items) {
+          if (!item.shopping_item_id || !item.ingredient_id) {
+            return NextResponse.json(
+              { error: \"Each item must have shopping_item_id and ingredient_id\" },
+              { status: 400 }
+            );
+          }
+        }·
+        const transferredItems: TransferToInventoryRequest[] = [];
+        const errors: string[] = [];·
+        for (const item of items) {
+          try {
+            // Check if inventory item already exists for this ingredient
+            const { data: existingItem } = await supabase
+              .from(\"user_inventory\")
+              .select(\"*\")
+              .eq(\"user_id\", user.id)
+              .eq(\"ingredient_id\", item.ingredient_id)
+              .eq(\"location\", item.location || \"pantry\")
+              .single();·
+            if (existingItem) {
+              // Update existing inventory item (add quantity)
+              const { error: updateError } = await supabase
+                .from(\"user_inventory\")
+                .update({
+                  quantity: existingItem.quantity + (item.quantity || 1),
+                  expiration_date: item.expiration_date || existingItem.expiration_date,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq(\"id\", existingItem.id);·
+              if (updateError) {
+                errors.push(`Failed to update inventory for item ${item.shopping_item_id}`);
+                continue;
+              }
+            } else {
+              // Create new inventory item
+              const { error: insertError } = await supabase.from(\"user_inventory\").insert({
+                user_id: user.id,
+                ingredient_id: item.ingredient_id,
+                quantity: item.quantity || 1,
+                unit: item.unit || null,
+                location: (item.location as InventoryLocation) || \"pantry\",
+                expiration_date: item.expiration_date || null,
+              });·
+              if (insertError) {
+                errors.push(`Failed to add inventory item for ${item.shopping_item_id}`);
+                continue;
+              }
+            }·
+            // Mark shopping item as checked
+            const { error: checkError } = await supabase
+              .from(\"shopping_list_items\")
+              .update({ is_checked: true })
+              .eq(\"id\", item.shopping_item_id);·
+            if (checkError) {
+              errors.push(`Failed to mark shopping item ${item.shopping_item_id} as checked`);
+              continue;
+            }·
+            transferredItems.push(item);
+          } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : \"Unknown error\";
+            errors.push(`Error processing item ${item.shopping_item_id}: ${errorMessage}`);
+          }
+        }·
+        return NextResponse.json({
+          success: true,
+          transferred_count: transferredItems.length,
+          transferred_items: transferredItems,
+          errors: errors.length > 0 ? errors : undefined,
+        });
+      } catch (err) {
+        const isJsonError = err instanceof SyntaxError;
+        return NextResponse.json(
+          { error: isJsonError ? \"Invalid JSON in request body\" : \"Invalid request body\" },
+          { status: 400 }
+        );
+      }
+    }·
+    /**
+     * DELETE /api/inventory/transfer
+     * Undo a transfer - remove items from inventory and uncheck shopping items
+     */
+    export async function DELETE(request: NextRequest) {
+      const supabase = await createClient();·
+      // Check authentication
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();·
+      if (authError || !user) {
+        return NextResponse.json({ error: \"Unauthorized\" }, { status: 401 });
+      }·
+      try {
+        const body = await request.json();
+        const { items } = body as { items: TransferToInventoryRequest[] };·
+        if (!items || !Array.isArray(items) || items.length === 0) {
+          return NextResponse.json({ error: \"Items array is required\" }, { status: 400 });
+        }·
+        for (const item of items) {
+          // Uncheck shopping item
+          await supabase
+            .from(\"shopping_list_items\")
+            .update({ is_checked: false })
+            .eq(\"id\", item.shopping_item_id);·
+          // Delete or reduce inventory item quantity
+          const { data: existingItem } = await supabase
+            .from(\"user_inventory\")
+            .select(\"*\")
+            .eq(\"user_id\", user.id)
+            .eq(\"ingredient_id\", item.ingredient_id)
+            .eq(\"location\", item.location || \"pantry\")
+            .single();·
+          if (existingItem) {
+            const newQuantity = existingItem.quantity - (item.quantity || 1);
+            if (newQuantity <= 0) {
+              // Delete the inventory item
+              await supabase.from(\"user_inventory\").delete().eq(\"id\", existingItem.id);
+            } else {
+              // Reduce the quantity
+              await supabase
+                .from(\"user_inventory\")
+                .update({
+                  quantity: newQuantity,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq(\"id\", existingItem.id);
+            }
+          }
+        }·
+        return NextResponse.json({ success: true });
+      } catch (err) {
+        const isJsonError = err instanceof SyntaxError;
+        return NextResponse.json(
+          { error: isJsonError ? \"Invalid JSON in request body\" : \"Invalid request body\" },
+          { status: 400 }
+        );
+      }
+    }
+    "
+
+      63 |   test("attack_transfer_rejects_zero_and_negative_quantities", () => {
+      64 |     const route = source("src/app/api/inventory/transfer/route.ts");
+    > 65 |     expect(route).toMatch(/item\.quantity\s*<=\s*0/);
+         |                   ^
+      66 |     expect(route).toContain("status: 400");
+      67 |   });
+      68 |
+
+      at Object.toMatch (tests/p1a/security-attack-cases.test.ts:65:19)
+
+  ● P1a non-destructive adversarial security contracts › attack_transfer_rejects_unknown_storage_locations
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /validLocations|\["pantry",\s*"fridge",\s*"freezer",\s*"other"\]/
+    Received string:  "import { createClient } from \"@/utils/supabase/server\";
+    import { NextRequest, NextResponse } from \"next/server\";·
+    import type { InventoryLocation, TransferToInventoryRequest } from \"@/types/data\";·
+    /**
+     * POST /api/inventory/transfer
+     * Transfer shopping list items to inventory
+     *
+     * Accepts an array of items to transfer:
+     * - Adds new items to inventory
+     * - Updates existing inventory quantities if item exists
+     * - Marks shopping items as checked
+     */
+    export async function POST(request: NextRequest) {
+      const supabase = await createClient();·
+      // Check authentication
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();·
+      if (authError || !user) {
+        return NextResponse.json({ error: \"Unauthorized\" }, { status: 401 });
+      }·
+      try {
+        const body = await request.json();
+        const { items } = body as { items: TransferToInventoryRequest[] };·
+        if (!items || !Array.isArray(items) || items.length === 0) {
+          return NextResponse.json({ error: \"Items array is required\" }, { status: 400 });
+        }·
+        // Validate each item
+        for (const item of items) {
+          if (!item.shopping_item_id || !item.ingredient_id) {
+            return NextResponse.json(
+              { error: \"Each item must have shopping_item_id and ingredient_id\" },
+              { status: 400 }
+            );
+          }
+        }·
+        const transferredItems: TransferToInventoryRequest[] = [];
+        const errors: string[] = [];·
+        for (const item of items) {
+          try {
+            // Check if inventory item already exists for this ingredient
+            const { data: existingItem } = await supabase
+              .from(\"user_inventory\")
+              .select(\"*\")
+              .eq(\"user_id\", user.id)
+              .eq(\"ingredient_id\", item.ingredient_id)
+              .eq(\"location\", item.location || \"pantry\")
+              .single();·
+            if (existingItem) {
+              // Update existing inventory item (add quantity)
+              const { error: updateError } = await supabase
+                .from(\"user_inventory\")
+                .update({
+                  quantity: existingItem.quantity + (item.quantity || 1),
+                  expiration_date: item.expiration_date || existingItem.expiration_date,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq(\"id\", existingItem.id);·
+              if (updateError) {
+                errors.push(`Failed to update inventory for item ${item.shopping_item_id}`);
+                continue;
+              }
+            } else {
+              // Create new inventory item
+              const { error: insertError } = await supabase.from(\"user_inventory\").insert({
+                user_id: user.id,
+                ingredient_id: item.ingredient_id,
+                quantity: item.quantity || 1,
+                unit: item.unit || null,
+                location: (item.location as InventoryLocation) || \"pantry\",
+                expiration_date: item.expiration_date || null,
+              });·
+              if (insertError) {
+                errors.push(`Failed to add inventory item for ${item.shopping_item_id}`);
+                continue;
+              }
+            }·
+            // Mark shopping item as checked
+            const { error: checkError } = await supabase
+              .from(\"shopping_list_items\")
+              .update({ is_checked: true })
+              .eq(\"id\", item.shopping_item_id);·
+            if (checkError) {
+              errors.push(`Failed to mark shopping item ${item.shopping_item_id} as checked`);
+              continue;
+            }·
+            transferredItems.push(item);
+          } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : \"Unknown error\";
+            errors.push(`Error processing item ${item.shopping_item_id}: ${errorMessage}`);
+          }
+        }·
+        return NextResponse.json({
+          success: true,
+          transferred_count: transferredItems.length,
+          transferred_items: transferredItems,
+          errors: errors.length > 0 ? errors : undefined,
+        });
+      } catch (err) {
+        const isJsonError = err instanceof SyntaxError;
+        return NextResponse.json(
+          { error: isJsonError ? \"Invalid JSON in request body\" : \"Invalid request body\" },
+          { status: 400 }
+        );
+      }
+    }·
+    /**
+     * DELETE /api/inventory/transfer
+     * Undo a transfer - remove items from inventory and uncheck shopping items
+     */
+    export async function DELETE(request: NextRequest) {
+      const supabase = await createClient();·
+      // Check authentication
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();·
+      if (authError || !user) {
+        return NextResponse.json({ error: \"Unauthorized\" }, { status: 401 });
+      }·
+      try {
+        const body = await request.json();
+        const { items } = body as { items: TransferToInventoryRequest[] };·
+        if (!items || !Array.isArray(items) || items.length === 0) {
+          return NextResponse.json({ error: \"Items array is required\" }, { status: 400 });
+        }·
+        for (const item of items) {
+          // Uncheck shopping item
+          await supabase
+            .from(\"shopping_list_items\")
+            .update({ is_checked: false })
+            .eq(\"id\", item.shopping_item_id);·
+          // Delete or reduce inventory item quantity
+          const { data: existingItem } = await supabase
+            .from(\"user_inventory\")
+            .select(\"*\")
+            .eq(\"user_id\", user.id)
+            .eq(\"ingredient_id\", item.ingredient_id)
+            .eq(\"location\", item.location || \"pantry\")
+            .single();·
+          if (existingItem) {
+            const newQuantity = existingItem.quantity - (item.quantity || 1);
+            if (newQuantity <= 0) {
+              // Delete the inventory item
+              await supabase.from(\"user_inventory\").delete().eq(\"id\", existingItem.id);
+            } else {
+              // Reduce the quantity
+              await supabase
+                .from(\"user_inventory\")
+                .update({
+                  quantity: newQuantity,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq(\"id\", existingItem.id);
+            }
+          }
+        }·
+        return NextResponse.json({ success: true });
+      } catch (err) {
+        const isJsonError = err instanceof SyntaxError;
+        return NextResponse.json(
+          { error: isJsonError ? \"Invalid JSON in request body\" : \"Invalid request body\" },
+          { status: 400 }
+        );
+      }
+    }
+    "
+
+      69 |   test("attack_transfer_rejects_unknown_storage_locations", () => {
+      70 |     const route = source("src/app/api/inventory/transfer/route.ts");
+    > 71 |     expect(route).toMatch(/validLocations|\["pantry",\s*"fridge",\s*"freezer",\s*"other"\]/);
+         |                   ^
+      72 |   });
+      73 |
+      74 |   test("attack_shopping_item_update_rejects_negative_quantity", () => {
+
+      at Object.toMatch (tests/p1a/security-attack-cases.test.ts:71:19)
+
+  ● P1a non-destructive adversarial security contracts › attack_shopping_item_update_rejects_negative_quantity
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /quantity\s*<\s*0|quantity\s*<=\s*0/
+    Received string:  "export async function PUT(request: NextRequest, { params }: RouteParams) {
+      const supabase = await createClient();
+      const { id: listId, itemId } = await params;·
+      // Check authentication
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();·
+      if (authError || !user) {
+        return NextResponse.json({ error: \"Unauthorized\" }, { status: 401 });
+      }·
+      // Verify ownership of the list
+      const { data: list, error: listError } = await supabase
+        .from(\"shopping_lists\")
+        .select(\"id\")
+        .eq(\"id\", listId)
+        .eq(\"user_id\", user.id)
+        .single();·
+      if (listError || !list) {
+        return NextResponse.json({ error: \"Shopping list not found\" }, { status: 404 });
+      }·
+      try {
+        const body = await request.json();
+        const { item_name, quantity, unit, category, is_checked, position, notes } = body;·
+        // Build update object
+        const updateData: Record<string, unknown> = {};·
+        if (item_name !== undefined) {
+          if (typeof item_name !== \"string\" || item_name.trim().length === 0) {
+            return NextResponse.json({ error: \"Item name cannot be empty\" }, { status: 400 });
+          }
+          updateData.item_name = item_name.trim();
+        }·
+        if (quantity !== undefined) {
+          updateData.quantity = Number(quantity) || 1;
+        }·
+        if (unit !== undefined) {
+          updateData.unit = unit?.trim() || null;
+        }·
+        if (category !== undefined) {
+          updateData.category = category?.trim() || \"Other\";
+        }·
+        if (is_checked !== undefined) {
+          updateData.is_checked = Boolean(is_checked);
+        }·
+        if (position !== undefined) {
+          updateData.position = Number(position) || 0;
+        }·
+        if (notes !== undefined) {
+          updateData.notes = notes?.trim() || null;
+        }·
+        // Update the item
+        const { data: updatedItem, error } = await supabase
+          .from(\"shopping_list_items\")
+          .update(updateData)
+          .eq(\"id\", itemId)
+          .eq(\"shopping_list_id\", listId)
+          .select(
+            `
+            *,
+            Ingredient:ingredient_id (
+              id,
+              name,
+              unit
+            )
+          `
+          )
+          .single();·
+        if (error) {
+          if (error.code === \"PGRST116\") {
+            return NextResponse.json({ error: \"Item not found\" }, { status: 404 });
+          }
+          console.error(\"Error updating shopping list item:\", error);
+          return NextResponse.json({ error: \"Failed to update item\" }, { status: 500 });
+        }·
+        // Update the list's updated_at timestamp
+        await supabase
+          .from(\"shopping_lists\")
+          .update({ updated_at: new Date().toISOString() })
+          .eq(\"id\", listId);·
+        return NextResponse.json(updatedItem);
+      } catch {
+        return NextResponse.json({ error: \"Invalid request body\" }, { status: 400 });
+      }
+    }·
+    /**
+     * DELETE /api/shopping-lists/[id]/items/[itemId]
+     * Remove an item from a shopping list
+     */
+    "
+
+      78 |       "export async function DELETE"
+      79 |     );
+    > 80 |     expect(put).toMatch(/quantity\s*<\s*0|quantity\s*<=\s*0/);
+         |                 ^
+      81 |   });
+      82 |
+      83 |   test("attack_shopping_item_update_does_not_coerce_false_string_to_true", () => {
+
+      at Object.toMatch (tests/p1a/security-attack-cases.test.ts:80:17)
+
+  ● P1a non-destructive adversarial security contracts › attack_shopping_item_update_does_not_coerce_false_string_to_true
+
+    expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "Boolean(is_checked)"
+    Received string:        "export async function PUT(request: NextRequest, { params }: RouteParams) {
+      const supabase = await createClient();
+      const { id: listId, itemId } = await params;
+
+      // Check authentication
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        return NextResponse.json({ error: \"Unauthorized\" }, { status: 401 });
+      }
+
+      // Verify ownership of the list
+      const { data: list, error: listError } = await supabase
+        .from(\"shopping_lists\")
+        .select(\"id\")
+        .eq(\"id\", listId)
+        .eq(\"user_id\", user.id)
+        .single();
+
+      if (listError || !list) {
+        return NextResponse.json({ error: \"Shopping list not found\" }, { status: 404 });
+      }
+
+      try {
+        const body = await request.json();
+        const { item_name, quantity, unit, category, is_checked, position, notes } = body;
+
+        // Build update object
+        const updateData: Record<string, unknown> = {};
+
+        if (item_name !== undefined) {
+          if (typeof item_name !== \"string\" || item_name.trim().length === 0) {
+            return NextResponse.json({ error: \"Item name cannot be empty\" }, { status: 400 });
+          }
+          updateData.item_name = item_name.trim();
+        }
+
+        if (quantity !== undefined) {
+          updateData.quantity = Number(quantity) || 1;
+        }
+
+        if (unit !== undefined) {
+          updateData.unit = unit?.trim() || null;
+        }
+
+        if (category !== undefined) {
+          updateData.category = category?.trim() || \"Other\";
+        }
+
+        if (is_checked !== undefined) {
+          updateData.is_checked = Boolean(is_checked);
+        }
+
+        if (position !== undefined) {
+          updateData.position = Number(position) || 0;
+        }
+
+        if (notes !== undefined) {
+          updateData.notes = notes?.trim() || null;
+        }
+
+        // Update the item
+        const { data: updatedItem, error } = await supabase
+          .from(\"shopping_list_items\")
+          .update(updateData)
+          .eq(\"id\", itemId)
+          .eq(\"shopping_list_id\", listId)
+          .select(
+            `
+            *,
+            Ingredient:ingredient_id (
+              id,
+              name,
+              unit
+            )
+          `
+          )
+          .single();
+
+        if (error) {
+          if (error.code === \"PGRST116\") {
+            return NextResponse.json({ error: \"Item not found\" }, { status: 404 });
+          }
+          console.error(\"Error updating shopping list item:\", error);
+          return NextResponse.json({ error: \"Failed to update item\" }, { status: 500 });
+        }
+
+        // Update the list's updated_at timestamp
+        await supabase
+          .from(\"shopping_lists\")
+          .update({ updated_at: new Date().toISOString() })
+          .eq(\"id\", listId);
+
+        return NextResponse.json(updatedItem);
+      } catch {
+        return NextResponse.json({ error: \"Invalid request body\" }, { status: 400 });
+      }
+    }
+
+    /**
+     * DELETE /api/shopping-lists/[id]/items/[itemId]
+     * Remove an item from a shopping list
+     */
+    "
+
+      87 |       "export async function DELETE"
+      88 |     );
+    > 89 |     expect(put).not.toContain("Boolean(is_checked)");
+         |                     ^
+      90 |     expect(put).toMatch(/typeof is_checked.*boolean/);
+      91 |   });
+      92 |
+
+      at Object.toContain (tests/p1a/security-attack-cases.test.ts:89:21)
+
+  ● P1a non-destructive adversarial security contracts › attack_achievement_check_rejects_unknown_trigger_values
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /\[.*meal_logged.*nutrient_viewed.*manual.*\]/s
+    Received string:  "import { NextResponse } from \"next/server\";
+    import { createClient } from \"@/utils/supabase/server\";
+    import { getUserIdentity } from \"@/lib/auth\";
+    import { supabaseServer } from \"@/lib/supabaseServer\";
+    import { sendMultipleAchievementNotifications, isPushConfigured } from \"@/lib/pushNotifications\";·
+    import type { SupabaseClient } from \"@supabase/supabase-js\";
+    import type { Database } from \"@/types/supabase\";
+    import type { Achievement, AchievementCheckRequest, AchievementCheckResponse } from \"@/types/data\";·
+    type UserAchievementRow = {
+      achievement_id: number;
+    };·
+    type CalendarMealWithTags = {
+      Recipe?: {
+        \"Recipe-Tag_Map\"?: Array<{
+          Tag?: { name?: string | null } | null;
+        }>;
+      } | null;
+    };·
+    type CalendarDate = { date: string | null };·
+    type UserStats = {
+      meals_logged: number;
+      green_recipes: number;
+      days_tracked: number;
+      streak_days: number;
+      dashboard_views: number;
+      nutrient_aware_percentage: number;
+    };·
+    /**
+     * POST /api/achievements/check
+     *
+     * Checks and awards new achievements based on user's current progress.
+     * Called after user performs actions (meal_logged, nutrient_viewed, etc.)
+     *
+     * Request body:
+     * - trigger: \"meal_logged\" | \"nutrient_viewed\" | \"manual\"
+     *
+     * Returns:
+     * - newly_earned: Array of newly unlocked achievements
+     * - message: Success message
+     */
+    export async function POST(request: Request) {
+      const supabase = await createClient();
+      let publicUserId: number;
+      let authUserId: string;·
+      try {
+        ({ publicUserId, authUserId } = await getUserIdentity(supabase));
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : \"Unauthorized\";
+        console.warn(\"POST /api/achievements/check auth error:\", errorMessage);
+        return NextResponse.json({ error: errorMessage }, { status: 401 });
+      }·
+      let body: AchievementCheckRequest;
+      try {
+        body = await request.json();
+      } catch {
+        return NextResponse.json({ error: \"Invalid JSON body\" }, { status: 400 });
+      }·
+      if (!body.trigger) {
+        return NextResponse.json({ error: \"Missing trigger field\" }, { status: 400 });
+      }·
+      try {
+        // Fetch all achievement definitions
+        const { data: achievements, error: achievementsError } = await supabase
+          .from(\"achievement_definitions\")
+          .select(\"*\");·
+        if (achievementsError) {
+          console.error(\"Error fetching achievements:\", achievementsError.message);
+          return NextResponse.json({ error: achievementsError.message }, { status: 500 });
+        }·
+        // Fetch user's already earned achievements
+        const { data: userAchievements, error: userAchievementsError } = await supabase
+          .from(\"user_achievements\")
+          .select(\"achievement_id\")
+          .eq(\"user_id\", authUserId);·
+        if (userAchievementsError) {
+          console.error(\"Error fetching user achievements:\", userAchievementsError.message);
+          return NextResponse.json({ error: userAchievementsError.message }, { status: 500 });
+        }·
+        const userAchievementRows = (userAchievements ?? []) as UserAchievementRow[];
+        const earnedAchievementIds = new Set(userAchievementRows.map((ua) => ua.achievement_id));·
+        // Get user statistics
+        const stats = await calculateUserStats(supabase, publicUserId, authUserId);·
+        // Check which achievements are newly earned
+        const newlyEarned: Achievement[] = [];·
+        const achievementDefinitions = (achievements ?? []) as Achievement[];·
+        for (const achievement of achievementDefinitions) {
+          // Skip already earned
+          if (earnedAchievementIds.has(achievement.id)) continue;·
+          const criteria = achievement.criteria;
+          const isEarned = checkAchievementCriteria(criteria, stats);·
+          if (isEarned) {
+            // Award achievement
+            const { error: insertError } = await supabaseServer.from(\"user_achievements\").insert({
+              user_id: authUserId,
+              achievement_id: achievement.id,
+              earned_at: new Date().toISOString(),
+              progress: {
+                final_value: stats[criteria.metric as keyof typeof stats],
+                trigger: body.trigger,
+              },
+            });·
+            if (!insertError) {
+              newlyEarned.push({
+                id: achievement.id,
+                name: achievement.name,
+                title: achievement.title,
+                description: achievement.description,
+                icon: achievement.icon,
+                tier: achievement.tier,
+                criteria: achievement.criteria,
+              });
+            } else {
+              console.error(`Error awarding achievement ${achievement.name}:`, insertError.message);
+            }
+          }
+        }·
+        const response: AchievementCheckResponse = {
+          newly_earned: newlyEarned,
+          message:
+            newlyEarned.length > 0
+              ? `Congratulations! You earned ${newlyEarned.length} new achievement(s)!`
+              : \"No new achievements earned.\",
+        };·
+        // Send push notifications for newly earned achievements (async, non-blocking)
+        if (newlyEarned.length > 0 && isPushConfigured()) {
+          sendMultipleAchievementNotifications(authUserId, newlyEarned)
+            .then(({ sent, failed }) => {
+              if (sent > 0) {
+                console.log(
+                  `Push notifications sent for ${newlyEarned.length} achievements: ${sent} succeeded, ${failed} failed`
+                );
+              }
+            })
+            .catch((err) => {
+              console.error(\"Error sending achievement push notifications:\", err);
+            });
+        }·
+        return NextResponse.json(response);
+      } catch (error) {
+        console.error(\"Error checking achievements:\", error);
+        return NextResponse.json({ error: \"Internal server error\" }, { status: 500 });
+      }
+    }·
+    /**
+     * Calculate user statistics for achievement checking
+     */
+    async function calculateUserStats(
+      supabase: SupabaseClient<Database>,
+      publicUserId: number,
+      authUserId: string
+    ) {
+      const stats: UserStats = {
+        meals_logged: 0,
+        green_recipes: 0,
+        days_tracked: 0,
+        streak_days: 0,
+        dashboard_views: 0,
+        nutrient_aware_percentage: 0,
+      };·
+      try {
+        // Count meals logged
+        const { count: mealsCount, error: mealsError } = await supabase
+          .from(\"Calendar\")
+          .select(\"*\", { count: \"exact\", head: true })
+          .eq(\"user_id\", publicUserId)
+          .eq(\"status\", true);·
+        if (!mealsError && mealsCount !== null) {
+          stats.meals_logged = mealsCount;
+        }·
+        // Count green recipes
+        const { data: greenMeals, error: greenError } = await supabase
+          .from(\"Calendar\")
+          .select(
+            `
+            id,
+            Recipe: recipe_id (
+              id,
+              Recipe-Tag_Map (
+                Tag: tag_id (
+                  name
+                )
+              )
+            )
+          `
+          )
+          .eq(\"user_id\", publicUserId)
+          .eq(\"status\", true);·
+        if (!greenError && greenMeals) {
+          const greenMealsTyped = greenMeals as CalendarMealWithTags[];
+          stats.green_recipes = greenMealsTyped.filter((meal) => {
+            const recipe = meal.Recipe;
+            if (!recipe) return false;
+            const tagMaps = recipe[\"Recipe-Tag_Map\"] || [];
+            return tagMaps.some(
+              (tm) =>
+                tm.Tag?.name?.toLowerCase().includes(\"sustainable\") ||
+                tm.Tag?.name?.toLowerCase().includes(\"green\") ||
+                tm.Tag?.name?.toLowerCase().includes(\"eco\")
+            );
+          }).length;
+        }·
+        // Count days tracked and calculate streak
+        const { data: calendarDates, error: datesError } = await supabase
+          .from(\"Calendar\")
+          .select(\"date\")
+          .eq(\"user_id\", publicUserId)
+          .eq(\"status\", true);·
+        if (!datesError && calendarDates) {
+          const calendarDatesTyped = calendarDates as CalendarDate[];
+          const uniqueDates = new Set(calendarDatesTyped.map((c) => c.date));
+          stats.days_tracked = uniqueDates.size;
+          stats.streak_days = calculateStreak(Array.from(uniqueDates) as string[]);
+        }·
+        // Count dashboard views
+        const { count: nutrientViewsCount, error: nutrientError } = await supabase
+          .from(\"nutrient_tracking\")
+          .select(\"*\", { count: \"exact\", head: true })
+          .eq(\"user_id\", authUserId);·
+        if (!nutrientError && nutrientViewsCount !== null) {
+          stats.dashboard_views = nutrientViewsCount;
+        }·
+        // Calculate nutrient-aware percentage
+        const { data: nutrientMeals, error: nutrientMealsError } = await supabase
+          .from(\"nutrient_tracking\")
+          .select(\"date\")
+          .eq(\"user_id\", authUserId);·
+        if (!nutrientMealsError && nutrientMeals && stats.meals_logged > 0) {
+          stats.nutrient_aware_percentage = Math.round(
+            (nutrientMeals.length / stats.meals_logged) * 100
+          );
+        }
+      } catch (error) {
+        console.error(\"Error calculating user stats:\", error);
+      }·
+      return stats;
+    }·
+    /**
+     * Calculate current streak from array of dates
+     */
+    function calculateStreak(dates: string[]): number {
+      if (dates.length === 0) return 0;·
+      const sortedDates = dates.map((d) => new Date(d)).sort((a, b) => b.getTime() - a.getTime()); // Most recent first·
+      let streak = 1;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);·
+      const mostRecent = new Date(sortedDates[0]);
+      mostRecent.setHours(0, 0, 0, 0);·
+      // Check if most recent is today or yesterday
+      const daysSinceLastLog = Math.floor(
+        (today.getTime() - mostRecent.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (daysSinceLastLog > 1) return 0;·
+      // Count consecutive days
+      for (let i = 1; i < sortedDates.length; i++) {
+        const current = new Date(sortedDates[i]);
+        const previous = new Date(sortedDates[i - 1]);
+        current.setHours(0, 0, 0, 0);
+        previous.setHours(0, 0, 0, 0);·
+        const dayDiff = Math.floor((previous.getTime() - current.getTime()) / (1000 * 60 * 60 * 24));
+        if (dayDiff === 1) {
+          streak++;
+        } else {
+          break;
+        }
+      }·
+      return streak;
+    }·
+    /**
+     * Check if achievement criteria is met
+     */
+    function checkAchievementCriteria(criteria: Achievement[\"criteria\"], stats: UserStats): boolean {
+      const current = stats[criteria.metric as keyof UserStats] || 0;·
+      switch (criteria.type) {
+        case \"count\":
+          return current >= criteria.target;
+        case \"streak\":
+          return current >= criteria.target;
+        case \"threshold\":
+          return current >= criteria.target;
+        default:
+          return false;
+      }
+    }
+    "
+
+      93 |   test("attack_achievement_check_rejects_unknown_trigger_values", () => {
+      94 |     const route = source("src/app/api/achievements/check/route.ts");
+    > 95 |     expect(route).toMatch(/\[.*meal_logged.*nutrient_viewed.*manual.*\]/s);
+         |                   ^
+      96 |     expect(route).toMatch(/includes\(body\.trigger\)/);
+      97 |   });
+      98 |
+
+      at Object.toMatch (tests/p1a/security-attack-cases.test.ts:95:19)
+
+FAIL tests/p1a/use-case-contracts.test.ts
+  ● P1a high-level use-case contracts › test_uc20_rejects_transfer_of_another_users_shopping_item
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: ".eq(\"user_id\", user.id)"
+    Received string:    "// Mark shopping item as checked
+            const { error: checkError } = await supabase
+              .from(\"shopping_list_items\")
+              .update({ is_checked: true })
+              .eq(\"id\", item.shopping_item_id);·
+            if (checkError) {
+              errors.push(`Failed to mark shopping item ${item.shopping_item_id} as checked`);
+              continue;
+            }·
+            "
+
+      103 |
+      104 |     // A shopping item must be scoped to the authenticated user before it is changed.
+    > 105 |     expect(ownershipSensitiveUpdate).toContain('.eq("user_id", user.id)');
+          |                                      ^
+      106 |   });
+      107 | });
+      108 |
+
+      at Object.toContain (tests/p1a/use-case-contracts.test.ts:105:38)
+
+PASS tests/p1a/inventory-behavior.test.ts
+
+Test Suites: 2 failed, 1 passed, 3 total
+Tests:       11 failed, 33 passed, 44 total
+Snapshots:   0 total
+Time:        0.311 s, estimated 1 s
+Ran all test suites.
