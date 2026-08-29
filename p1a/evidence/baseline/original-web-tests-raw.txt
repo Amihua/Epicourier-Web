@@ -1,0 +1,257 @@
+
+> epicourier@0.1.0 test
+> jest --runInBand --testPathIgnorePatterns=/tests/p1a/
+
+PASS __tests__/node/achievementsApi.test.ts
+  ● Console
+
+    console.error
+      Error fetching achievements: defs fail
+
+      76 |
+      77 |     if (achievementsError) {
+    > 78 |       console.error("Error fetching achievements:", achievementsError.message);
+         |               ^
+      79 |       return NextResponse.json({ error: achievementsError.message }, { status: 500 });
+      80 |     }
+      81 |
+
+      at error (src/app/api/achievements/check/route.ts:78:15)
+      at Object.<anonymous> (__tests__/node/achievementsApi.test.ts:888:19)
+
+    console.error
+      Error fetching user achievements: ua fail
+
+      87 |
+      88 |     if (userAchievementsError) {
+    > 89 |       console.error("Error fetching user achievements:", userAchievementsError.message);
+         |               ^
+      90 |       return NextResponse.json({ error: userAchievementsError.message }, { status: 500 });
+      91 |     }
+      92 |
+
+      at error (src/app/api/achievements/check/route.ts:89:15)
+      at Object.<anonymous> (__tests__/node/achievementsApi.test.ts:906:19)
+
+PASS __tests__/node/inventoryApi.test.ts
+PASS __tests__/node/challengesApi.test.ts
+PASS __tests__/jsdom/useNutrientDashboard.test.tsx
+  ● Console
+
+    console.error
+      An update to TestComponent inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      199 |         ]);
+      200 |
+    > 201 |       setDaily(todaySummary.daily);
+          |       ^
+      202 |
+      203 |       const sevenTrend: TrendPoint[] = dailyTrendSummaries
+      204 |         .map((res) => res.daily)
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setDaily (src/app/dashboard/nutrients/useNutrientDashboard.ts:201:7)
+
+    console.error
+      An update to TestComponent inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      211 |           fats: d.fats_g,
+      212 |         }));
+    > 213 |       setPastSeven(sevenTrend);
+          |       ^
+      214 |
+      215 |       const weeklyTrendData: WeeklyNutrient[] = weeklySummaries
+      216 |         .map((res) => res.weekly?.[0])
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setPastSeven (src/app/dashboard/nutrients/useNutrientDashboard.ts:213:7)
+
+    console.error
+      An update to TestComponent inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      216 |         .map((res) => res.weekly?.[0])
+      217 |         .filter((w): w is WeeklyNutrient => Boolean(w));
+    > 218 |       setWeekly(weeklyTrendData);
+          |       ^
+      219 |
+      220 |       const monthlyTrendData: MonthlyNutrient[] = monthlySummaries
+      221 |         .map((res) => res.monthly?.[0])
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setWeekly (src/app/dashboard/nutrients/useNutrientDashboard.ts:218:7)
+
+    console.error
+      An update to TestComponent inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      221 |         .map((res) => res.monthly?.[0])
+      222 |         .filter((m): m is MonthlyNutrient => Boolean(m));
+    > 223 |       setMonthly(monthlyTrendData);
+          |       ^
+      224 |     } catch (err) {
+      225 |       console.error("Error fetching nutrient data:", err);
+      226 |       setError(err instanceof Error ? err.message : "Unknown error");
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setMonthly (src/app/dashboard/nutrients/useNutrientDashboard.ts:223:7)
+
+    console.error
+      An update to TestComponent inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      226 |       setError(err instanceof Error ? err.message : "Unknown error");
+      227 |     } finally {
+    > 228 |       setSummaryLoading(false);
+          |       ^
+      229 |     }
+      230 |   }, [fetchSummary, monthRange]);
+      231 |
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setSummaryLoading (src/app/dashboard/nutrients/useNutrientDashboard.ts:228:7)
+
+PASS __tests__/node/shoppingListsApi.test.ts
+PASS __tests__/node/gamificationIntegration.test.ts
+PASS __tests__/node/streaksApi.test.ts
+PASS __tests__/jsdom/RecipeRecommendationModal.test.tsx
+PASS __tests__/jsdom/SmartCartWidget.test.tsx
+PASS __tests__/node/smartCartWidgetApi.test.ts
+PASS __tests__/jsdom/GoalDialog.test.tsx
+PASS __tests__/node/notificationsApi.test.ts
+PASS __tests__/jsdom/PushNotifications.test.tsx
+PASS __tests__/node/nutrientsExportApi.test.ts
+PASS __tests__/node/eventsApi.test.ts
+PASS __tests__/jsdom/ChallengeCard.test.tsx
+PASS __tests__/jsdom/inventory/InventoryPage.test.tsx
+PASS __tests__/jsdom/use-toast.test.tsx
+PASS __tests__/jsdom/useNutrientExport.test.tsx
+PASS __tests__/jsdom/ui-dropdown-menu.test.tsx
+PASS __tests__/jsdom/nutrients-page.test.tsx
+PASS __tests__/jsdom/PercentLineChart.test.tsx
+PASS __tests__/node/utils/expiration.test.ts
+PASS __tests__/jsdom/inventory/EditInventoryModal.test.tsx
+PASS __tests__/node/utils/recipeMatch.test.ts
+PASS __tests__/node/eventsIdApi.test.ts
+PASS __tests__/jsdom/hooks/useInventory.test.ts
+PASS __tests__/node/inventoryTransferApi.test.ts
+PASS __tests__/jsdom/hooks/useTransferToInventory.test.tsx
+PASS __tests__/jsdom/ui-field.test.tsx
+PASS __tests__/jsdom/AchievementToast.test.tsx
+PASS __tests__/jsdom/hooks/useExpiringItems.test.ts
+PASS __tests__/node/nutrientGoalsApi.test.ts
+PASS __tests__/node/challengeReset.test.ts
+PASS __tests__/jsdom/ui-input-group.test.tsx
+PASS __tests__/jsdom/inventory/InventoryCard.test.tsx
+PASS __tests__/jsdom/ui-sidebar.test.tsx
+PASS __tests__/jsdom/use-recipe.test.tsx
+PASS __tests__/jsdom/inventory/AddInventoryModal.test.tsx
+PASS __tests__/jsdom/inventory/BatchDeleteDialog.test.tsx
+PASS __tests__/jsdom/signup.test.tsx
+PASS __tests__/jsdom/MealDetailModal.test.tsx
+PASS __tests__/node/inventoryBatchDeleteApi.test.ts
+PASS __tests__/node/signup.action.ts
+PASS __tests__/node/utils/lowStock.test.ts
+PASS __tests__/jsdom/hooks/useLowStockItems.test.ts
+PASS __tests__/jsdom/layout.test.tsx
+PASS __tests__/node/smartCartComprehensive.test.ts
+PASS __tests__/jsdom/inventory/ExpirationBadge.test.tsx
+PASS __tests__/jsdom/signin.test.tsx
+PASS __tests__/jsdom/AddMealModal.test.tsx
+PASS __tests__/jsdom/TransferFlow.test.tsx
+PASS __tests__/jsdom/inventory/RecipeMatchBadge.test.tsx
+PASS __tests__/jsdom/ui-sheet.test.tsx
+PASS __tests__/jsdom/pagination.test.tsx
+PASS __tests__/node/util.test.ts
+PASS __tests__/jsdom/inventory/LowStockBanner.test.tsx
+PASS __tests__/jsdom/use-mobile.test.tsx
+PASS __tests__/jsdom/searchbar.test.tsx
+PASS __tests__/node/middleware.test.ts
+PASS __tests__/jsdom/ui-button.test.tsx
+PASS __tests__/node/constants.test.ts
+PASS __tests__/node/signin.action.ts
+PASS __tests__/node/logout.action.test.ts
+PASS __tests__/jsdom/landing.test.tsx
+PASS __tests__/jsdom/ui-separator.test.tsx
+PASS __tests__/jsdom/ui-skeleton.test.tsx
+PASS __tests__/jsdom/next-config.test.ts
+PASS __tests__/jsdom/ui-accordion.test.tsx
+PASS __tests__/jsdom/page.test.tsx
+
+Test Suites: 1 skipped, 70 passed, 70 of 71 total
+Tests:       1 skipped, 1095 passed, 1096 total
+Snapshots:   0 total
+Time:        14.461 s
+Ran all test suites in 2 projects.
+npm notice
+npm notice New major version of npm available! 10.9.8 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
