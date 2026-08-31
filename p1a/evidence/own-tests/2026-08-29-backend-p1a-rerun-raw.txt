@@ -1,0 +1,8 @@
+..................                                                       [100%]
+=============================== warnings summary ===============================
+../../python-envs/epicourier-backend/lib/python3.9/site-packages/google/genai/types.py:9908
+  /mnt/data1/sliu78/python-envs/epicourier-backend/lib/python3.9/site-packages/google/genai/types.py:9908: PydanticDeprecatedSince212: Using `@model_validator` with mode='after' on a classmethod is deprecated. Instead, use an instance method. See the documentation at https://docs.pydantic.dev/2.12/concepts/validators/#model-after-validator. Deprecated in Pydantic V2.12 to be removed in V3.0.
+    def validate_name(cls, model: 'Metric') -> 'Metric':
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+18 passed, 1 warning in 0.11s
