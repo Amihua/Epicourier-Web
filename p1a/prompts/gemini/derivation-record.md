@@ -4,7 +4,7 @@
 
   - Model: Gemini 3.7 Flash (reasoning effort: high), as reported by Antigravity CLI, run through Antigravity CLI (`agy`) v1.1.22 with full repository access. Antigravity CLI is Google's official successor to Gemini CLI, which was retired in June 2026; it is the current free consumer path to Gemini coding agents.
   - Prompt: the clean-room reverse-engineering prompt in `p1a/README.md`, run once, unmodified except for filling its two placeholders from the course format file (the structure table and UC1 only).
-  - Output: the 20 use cases and verification table in `p1a/use-cases/p1a_gemini/use-cases.md`. The prompt as run is preserved in `p1a/prompts/gemini/P01-prompt.md`.
+  - Output: the 20 use cases and verification table in `p1a/use-cases/p1a_gemini/use-cases.md`.
   - Permitted sources only. The session tool log shows the model read: README.md; docs/user-guides/ (quick-start, inventory-management, shopping-lists, smart-suggestions); AGENT-PLAN/03-API-SPECIFICATIONS.md and AGENT-PLAN/v1.3.0-SMART-CART-PLAN.md (architecture documents, not testing documents); page components under web/src/app/; selected components under web/src/components/; and backend/api/index.py.
   - Contamination audit: this branch already contains `p1a/use-cases/p1a_codex/`, which is a pre-existing use-case list and therefore a forbidden source under the prompt. The session tool log was audited after the run: the model opened no file under `p1a/`, `web/__tests__/`, `web/e2e/`, `web/tests/`, or `backend/tests/`. Unlike the Claude run, this session contained no prior display of Codex output, so no use case is marked non-independent.
 
