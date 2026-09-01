@@ -59,7 +59,7 @@
 
   ## Cross-model note
 
-  At the time of writing, `p1a/use-cases/` holds the Codex run and this run; the Claude run is recorded in its derivation record. Comparing this run against Codex:
+  When this record was first written, `p1a/use-cases/` held only the Codex run and this run. Four runs are now present: Codex, this one, Claude (`p1a/use-cases/p1a_claude/use-cases.md`, whose derivation record is filed as `p1a/prompts/claude/P05-response.md` despite the name, with per-use-case evidence in `p1a/traceability/p1a_claude_traceability.md`), and a local `qwen2.5:32b` run (`p1a/use-cases/p1a_qwen2.5/use-cases.md`). The four-way comparison, the disagreements, and which source settled each one are in `p1a/prompts/step8-prompt-model-table.md`. Comparing this run against Codex:
 
   Seventeen to eighteen of twenty use cases correspond in substance despite different numbering and phrasing (e.g. Gemini UC13 "Delete inventory items in batch" ≙ Codex UC16 "Remove inventory items"; Gemini UC20 "Join community challenge" ≙ Codex UC12 "Join a wellness challenge").
 
