@@ -1,15 +1,4 @@
-#!/usr/bin/env python3
-"""Send the shared keeper prompt + codebase context to a local Ollama model.
-Uses the exact same prompt as other models (Codex, Claude, Gemini) per course requirement."""
-import ollama
-import sys
-from pathlib import Path
-
-CONTEXT_FILE = Path(__file__).parent / "context_mini.txt"
-MODEL = "qwen2.5:32b"
-
-# Exact shared keeper prompt from p1a/README.md, with placeholders filled in
-KEEPER_PROMPT = r"""You are a senior software engineer independently reverse-engineering
+You are a senior software engineer independently reverse-engineering
 Epicourier-Web.
 
 IMPORTANT CLEAN-ROOM CONSTRAINT:
@@ -118,35 +107,4 @@ After the 20 use cases, provide this separate verification table:
 
 Below is the codebase (permitted product artifacts only). Read it all, then produce the 20 use cases.
 
-"""
-
-def main():
-    context = CONTEXT_FILE.read_text()
-    full_prompt = KEEPER_PROMPT + context
-
-    print(f"Sending {len(full_prompt)} chars to {MODEL}...", file=sys.stderr)
-    print(f"Estimated tokens: ~{len(full_prompt)//4}", file=sys.stderr)
-
-    response = ollama.chat(
-        model=MODEL,
-        messages=[
-            {"role": "user", "content": full_prompt},
-        ],
-        options={"num_ctx": 32768, "temperature": 0.3, "num_predict": 16384},  # qwen2.5:32b max ctx is 32768
-    )
-
-    output = response["message"]["content"]
-    print(output)
-
-    out_path = Path(__file__).parent.parent / "prompts" / "qwen2.5" / "response.md"
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(output)
-
-    prompt_path = Path(__file__).parent.parent / "prompts" / "qwen2.5" / "prompt.md"
-    prompt_path.write_text(KEEPER_PROMPT.strip() + "\n\n[codebase context from context_slim.txt appended here]\n")
-
-    print(f"\nResponse saved to {out_path}", file=sys.stderr)
-    print(f"Prompt saved to {prompt_path}", file=sys.stderr)
-
-if __name__ == "__main__":
-    main()
+[codebase context from context_slim.txt appended here]
