@@ -68,32 +68,26 @@ Canonical deliverable:
 
 Model records:
 
-| Model | Prompt | Response or run record | Derived use cases |
-|---|---|---|---|
-| Codex | [prompt.md](prompts/codex/prompt.md) | [response.md](prompts/codex/response.md) | [Use cases](use-cases/p1a_codex/use-cases.md) |
-| Gemini | [prompt.md](prompts/gemini/prompt.md) | [response.md](prompts/gemini/response.md) | [Use cases](use-cases/p1a_gemini/use-cases.md) |
-| Claude | [prompt.md](prompts/claude/prompt.md) | [response.md](prompts/claude/response.md) | [Use cases](use-cases/p1a_claude/use-cases.md) |
+
+| Model             | Prompt                                 | Response or run record                     | Derived use cases                               |
+| ----------------- | -------------------------------------- | ------------------------------------------ | ----------------------------------------------- |
+| Codex             | [prompt.md](prompts/codex/prompt.md)   | [response.md](prompts/codex/response.md)   | [Use cases](use-cases/p1a_codex/use-cases.md)   |
+| Gemini            | [prompt.md](prompts/gemini/prompt.md)  | [response.md](prompts/gemini/response.md)  | [Use cases](use-cases/p1a_gemini/use-cases.md)  |
+| Claude            | [prompt.md](prompts/claude/prompt.md)  | [response.md](prompts/claude/response.md)  | [Use cases](use-cases/p1a_claude/use-cases.md)  |
 | qwen2.5:32b local | [prompt.md](prompts/qwen2.5/prompt.md) | [response.md](prompts/qwen2.5/response.md) | [Use cases](use-cases/p1a_qwen2.5/use-cases.md) |
+
 
 Local-model scripts:
 
 - [Local-model runner](scripts/run_local_model.py)
 - [Context-gathering script](scripts/gather_context_mini.sh)
 
-## PDF assembly order
-
-1. D1 — Product choice
-2. D2 — Final 20 use cases
-3. D3 — Tests, representative raw output, and results tables
-4. D4 — Final traceability and project-test coverage discussion
-5. D5 — Prompt notes and cross-model comparison
-6. Repository evidence links or a short appendix
-
 ## File checklist
 
-- [ ] Add `p1a/product-choice.md` after confirming the team selection history.
-- [x] D2 final use cases
-- [x] D3 test code, result tables, and raw output
-- [x] D4 final traceability
-- [x] D5 canonical cross-model comparison and model records
-- [ ] Assemble and verify the single PDF
+- Add `p1a/product-choice.md` after confirming the team selection history.
+- D2 final use cases
+- D3 test code, result tables, and raw output
+- D4 final traceability
+- D5 canonical cross-model comparison and model records
+- Assemble and verify the single PDF
+
