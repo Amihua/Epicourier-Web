@@ -1,96 +1,99 @@
-# CSC510 Project 1a
+# CSC510 Project 1a — Deliverables
 
-This directory contains our use cases, test evidence, LLM prompt records,
-traceability analysis, and ACM report for Project 1a.
+This directory collects the source artifacts used to assemble the single Project 1a PDF for Moodle.
 
-Edited Date: 2026.08.29
+Repository: [Epicourier-Web](https://github.com/Amihua/Epicourier-Web)
 
-Prompt:
+## D1 — Product choice
 
-```
-You are a senior software engineer independently reverse-engineering
-Epicourier-Web.
+Product-choice document: `p1a/product-choice.md` (**not yet added**).
 
-IMPORTANT CLEAN-ROOM CONSTRAINT:
+The document should be added after the team confirms the real product-selection history. The repository URL is [https://github.com/Amihua/Epicourier-Web](https://github.com/Amihua/Epicourier-Web).
 
-During this task, do not inspect, search, cite, or use any existing test case,
-test name, test implementation, test plan, coverage report, or pre-existing
-use-case list from the Epicourier repository.
+## D2 — Final 20 use cases
 
-Forbidden sources include, but are not limited to:
+Canonical deliverable:
 
-- web/__tests__/
-- web/e2e/
-- backend/tests/
-- data/test_recipe.py
-- AGENT-PLAN/07-TESTING-STRATEGY.md
-- any file whose main purpose is testing, test coverage, or test-case design
+- [Final 20 use cases](use-cases/final-use-cases.md)
 
-You still have repository access, but for this task you must derive the design
-independently from product artifacts such as:
+Supporting model outputs:
 
-- README.md and INSTALL.md
-- docs/user-guides/
-- web/src/
-- backend/api/
-- supabase/migrations/
-- product architecture documentation that is not a testing document
+- [Codex use cases](use-cases/p1a_codex/use-cases.md)
+- [Gemini use cases](use-cases/p1a_gemini/use-cases.md)
+- [Claude use cases](use-cases/p1a_claude/use-cases.md)
+- [qwen2.5 use cases](use-cases/p1a_qwen2.5/use-cases.md)
 
-If you accidentally rely on a forbidden source, explicitly disclose it and
-do not use that conclusion.
+## D3 — Tests and results
 
-COURSE FORMAT EXAMPLE:
+Test code:
 
-The following example comes from an unrelated food-delivery system. It is
-provided ONLY to demonstrate the required use-case structure.
+- [Web P1a tests](../web/tests/p1a/)
+- [Backend P1a tests](../backend/tests/sihao/p1a/)
 
-You must NOT:
-- count this example as one of the 20 Epicourier use cases;
-- reuse its actors, scenarios, extensions, or postconditions;
-- replace food-delivery nouns with Epicourier nouns and call it a new use case;
-- assume Epicourier supports any behavior shown in this example.
+Results tables:
 
-[Paste “The structure of a use case” table here.]
+- [Own-test results](evidence/own-tests/RESULTS.md)
+- [Adversarial-test results](evidence/own-tests/ATTACK-RESULTS.md)
 
-[Paste only “UC1: Place order” from usecases0.md here.]
+Raw test output:
 
-TASK:
+- [Combined Web P1a and security output](evidence/own-tests/2026-08-29-web-p1a-all-with-security-raw.txt)
+- [Combined Backend P1a and security output](evidence/own-tests/2026-08-29-backend-p1a-all-with-security-raw.txt)
+- [Web P1a rerun output](evidence/own-tests/2026-08-29-web-p1a-rerun-raw.txt)
+- [Backend P1a rerun output](evidence/own-tests/2026-08-29-backend-p1a-rerun-raw.txt)
+- [Original Web-test baseline](evidence/baseline/original-web-tests-raw.txt)
+- [Original Backend-test baseline](evidence/baseline/original-backend-tests-raw.txt)
 
-Independently identify exactly 20 of the most important user-facing use cases
-implemented by Epicourier-Web.
+## D4 — Test-to-use-case traceability
 
-Use this exact format for every use case:
+Canonical deliverable:
 
-## UC<number>: <Verb + noun>
+- [Final human-verified traceability](traceability/final-traceability.md)
 
-| Part | Content |
-|---|---|
-| **Name** | <Actor's goal: verb + noun> |
-| **Primary actor** | <Who wants the goal> |
-| **Stakeholders & interests** | <Who else cares and what they want> |
-| **Preconditions** | <What must already be true> |
-| **Trigger** | <Event that begins the use case> |
-| **Main success scenario** | 1. <Step>. 2. <Step>. 3. <Step>. |
-| **Extensions** | 2a: <Variation/failure> → <system behavior>. |
-| **Postconditions** | <What is guaranteed after success> |
+Design baseline:
 
-RULES:
+- [Final 20 use cases](use-cases/final-use-cases.md)
 
-1. Produce exactly 20 Epicourier use cases.
-2. Use verb + noun names from the primary actor's perspective.
-3. Keep the main success scenario as the happy path only.
-4. Put all branches and failures in Extensions.
-5. Key extensions to main-flow steps, such as 2a or 4b.
-6. Describe what the actor and system do, not UI widgets, databases, APIs,
-   frameworks, or internal functions.
-7. Do not copy or paraphrase pre-existing test cases or use-case lists.
-8. Verify every claimed feature against permitted product artifacts.
-9. Mark unsupported claims as UNSUPPORTED instead of guessing.
-10. Do not include the course example in the final 20.
+Supporting model-specific traceability:
 
-After the 20 use cases, provide this separate verification table:
+- [Codex traceability](traceability/p1a_codex_traceability.md)
+- [Gemini traceability](traceability/p1a_gemini_traceability.md)
+- [Claude traceability](traceability/p1a_claude_traceability.md)
 
-| UC | Permitted product evidence | File and line | Confidence | Concern |
-|---|---|---|---|---|
-```
+## D5 — Prompt notes and cross-model comparison
 
+Canonical deliverable:
+
+- [Prompt × model comparison and reconciliation](prompts/step8-prompt-model-table.md)
+
+Model records:
+
+| Model | Prompt | Response or run record | Derived use cases |
+|---|---|---|---|
+| Codex | [prompt.md](prompts/codex/prompt.md) | [response.md](prompts/codex/response.md) | [Use cases](use-cases/p1a_codex/use-cases.md) |
+| Gemini | [prompt.md](prompts/gemini/prompt.md) | [response.md](prompts/gemini/response.md) | [Use cases](use-cases/p1a_gemini/use-cases.md) |
+| Claude | [prompt.md](prompts/claude/prompt.md) | [response.md](prompts/claude/response.md) | [Use cases](use-cases/p1a_claude/use-cases.md) |
+| qwen2.5:32b local | [prompt.md](prompts/qwen2.5/prompt.md) | [response.md](prompts/qwen2.5/response.md) | [Use cases](use-cases/p1a_qwen2.5/use-cases.md) |
+
+Local-model scripts:
+
+- [Local-model runner](scripts/run_local_model.py)
+- [Context-gathering script](scripts/gather_context_mini.sh)
+
+## PDF assembly order
+
+1. D1 — Product choice
+2. D2 — Final 20 use cases
+3. D3 — Tests, representative raw output, and results tables
+4. D4 — Final traceability and project-test coverage discussion
+5. D5 — Prompt notes and cross-model comparison
+6. Repository evidence links or a short appendix
+
+## File checklist
+
+- [ ] Add `p1a/product-choice.md` after confirming the team selection history.
+- [x] D2 final use cases
+- [x] D3 test code, result tables, and raw output
+- [x] D4 final traceability
+- [x] D5 canonical cross-model comparison and model records
+- [ ] Assemble and verify the single PDF
