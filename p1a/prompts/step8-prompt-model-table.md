@@ -1,4 +1,4 @@
-# P1a Step 8 — Prompt × Model Table
+# P1a Step 8 — Cross-Model Comparison and Reconciliation
 
 ## What this table is
 
@@ -10,15 +10,34 @@ Rules used to fill it:
 - "Caught errors" counts claims that contradicted source and were corrected, with the evidence recorded in that model's derivation record.
 - Four models are covered: three hosted (Codex, Gemini, Claude) plus a locally run fourth (qwen2.5:32b via Ollama), which satisfies the optional local-model item in D5.
 
+## D5 claim and scope
+
+P01 is the sole **cross-model keeper prompt**: the same clean-room task was run on Codex, Gemini, Claude, and the local qwen2.5 model. P02 and P05 are **supplementary audit prompts**, not cross-model keepers; cells where they were not run remain explicitly marked rather than being inferred or fabricated. This distinction matters because a prompt × model table is evidence only when an artifact survives for each claimed run.
+
+This comparison supports D5 with: four preserved P01 prompt copies; four preserved model outputs or derivation records; a local-model raw completion; source-linked caught-error records; raw Jest and Pytest logs; explicit disagreements; and decisions that label unique findings as gems, hallucinations, or omissions.
+
 ## Prompt inventory
 
 | ID | Prompt | Preserved at | Purpose |
 |---|---|---|---|
-| **P01** | Clean-room reverse-engineering prompt: derive exactly 20 user-facing use cases in the required format, from product artifacts only, with a verification table; forbidden sources listed explicitly. | `p1a/README.md`, used verbatim with its two placeholders filled from the course format file (the structure table and UC1 only). The instantiated copy sent to the local model is preserved at `p1a/prompts/qwen2.5/prompt.md`. | D2 — the use-case set |
-| **P02** | Evidence-fetch prompt: "open `<file>`, show me the complete code for `<area>`, do not summarize, do not conclude." Instantiated once per file under audit, so there is no single archived copy. | Pattern recorded in `p1a/prompts/gemini/derivation-record.md` | Verification — turns the agent into a retrieval tool and keeps the judgment human |
-| **P05** | Traceability prompt: map every test under `web/tests/p1a/` and `backend/tests/sihao/p1a/` to the use-case set, then assess the project's own tests against those use cases. | Codex response preserved unchanged at `p1a/prompts/codex/P05-response.md` | D4 — traceability matrix |
+| **P01** | Clean-room reverse-engineering prompt: derive exactly 20 user-facing use cases in the required format, from product artifacts only, with a verification table; forbidden sources listed explicitly. | `p1a/README.md`, used verbatim with its two placeholders filled from the course format file (the structure table and UC1 only). Instantiated copies are preserved under `p1a/prompts/{codex,gemini,claude,qwen2.5}/prompt.md`; the four copies are byte-identical. | D2 — the use-case set |
+| **P02** | Evidence-fetch prompt: "open `<file>`, show me the complete code for `<area>`, do not summarize, do not conclude." Instantiated once per file under audit, so there is no single archived copy. | Pattern recorded in `p1a/prompts/gemini/response.md` | Verification — turns the agent into a retrieval tool and keeps the judgment human |
+| **P05** | Traceability prompt: map every test under `web/tests/p1a/` and `backend/tests/sihao/p1a/` to the use-case set, then assess the project's own tests against those use cases. | Codex response preserved unchanged at `p1a/prompts/codex/response.md` | D4 — traceability matrix |
 
-## The table
+## Evidence of actual model use
+
+| Model | Preserved prompt | Preserved P01 output | Supporting run/audit record | What this proves |
+|---|---|---|---|---|
+| Codex | `p1a/prompts/codex/prompt.md` | `p1a/use-cases/p1a_codex/use-cases.md` | `p1a/prompts/codex/response.md`; `p1a/traceability/final-traceability.md` | Codex produced the 20-UC baseline and later P05 traceability; the original P05 response is preserved even where human verification corrected it. |
+| Gemini | `p1a/prompts/gemini/prompt.md` | `p1a/use-cases/p1a_gemini/use-cases.md` | `p1a/prompts/gemini/response.md`; `p1a/traceability/p1a_gemini_traceability.md` | Gemini produced a distinct 20-UC set; its record preserves five caught errors, including the initial bad human sign-off. |
+| Claude | `p1a/prompts/claude/prompt.md` | `p1a/use-cases/p1a_claude/use-cases.md` | `p1a/prompts/claude/response.md`; `p1a/traceability/p1a_claude_traceability.md` | Claude produced a separately evidenced set and disclosed clean-room contamination instead of presenting it as independent agreement. |
+| qwen2.5:32b local | `p1a/prompts/qwen2.5/prompt.md` | `p1a/use-cases/p1a_qwen2.5/use-cases.md` | `p1a/prompts/qwen2.5/response.md`; `p1a/scripts/run_local_model.py` | The fourth model ran locally through Ollama; its raw 281-line completion is preserved, including its repeated citation defect. |
+
+The four `p1a/use-cases/p1a_<model>/use-cases.md` files are the preserved P01 generated deliverables, not retrospective summaries. qwen additionally has its raw completion; the hosted runs have derivation/audit records rather than fabricated screenshots.
+
+Raw execution evidence used to correct the later traceability claims is preserved in `p1a/evidence/own-tests/`, especially `2026-08-29-web-p1a-all-with-security-raw.txt` and `2026-08-29-backend-p1a-all-with-security-raw.txt`. These logs show actual PASS/FAIL outcomes rather than retrospective prose.
+
+## Prompt × model → verdict
 
 | | **Codex** | **Gemini** (Antigravity CLI, Gemini 3.7 Flash, reasoning high) | **Claude** (Opus 5 via Claude Code) | **qwen2.5:32b** (local, Ollama) |
 |---|---|---|---|---|
@@ -31,7 +50,7 @@ Rules used to fill it:
 | Model | Errors caught | How |
 |---|---|---|
 | Codex (P05) | Several failing tests reported as passing protections | Compared the generated prose against the raw Jest and Pytest logs in `p1a/evidence/own-tests/`. Corrected in `p1a/traceability/final-traceability.md`, which now carries an explicit type/result/evidence column per test; the original response is preserved unchanged for the record. |
-| Gemini (P01) | 5 false claims, plus 2 padded citations | All five via P02. In order: (1) an invented confirm-to-delete flow for zero quantity; (2) an overstated "all ingredients needed for the period" postcondition, contradicted by `new Set(...)` deduplication of recipe IDs; (3) a claimed *unique username* check where only email uniqueness exists; (4) a claimed default list name where both the modal and the API reject an empty name; (5) a claimed *archive* of a completed shopping list where the code performs a hard `DELETE` with cascading items. Full evidence in `p1a/prompts/gemini/derivation-record.md`. |
+| Gemini (P01) | 5 false claims, plus 2 padded citations | All five via P02. In order: (1) an invented confirm-to-delete flow for zero quantity; (2) an overstated "all ingredients needed for the period" postcondition, contradicted by `new Set(...)` deduplication of recipe IDs; (3) a claimed *unique username* check where only email uniqueness exists; (4) a claimed default list name where both the modal and the API reject an empty name; (5) a claimed *archive* of a completed shopping list where the code performs a hard `DELETE` with cascading items. Full evidence in `p1a/prompts/gemini/response.md`. |
 | Claude (P01) | 3, all about provenance rather than about the product | (1) Four citations in early UC3 and UC4 drafts were carried from Codex output visible earlier in the session rather than read from source; all four line ranges were wrong and were corrected against `web/src/`. (2) That same exposure revealed the names of UC1–UC5, which are therefore marked non-independent — agreement with Codex on those five must not be counted as cross-model confirmation. (3) Test artifacts had been opened earlier in the session while checking that the project builds; disclosed, with no use case or citation deriving from them. |
 | qwen2.5:32b (P01, local) | 2, found by us during review | (1) Every one of its 20 verification-table citations uses the same line range `:1-28`, in files running to 128–683 lines — the range is a constant, not a reference, and all 20 rows claim confidence "High" with concern "None". (2) Its UC5 trigger quotes a `"Check Achievements"` button; the manual re-check exists (`web/src/app/dashboard/achievements/page.tsx:121`, posting `{ trigger: "manual" }`) but the control is labelled **"Check Progress"** (`:133`). Naming a widget at all also breaks the prompt's rule against describing UI controls, which the three hosted models observed. |
 
@@ -47,7 +66,22 @@ The Gemini error worth reading twice is number 3: the first verification pass ha
 | Does the nutrient export produce a PDF? qwen2.5 does not cover export at all; Gemini describes "CSV spreadsheets and text reports"; Claude records it as a user-facing defect. | **Both hosted descriptions, which agree with each other and with source.** | `web/src/app/api/nutrients/export/route.ts:328` states in its own comment that the `pdf` format returns a text-based summary and that the parameter name is kept "for API consistency". Gemini's wording is more accurate than the API's parameter name; Claude goes further and names the consequence — a user who asks for a PDF does not get one. |
 | Does a completed shopping list get archived or deleted? The Gemini use case said archived; the code says deleted. | **The code.** | `handleCompleteList` sends `DELETE /api/shopping-lists/{id}`; that route runs a hard `.delete()` and the items cascade. An `is_archived` field exists on the list type, which is almost certainly what the model pattern-matched on, but nothing writes it. This is a model-versus-source disagreement rather than model-versus-model, and it is the most consequential single correction we made: archived implies recoverable, deleted is not. |
 
-One agreement is worth recording alongside the disagreements, because it is the only finding all four runs support: **no model's use-case set is a superset of the others.** Claude's is the most complete and still omits nothing only because it names the union of the achievements and inventory-review goals; Gemini alone found adding ingredients to a list; Codex alone shaped its inventory granularity to match the test suite. The local model found no goal the hosted three missed.
+## Minority and unique findings: gem or hallucination
+
+A minority finding is not accepted or rejected by model count. Each is classified against source:
+
+| Finding | Who found it | Classification | Evidence and consequence |
+|---|---|---|---|
+| Add selected recipe ingredients to an existing or new shopping list | Gemini and Claude; omitted by Codex and qwen2.5 | **Gem — retained in final UC18.** | `web/src/components/shopping/AddToCartButton.tsx:20-47` opens the flow; `AddToShoppingListModal.tsx:57-157` selects ingredients, chooses or creates a list, and posts items. This was a real coverage gap, not speculative UX. |
+| Completed shopping lists are archived | Gemini only | **Hallucination — rejected.** | `web/src/app/dashboard/shopping/[id]/page.tsx` calls the list `DELETE` route; the route performs hard deletion with cascading items. An unused `is_archived` field likely triggered pattern completion. Final UC20 says removed, not archived. |
+| Ordinary list creation supplies a default name | Gemini only | **Hallucination in that context — rejected.** | `CreateListModal.tsx` and the API reject an empty name. The recipe-specific modal has a separate `Shopping for <recipe>` fallback at `AddToShoppingListModal.tsx:121-130`; the final UC distinguishes the two paths. |
+| Confirm before removing inventory when quantity becomes zero | Gemini only | **Hallucination — rejected.** | `EditInventoryModal.tsx` rejects non-positive quantity; no confirm-to-delete branch exists. The corrected Gemini record preserves the original claim and repair. |
+| Unmatched free-text shopping items cannot later transfer to inventory | Claude only | **Gem — retained as UC18 extension 5b.** | The item route can store a name without `ingredient_id`; the transfer route requires a catalogue-linked ingredient. This is a real cross-workflow defect and exposes a test gap. |
+| PDF export is actually a text summary | Claude frames it as a defect; Gemini describes text output | **Gem — retained in UC10 wording.** | `web/src/app/api/nutrients/export/route.ts:328` explicitly says the `pdf` parameter returns a text-based summary. The final UC avoids promising a real PDF. |
+| Nine `View <page>` goals | qwen2.5 primarily | **Not a hallucinated feature, but rejected framing.** | The pages exist, yet page navigation is not an actor goal and violates the requested goal-oriented format. Their supported underlying behaviors are covered by stronger UCs. |
+| Any new user-facing goal unique to qwen2.5 | qwen2.5 only | **None found.** | The local run contributed independent format/coverage evidence but no source-supported goal missed by all hosted models. Saying this explicitly prevents the fourth run from being padded into a discovery claim. |
+
+One agreement is worth recording alongside the disagreements, because it is the only finding all four runs support: **no model's use-case set is a superset of the others.** Claude's is the most complete and still omits nothing only because it names the union of the achievements and inventory-review goals; Gemini and Claude found adding ingredients to a list while Codex and qwen2.5 omitted it; Codex alone shaped its inventory granularity to match the test suite. The local model found no goal the hosted three missed.
 
 ## Per-model strengths and weaknesses, on this repository specifically
 
@@ -55,6 +89,18 @@ One agreement is worth recording alongside the disagreements, because it is the 
 - **Gemini via Antigravity CLI.** Fast, broad repository exploration; consistently well-formed output; citations that resolve to real files. Weaknesses, all now evidenced: it decorates real behavior with invented UX conventions (a confirm-to-delete flow, a default list name), it overstates guarantees into determinism ("all ingredients", "archives", prompt-embedded score weights read as computed scores), it rounds citation ranges upward past the end of the file, and its "Sources" footer cites unrelated public forks of this project that must be ignored during verification.
 - **Claude via Claude Code.** The only run that paired every use case with both a citation and a named concern, and the only one that verified claims by starting the application and the backend rather than by reading alone; its concerns surface real defects the other runs missed (silent skipping of unresolvable ingredients, `calculateExpirationStatus` duplicated verbatim in three routes, merge-on-duplicate overwriting a stored expiry date). Weakness is procedural rather than factual: it was run in a session where Codex output and test files had already been displayed, so five of its twenty use cases are disclosed as non-independent and four early citations had to be corrected. Clean-room discipline has to be arranged before the run, not audited after it.
 - **qwen2.5:32b, local via Ollama.** Its value is that it ran at all and produced correctly structured output with no hosted-service dependency — the format was followed, and none of its claims turned out to be a hallucinated feature. Weaknesses: citations are a constant rather than a reference, every row self-reports high confidence and no concern, the naming enumerates pages instead of goals, and it misses the flagship AI recommendation flow entirely. Useful as a format and coverage baseline; not useful as evidence.
+
+## D5 rubric-to-evidence check
+
+| D5 question | Evidence in this repository | Verdict |
+|---|---|---|
+| Real caught-error stories, with evidence? | The caught-error table names concrete false claims; `p1a/prompts/gemini/response.md` preserves five corrections and the mistaken first sign-off; `p1a/prompts/codex/response.md` is contradicted by raw PASS/FAIL logs and corrected in `p1a/traceability/final-traceability.md`. | **Yes — errors are specific, preserved, and corrected rather than asserted abstractly.** |
+| Prompts beyond the ten starters? | P01 is a project-specific clean-room reverse-engineering prompt. P02 is a deliberately narrow evidence-fetch prompt. P05 is a project-specific test-to-UC traceability audit. | **Yes — all three are tailored to this repository and assignment.** |
+| Real reflection, or padding? | The per-model section identifies distinct failure modes: intent narrated as behavior, invented UX conventions, provenance contamination, constant citations, and page-oriented goals. Each reflection changes selection or verification practice. | **Real reflection tied to observed failures.** |
+| Evidence of three or more models actually used? | Four byte-identical prompt copies and four preserved P01 output sets are indexed above; hosted derivation records and the raw local completion provide additional provenance. No screenshot is claimed where none was preserved. | **Yes — Codex, Gemini, Claude, and local qwen2.5:32b.** |
+| Disagreements shown and resolved? | The disagreement table names the competing outputs, the believed model or source, and the exact settling evidence. | **Yes.** |
+| Unique findings treated as data? | The gem/hallucination table classifies minority claims individually and records their effect on final UC18, UC20, or rejection. | **Yes — no blanket consensus claim.** |
+| Keeper prompts run across models? | P01 is explicitly the sole keeper and has a preserved run for all four models. P02 and P05 are transparently labeled supplementary and show `Not run` where appropriate. | **Yes for the keeper; no invented cells.** |
 
 ## Local / fourth model
 

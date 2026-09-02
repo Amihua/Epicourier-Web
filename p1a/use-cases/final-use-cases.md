@@ -264,4 +264,4 @@ This final set uses the Codex version as its baseline because its goal granulari
 
 ## Coverage boundary
 
-The final list contains exactly 20 source-supported, user-facing goals. It favors complete workflows and test-owning behavior over page enumeration and small supporting actions. The cross-model selection decisions and evidence are recorded separately in `p1a/use-cases/step8-reconciliation.md`.
+The final list contains exactly 20 source-supported, user-facing goals. It favors complete workflows and test-owning behavior over page enumeration and small supporting actions. The cross-model selection decisions and evidence are recorded separately in `p1a/prompts/step8-prompt-model-table.md`.

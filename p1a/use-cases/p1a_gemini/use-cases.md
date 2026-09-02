@@ -332,7 +332,7 @@
 Five claims in the model's original output were found to contradict source during
 line-level verification and have been corrected above. The original wording is
 preserved here for the record; full evidence and method are in the
-Gemini derivation record (`p1a/prompts/gemini/derivation-record.md`).
+Gemini derivation record (`p1a/prompts/gemini/response.md`).
 
 Corrections 1 and 2 were made in the first verification pass. Corrections 3, 4,
 and 5 were made in a second pass that audited every claim in the document and

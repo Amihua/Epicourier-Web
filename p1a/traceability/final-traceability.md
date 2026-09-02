@@ -2,7 +2,7 @@
 
 ## Verification basis
 
-This is the corrected D4 artifact. The original Codex response is preserved unchanged at `p1a/prompts/codex/P05-response.md`. Results below were checked against:
+This is the corrected D4 artifact. The original Codex response is preserved unchanged at `p1a/prompts/codex/response.md`. Results below were checked against:
 
 - `p1a/evidence/own-tests/2026-08-29-web-p1a-all-with-security-raw.txt`: **44 executed, 33 PASS, 11 FAIL**.
 - `p1a/evidence/own-tests/2026-08-29-backend-p1a-all-with-security-raw.txt`: **25 executed, 18 PASS, 7 FAIL**.
