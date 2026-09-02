@@ -132,7 +132,7 @@ def main():
         messages=[
             {"role": "user", "content": full_prompt},
         ],
-        options={"num_ctx": 131072, "temperature": 0.3, "num_predict": 16384},
+        options={"num_ctx": 32768, "temperature": 0.3, "num_predict": 16384},  # qwen2.5:32b max ctx is 32768
     )
 
     output = response["message"]["content"]

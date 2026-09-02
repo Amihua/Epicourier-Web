@@ -1,0 +1,3140 @@
+=== README.md ===
+# Epicourier-Web 🍽️
+
+[![CI/CD Pipeline](https://github.com/sdxshuai/Epicourier-Web/actions/workflows/ci-jest.yml/badge.svg)](https://github.com/sdxshuai/Epicourier-Web/actions/workflows/ci-jest.yml)
+[![codecov](https://codecov.io/github/sdxshuai/Epicourier-Web/graph/badge.svg?token=TTLT1APZ44)](https://codecov.io/github/sdxshuai/Epicourier-Web)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17537732.svg)](https://doi.org/10.5281/zenodo.17537732)
+[![Project Status: Active](https://img.shields.io/badge/status-active-brightgreen.svg)](#)
+
+**YOUR NUTRITION, YOUR CONTROL. AI-POWERED MEAL PLANNING FOR WELLNESS AND SUSTAINABILITY.**
+
+Epicourier is a comprehensive, full-stack web ecosystem designed to modernize the culinary lifestyle. It seamlessly integrates AI-driven recipe generation with advanced inventory management. While the platform automates the logic of meal planning, our latest expansion focuses on the execution: tracking nutrition, gamifying consistency, and optimizing grocery logistics to reduce waste and enhance user engagement.
+
+---
+
+## 🎬 Demo Video
+
+**Watch our project demonstration on YouTube:**
+
+<div align="center">
+  
+[![Epicourier Demo Video](https://img.youtube.com/vi/qbFYmMTnb5M/maxresdefault.jpg)](https://youtu.be/qbFYmMTnb5M)
+
+**[▶️ Watch on YouTube](https://youtu.be/qbFYmMTnb5M)** | Full Features Demo
+
+</div>
+
+---
+
+## ✨ New Features (Phase 2 Expansion)
+
+### 📊 1. Nutrient Command Center
+
+_Data-driven health insights._
+
+- **Interactive Analytics**: A fully responsive dashboard powered by **Recharts** to visualize daily, weekly, and monthly macro trends.
+- **Goal Setting**: Users can define and track custom daily nutrient targets stored via immutable database indexing.
+- **Portability**: Full support for data export (CSV/Text reports) for healthcare or personal archiving.
+
+### 🎮 2. Gamified Wellness Architecture
+
+_Making healthy habits addictive._
+
+- **Streak System**: Visual "flame" intensity scales based on consistency, complete with "At Risk" warnings to prevent habit breaking.
+- **Challenges & Badges**: A robust engine for Weekly/Monthly challenges. Users unlock tier-based badges tracked via a dedicated achievement schema.
+- **Social & Engagement**: Real-time progress bars and participation UI to keep motivation high.
+
+### 🛒 3. AI Smart Cart & Inventory Manager
+
+_Reduce waste, save money._
+
+- **Intelligent Inventory**: Track pantry/fridge items with automatic expiration color-coding (Green/Yellow/Red alerts).
+- **Gemini-Powered Suggestions**: Our Python API utilizes **Google Gemini 2.5 Flash** to recommend recipes based specifically on ingredients expiring soon to minimize waste.
+- **Seamless Logistics**: One-click generation of shopping lists from meal plans, with automatic transfer flow from "Shopping List" to "User Inventory" upon purchase.
+
+**Tests**: 1,130+ automated test cases covering UI interactions, gamification logic, and backend AI services (Jest/Pytest). Pipelines: End-to-end GitHub Actions workflows for instant formatting (Ruff/Prettier), linting, and unit verification.
+
+---
+
+## 🚀 Getting Started
+
+Ready to cook? Follow these guides to set up your environment.
+
+=== INSTALL.md ===
+# Installation Guide
+
+## Requirements
+
+* Node.js **v20.0.0** or higher
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/epicourier-team/Epicourier-Web.git
+```
+
+If you plan to contribute, please **fork the repository first**,
+then add your fork as the `origin` remote.
+
+For more details, see **[CONTRIBUTE.md](./CONTRIBUTE.md)**.
+
+---
+
+## Install Dependencies
+
+```bash
+cd web
+npm install
+```
+
+---
+
+## Environment Variables
+
+Copy the example environment file and configure your variables:
+
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local` with your values:
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+
+=== Pages ===
+
+--- web/src/app/signup/page.tsx ---
+"use client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { validatePassword } from "@/lib/utils";
+import { Utensils, XCircle } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { signup } from "./actions";
+
+const SignUp = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const [errors, setErrors] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const validateForm = () => {
+    const newErrors = { username: "", email: "", password: "", confirmPassword: "" };
+    let firstError = "";
+
+    // required checks
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
+      if (!firstError) firstError = newErrors.username;
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+      if (!firstError) firstError = newErrors.email;
+    } else {
+      // simple email format check
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = "Please enter a valid email address";
+        if (!firstError) firstError = newErrors.email;
+      }
+    }
+
+    // password requirements
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+      if (!firstError) firstError = newErrors.password;
+    } else {
+      const pw = validatePassword(formData.password);
+      if (!pw.isValid) {
+        newErrors.password = pw.error;
+        if (!firstError) firstError = newErrors.password;
+      } else if (formData.password.length < 8) {
+        newErrors.password = "Password must be at least 8 characters";
+        if (!firstError) firstError = newErrors.password;
+      }
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+      if (!firstError) firstError = newErrors.confirmPassword;
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+      if (!firstError) firstError = newErrors.confirmPassword;
+    }
+
+    setErrors(newErrors);
+    return { isValid: !firstError, firstError };
+  };
+
+  const [serverError, setServerError] = useState<string | null>(null);
+
+--- web/src/app/signin/page.tsx ---
+"use client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Utensils, XCircle } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { login } from "./actions";
+
+const SignIn = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState({ email: "", password: "" });
+
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Reset all errors
+    setError(null);
+    setErrors({ email: "", password: "" });
+
+    // Client-side validation
+    const validationErrors: { email?: string; password?: string } = {};
+
+    if (!formData.email.trim()) {
+      validationErrors.email = "Email is required";
+    } else {
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        validationErrors.email = "Please enter a valid email address";
+      }
+    }
+
+    if (!formData.password.trim()) {
+      validationErrors.password = "Password is required";
+    }
+
+    // If there are validation errors, show them and return
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors({
+        email: validationErrors.email || "",
+        password: validationErrors.password || "",
+      });
+      // Don't set the error state or show toast for client-side validations
+      return;
+    }
+
+    try {
+      const result = await login(formData);
+
+      if (result?.error) {
+        // Handle specific Supabase error messages
+        let errorMessage = result.error;
+        if (result.error.includes("Invalid login credentials")) {
+          errorMessage = "Incorrect email or password";
+        }
+        setError(errorMessage);
+        toast({
+          title: "Sign in failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // If we get here, sign in was successful
+      toast({
+        title: "Success",
+        description: "Welcome back!",
+      });
+    } catch (err) {
+      // Next.js redirect() throws a special error - this is expected behavior
+      // Check if it's a redirect error (NEXT_REDIRECT)
+
+--- web/src/app/dashboard/page.tsx ---
+"use client";
+
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { SmartCartWidget } from "@/components/ui/SmartCartWidget";
+import {
+  Calendar,
+  Trophy,
+  ChefHat,
+  Target,
+  ArrowRight,
+  CheckCircle2,
+  Flame,
+  Beef,
+  Wheat,
+  Droplets,
+  ShoppingCart,
+  Package,
+} from "lucide-react";
+import Link from "next/link";
+
+interface RecentMeal {
+  id: number;
+  date: string;
+  meal_type: string;
+  recipe: { name: string; image_url?: string } | null;
+}
+
+interface ActiveChallenge {
+  id: number;
+  name: string;
+  title: string;
+  progress: { current: number; target: number } | null;
+  type: string;
+}
+
+interface RecentAchievement {
+  id: number;
+  name: string;
+  title: string;
+  icon: string;
+  tier: string;
+  earned_at: string;
+}
+
+interface NutrientSummary {
+  calories_kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fats_g: number;
+  meal_count: number;
+}
+
+export default function DashboardPage() {
+  const [userName, setUserName] = useState<string>("");
+  const [stats, setStats] = useState({
+    mealsLogged: 0,
+    achievements: 0,
+    challengesActive: 0,
+    challengesCompleted: 0,
+  });
+  const [recentMeals, setRecentMeals] = useState<RecentMeal[]>([]);
+  const [activeChallenges, setActiveChallenges] = useState<ActiveChallenge[]>([]);
+  const [recentAchievements, setRecentAchievements] = useState<RecentAchievement[]>([]);
+  const [todayNutrients, setTodayNutrients] = useState<NutrientSummary | null>(null);
+  const [nutrientsLoading, setNutrientsLoading] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function fetchUserData() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // Get user name from User table
+        const { data: userData } = await supabase
+          .from("User")
+          .select("fullname, username")
+          .eq("auth_id", user.id)
+
+--- web/src/app/dashboard/achievements/page.tsx ---
+"use client";
+
+import { useEffect, useState } from "react";
+import BadgeCard from "@/components/ui/BadgeCard";
+import { Trophy, Loader2, RefreshCw } from "lucide-react";
+
+import type { AchievementCheckResponse, AchievementsResponse } from "@/types/data";
+
+/**
+ * Achievements page - displays user's earned and available achievements
+ *
+ * Features:
+ * - Tabbed interface: Earned / Available
+ * - Real-time progress tracking for locked achievements
+ * - Manual achievement check button
+ * - Neo-brutalism design with bold panels
+ * - Loading and error states
+ */
+export default function AchievementsPage() {
+  const [tab, setTab] = useState<"earned" | "available">("earned");
+  const [data, setData] = useState<AchievementsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [checking, setChecking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [newAchievements, setNewAchievements] = useState<string[]>([]);
+
+  const fetchAchievements = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/achievements");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to fetch achievements");
+      }
+      const result: AchievementsResponse = await res.json();
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkAchievements = async () => {
+    setChecking(true);
+    setNewAchievements([]);
+    try {
+      const res = await fetch("/api/achievements/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trigger: "manual" }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to check achievements");
+      }
+
+      const result: AchievementCheckResponse = await res.json();
+      if (result.newly_earned && result.newly_earned.length > 0) {
+        setNewAchievements(result.newly_earned.map((a) => a.title));
+        // Refresh data to show newly earned achievements
+        await fetchAchievements();
+      }
+    } catch (err) {
+      console.error("Error checking achievements:", err);
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAchievements();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex items-center gap-2 text-gray-600">
+
+--- web/src/app/dashboard/nutrients/page.tsx ---
+"use client";
+
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  Activity,
+  Apple,
+  Beef,
+  ChartArea,
+  Loader2,
+  PieChart as PieIcon,
+  RefreshCcw,
+  Scale,
+  Target,
+} from "lucide-react";
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GoalDialog } from "./components/GoalDialog";
+import { PercentLineChart } from "./components/PercentLineChart";
+import { ExportActions } from "./components/ExportActions";
+import {
+  GOAL_FIELD_CONFIG,
+  MACRO_COLORS,
+  RECOMMENDED_GOALS,
+  useNutrientDashboard,
+} from "./useNutrientDashboard";
+import { useNutrientExport } from "./useNutrientExport";
+
+/**
+ * Nutrient Dashboard Page
+ * Displays daily snapshot plus weekly/monthly trends.
+ */
+export default function NutrientsPage() {
+  const { exporting, exportData } = useNutrientExport();
+  const {
+    summaryLoading,
+    error,
+    dailyData,
+    dailyPieData,
+    pastSevenNormalized,
+    weeklyTrendNormalized,
+    monthlyTrendNormalized,
+    monthRange,
+    setMonthRange,
+    goal,
+    goalModalOpen,
+    setGoalModalOpen,
+    goalLoading,
+    goalSaving,
+    goalError,
+    handleOpenGoalModal,
+    onSubmitGoal,
+    fetchNutrientData,
+    goalForm,
+    formatTooltipLabel,
+  } = useNutrientDashboard();
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-8 p-4 md:p-0">
+      {error && (
+        <div className="brutalism-card brutalism-shadow-lg border-4 border-red-500 bg-red-50 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="brutalism-text-bold text-lg text-red-800">Error Loading Data</h2>
+              <p className="text-sm font-semibold text-red-700">{error}</p>
+            </div>
+            <button
+              className="brutalism-button inline-flex items-center gap-2 rounded-none px-4 py-2"
+              onClick={fetchNutrientData}
+            >
+              <RefreshCcw className="size-4" /> Retry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Page Header */}
+      <div className="brutalism-card brutalism-shadow-lg bg-linear-to-r from-emerald-100 to-teal-100 p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="brutalism-text-bold mb-2 text-4xl uppercase">Nutrient Tracking</h1>
+
+--- web/src/app/dashboard/shopping/page.tsx ---
+"use client";
+
+import { useEffect, useState } from "react";
+import { Plus, ShoppingCart, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import CreateListModal from "@/components/shopping/CreateListModal";
+import ShoppingListCard from "@/components/shopping/ShoppingListCard";
+
+import type { ShoppingListWithStats } from "@/types/data";
+
+/**
+ * Shopping Lists page - manage multiple shopping lists
+ *
+ * Features:
+ * - Display all shopping lists as cards
+ * - Create new shopping list via modal
+ * - Empty state with CTA
+ * - Loading and error states
+ */
+export default function ShoppingPage() {
+  const [lists, setLists] = useState<ShoppingListWithStats[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { toast } = useToast();
+
+  const fetchLists = async () => {
+    setLoading(true);
+    try {
+      // Use API endpoint to get lists with stats
+      const response = await fetch("/api/shopping-lists");
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast({
+            title: "⚠️ Authentication Required",
+            description: "Please sign in to view shopping lists",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw new Error("Failed to fetch shopping lists");
+      }
+
+      const data = await response.json();
+      setLists(data || []);
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      toast({
+        title: "❌ Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLists();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleCreateSuccess = () => {
+    fetchLists();
+    setIsModalOpen(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex items-center gap-2 text-gray-600">
+          <Loader2 className="size-5 animate-spin" />
+          <span className="font-semibold">Loading shopping lists...</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+
+--- web/src/app/dashboard/recipes/page.tsx ---
+"use client";
+import FilterPanel from "@/components/ui/filterpanel";
+import Pagination from "@/components/ui/pagenation";
+import RecipeCard from "@/components/ui/recipecard";
+import SearchBar from "@/components/ui/searchbar";
+import { useRecipes } from "@/hooks/use-recipe";
+import { useInventory } from "@/hooks/useInventory";
+import { useState } from "react";
+import { Filter } from "lucide-react";
+
+type SortOption = "default" | "match-high" | "match-low";
+type MatchFilter = "all" | "can-make" | "partial" | "need-shopping";
+
+export default function RecipesPage() {
+  const [query, setQuery] = useState("");
+  const [ingredientIds, setIngredientIds] = useState<number[]>([]);
+  const [tagIds, setTagIds] = useState<number[]>([]);
+  const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState<SortOption>("default");
+  const [matchFilter, setMatchFilter] = useState<MatchFilter>("all");
+
+  const { items: inventoryItems } = useInventory();
+  const userIngredientIds = inventoryItems.map((item) => item.ingredient_id);
+
+  const { recipes, pagination, isLoading } = useRecipes({
+    query,
+    ingredientIds,
+    tagIds,
+    page,
+    limit: 20,
+    sortBy,
+    matchFilter,
+    userIngredientIds,
+  });
+
+  return (
+    <div className="mx-auto max-w-7xl p-6">
+      {/* Page Title */}
+      <div className="brutalism-banner mb-6 p-5">
+        <h1 className="text-3xl font-bold tracking-tight">Recipe Collection</h1>
+        <p className="mt-1 text-sm font-medium text-gray-700">Find your next favorite meal</p>
+      </div>
+
+      <SearchBar
+        onSearch={(q) => {
+          setQuery(q);
+          setPage(1);
+        }}
+      />
+      <FilterPanel
+        onFilterChange={({ ingredientIds, tagIds }) => {
+          setIngredientIds(ingredientIds);
+          setTagIds(tagIds);
+          setPage(1);
+        }}
+      />
+
+      {/* Match Filter & Sort Controls */}
+      <div className="brutalism-panel mb-6 flex flex-wrap items-center gap-4 bg-gray-50 p-4">
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-gray-600" />
+          <span className="text-sm font-bold">Match Filter:</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { value: "all", label: "All Recipes" },
+            { value: "can-make", label: "Can Make Now (≥80%)" },
+            { value: "partial", label: "Partial Match (50-79%)" },
+            { value: "need-shopping", label: "Need Shopping (<50%)" },
+          ].map((option) => (
+            <button
+              key={option.value}
+              onClick={() => {
+                setMatchFilter(option.value as MatchFilter);
+                setPage(1);
+              }}
+              className={`brutalism-border px-3 py-1 text-xs font-bold transition-all hover:-translate-y-0.5 ${
+                matchFilter === option.value
+                  ? "brutalism-shadow bg-yellow-300"
+                  : "bg-white hover:bg-gray-100"
+
+--- web/src/app/dashboard/challenges/page.tsx ---
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import ChallengeCard from "@/components/ui/ChallengeCard";
+import {
+  Target,
+  Loader2,
+  RefreshCw,
+  Calendar,
+  CalendarDays,
+  Star,
+  LayoutGrid,
+  Clock,
+  Salad,
+  Leaf,
+  CheckSquare,
+  ChefHat,
+  Trophy,
+} from "lucide-react";
+
+import type { ChallengesResponse, ChallengeWithStatus, ChallengeCategory } from "@/types/data";
+
+/**
+ * Challenges page - displays user's challenges and participation
+ *
+ * Features:
+ * - Tabbed interface: Active / Joined / Completed
+ * - Dual view: By Time (weekly/monthly/special) or By Category
+ * - Join challenge functionality
+ * - Progress tracking for joined challenges
+ * - Days remaining countdown
+ * - Neo-brutalism design with bold panels
+ * - Loading and error states
+ */
+export default function ChallengesPage() {
+  const [tab, setTab] = useState<"active" | "joined" | "completed">("active");
+  const [viewMode, setViewMode] = useState<"time" | "category">("time");
+  const [data, setData] = useState<ChallengesResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [joiningId, setJoiningId] = useState<number | null>(null);
+
+  const fetchChallenges = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/challenges");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to fetch challenges");
+      }
+      const result: ChallengesResponse = await res.json();
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const joinChallenge = async (challengeId: number) => {
+    setJoiningId(challengeId);
+    try {
+      const res = await fetch("/api/challenges/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ challenge_id: challengeId }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to join challenge");
+      }
+
+      // Refresh data to show updated participation
+      await fetchChallenges();
+      // Switch to joined tab
+      setTab("joined");
+    } catch (err) {
+      console.error("Error joining challenge:", err);
+
+--- web/src/app/dashboard/inventory/page.tsx ---
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { Package, Lightbulb, Loader2, Plus, X, CheckSquare, Square, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import {
+  LocationTabs,
+  InventorySearchBar,
+  ExpiringSoonBanner,
+  InventoryItemCard,
+  AddInventoryModal,
+  EditInventoryModal,
+  DeleteInventoryDialog,
+  BatchDeleteDialog,
+  RecipeRecommendationModal,
+} from "@/components/inventory";
+import type {
+  InventoryLocation,
+  InventoryItemWithDetails,
+  InventorySummary,
+  InventoryRecommendResponse,
+  InventoryItemForRecommendation,
+} from "@/types/data";
+
+// View mode type for clear state management
+type ViewMode = "all" | "expiring";
+
+// Python backend URL
+const BACKEND_URL = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "http://localhost:8000";
+
+export default function InventoryPage() {
+  const [items, setItems] = useState<InventoryItemWithDetails[]>([]);
+  const [summary, setSummary] = useState<InventorySummary | null>(null);
+  const [globalSummary, setGlobalSummary] = useState<InventorySummary | null>(null); // Always stores unfiltered counts
+  const [loading, setLoading] = useState(true);
+  const [activeLocation, setActiveLocation] = useState<InventoryLocation | "all">("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("all");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<InventoryItemWithDetails | null>(null);
+  const [deletingItem, setDeletingItem] = useState<InventoryItemWithDetails | null>(null);
+  const [suggesting, setSuggesting] = useState(false);
+
+  // Recipe recommendation state
+  const [isRecommendModalOpen, setIsRecommendModalOpen] = useState(false);
+  const [recommendations, setRecommendations] = useState<InventoryRecommendResponse | null>(null);
+
+  // Batch selection state
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [isBatchDeleteOpen, setIsBatchDeleteOpen] = useState(false);
+
+  const { toast } = useToast();
+
+  // Fetch global summary (unfiltered) for location counts
+  const fetchGlobalSummary = useCallback(async () => {
+    try {
+      const response = await fetch("/api/inventory");
+      if (response.ok) {
+        const data = await response.json();
+        setGlobalSummary(data.summary || null);
+      }
+    } catch (error) {
+      console.error("Error fetching global summary:", error);
+    }
+  }, []);
+
+  // Fetch on mount to get global counts
+  useEffect(() => {
+    fetchGlobalSummary();
+  }, [fetchGlobalSummary]);
+
+  const fetchInventory = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (activeLocation !== "all") {
+        params.set("location", activeLocation);
+      }
+      if (searchQuery.trim()) {
+
+--- web/src/app/dashboard/calendar/page.tsx ---
+"use client";
+
+import { createClient } from "@/utils/supabase/client";
+import { EventClickArg } from "@fullcalendar/core";
+import Image from "next/image";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import { useToast } from "@/hooks/use-toast";
+import interactionPlugin from "@fullcalendar/interaction";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+
+import AddMealModal from "@/components/ui/AddMealModal";
+import MealDetailModal from "@/components/ui/MealDetailModal";
+import GenerateShoppingListModal from "@/components/shopping/GenerateShoppingListModal";
+import "@/styles/fullcalendar-brutalism.css";
+
+// ------------------------------
+// Type Definitions
+// ------------------------------
+interface CalendarEvent {
+  id: string;
+  title: string;
+  start: string;
+  allDay: boolean;
+  extendedProps: {
+    calendarData: CalendarApiResponse | CalendarApiResponse[];
+    isPast: boolean;
+  };
+  backgroundColor: string;
+  borderColor: string;
+}
+
+interface Recipe {
+  id: number;
+  name: string;
+  image_url?: string;
+  description?: string;
+  min_prep_time?: number;
+  green_score?: number | string;
+}
+
+interface CalendarApiResponse {
+  id: number;
+  date: string;
+  meal_type: string;
+  status: boolean | null;
+  Recipe: {
+    id: number;
+    name: string;
+    image_url?: string;
+    description?: string;
+    min_prep_time?: number;
+    green_score?: number | string;
+  } | null;
+}
+
+export default function CalendarPage() {
+  const router = useRouter();
+  const supabase = createClient();
+  const { toast } = useToast();
+
+  // ------------------------------
+  // State management
+  // ------------------------------
+  const [userName, setUserName] = useState<string>("");
+
+  // const [recommendations, setRecommendations] = useState<Recipe[]>([]);
+  const [recommendations] = useState<Recipe[]>([]); // Kept empty for now as logic is commented out
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [showDateModal, setShowDateModal] = useState(false);
+
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedCalendarEntry, setSelectedCalendarEntry] = useState<CalendarApiResponse[] | null>(
+    null
+  );
+  const [isShoppingModalOpen, setIsShoppingModalOpen] = useState(false);
+
+--- web/src/app/dashboard/recommender/page.tsx ---
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Loader2, UtensilsCrossed } from "lucide-react";
+import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import AddMealModal from "../../../components/ui/AddMealModal";
+import { supabase } from "../../../lib/supabaseClient";
+
+interface Recipe {
+  id: number;
+  name: string;
+  key_ingredients: string[];
+  recipe: string;
+  tags: string[];
+  reason: string;
+}
+
+export default function RecommendPage() {
+  const [goal, setGoal] = useState<string>("");
+  const [numMeals, setNumMeals] = useState<number>(3);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [error, setError] = useState<string>("");
+  const [expandedGoal, setExpandedGoal] = useState<string>("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (!goal.trim()) {
+      setError("Please enter your goal.");
+      return;
+    }
+    if (![3, 5, 7].includes(numMeals)) {
+      setError("Number of meals must be 3, 5, or 7.");
+      return;
+    }
+
+    setLoading(true);
+    setRecipes([]);
+    try {
+      const res = await fetch("/api/recommender", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goal, numMeals }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Server responded with ${res.status}: ${text}`);
+      }
+
+      const data = await res.json();
+      if (data.error) {
+        setError(data.error);
+        setRecipes([]);
+        return;
+      }
+
+      // backend sends expanded goal once, not per recipe
+      setExpandedGoal(data.goal_expanded || "");
+      // attach Supabase Recipe.id to each recipe (if a matching name exists)
+      try {
+        const recipesFromBackend: Recipe[] = data.recipes || [];
+
+        const recipesWithIds = await Promise.all(
+          recipesFromBackend.map(async (r) => {
+            try {
+              const { data: row, error } = await supabase
+                .from("Recipe")
+                .select("id")
+                .eq("name", r.name)
+                .maybeSingle();
+
+              if (error) {
+                console.error("Supabase lookup error for", r.name, error);
+                return { ...r }; // return original if lookup fails
+              }
+
+              // row may be null if not found; keep id only when present
+
+--- web/src/app/dashboard/settings/page.tsx ---
+"use client";
+
+import { useState, useEffect } from "react";
+import { Bell, Shield, Palette, User, ChevronRight } from "lucide-react";
+import { NotificationPrompt } from "@/components/ui/NotificationPrompt";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+
+/**
+ * Settings Page
+ *
+ * User settings and preferences including:
+ * - Push notification settings
+ * - Account settings (future)
+ * - Appearance settings (future)
+ * - Privacy settings (future)
+ */
+export default function SettingsPage() {
+  const { isSupported, isSubscribed } = usePushNotifications();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return (
+    <div className="mx-auto max-w-3xl space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold">Settings</h1>
+        <p className="text-muted-foreground mt-1">Manage your account and preferences</p>
+      </div>
+
+      {/* Settings Sections */}
+      <div className="space-y-4">
+        {/* Notifications Section */}
+        <section className="bg-card overflow-hidden rounded-xl border">
+          <div className="bg-muted/30 flex items-center gap-3 border-b p-4">
+            <Bell className="text-primary h-5 w-5" />
+            <h2 className="font-semibold">Notifications</h2>
+          </div>
+
+          <div className="space-y-4 p-4">
+            {mounted && isSupported ? (
+              <>
+                <NotificationPrompt compact className="py-2" />
+
+                {/* Additional notification preferences */}
+                <div className="border-t pt-4">
+                  <h3 className="text-muted-foreground mb-3 text-sm font-medium">
+                    Notification Types
+                  </h3>
+                  <div className="space-y-3">
+                    <NotificationToggle
+                      label="Achievement Unlocks"
+                      description="Get notified when you earn new achievements"
+                      enabled={isSubscribed}
+                      disabled={!isSubscribed}
+                    />
+                    <NotificationToggle
+                      label="Streak Reminders"
+                      description="Remind me to log meals to maintain my streak"
+                      enabled={false}
+                      disabled={true}
+                      comingSoon
+                    />
+                    <NotificationToggle
+                      label="Challenge Updates"
+                      description="Updates on challenge progress and completions"
+                      enabled={false}
+                      disabled={true}
+                      comingSoon
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="text-muted-foreground text-sm">
+                Push notifications are not supported in this browser.
+              </p>
+            )}
+
+=== API routes ===
+
+--- web/src/app/api/events/route.ts ---
+import { createClient } from "@/utils/supabase/server";
+import { NextResponse } from "next/server";
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase";
+
+/**
+ * 輔助函數：
+ * 獲取 public."User" 表中的數字 ID (bigint)。
+ */
+async function getPublicUserId(supabase: SupabaseClient<Database>): Promise<number> {
+  const {
+    data: { user: authUser },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !authUser) {
+    throw new Error("User not authenticated");
+  }
+
+  if (!authUser.email) {
+    throw new Error("Authenticated user does not have an email.");
+  }
+
+  // 【修正】: 不使用 .single()，改用 .limit(1)
+  const { data: publicUsers, error: profileError } = await supabase
+    .from("User")
+    .select("id")
+    .eq("email", authUser.email)
+    .limit(1);
+
+  if (profileError) {
+    console.error("Error fetching public user profile:", profileError.message);
+    throw new Error("Error fetching user profile.");
+  }
+
+  if (!publicUsers || publicUsers.length === 0) {
+    throw new Error("Public user profile not found.");
+  }
+
+  const publicUser = publicUsers[0];
+  return publicUser.id;
+}
+
+/**
+ * GET /api/events
+ */
+export async function GET() {
+  const supabase = await createClient();
+  let publicUserId: number;
+
+  try {
+    publicUserId = await getPublicUserId(supabase);
+  } catch (err: unknown) {
+    let errorMessage = "Unauthorized";
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    }
+    console.warn("GET /api/events auth error:", errorMessage);
+    return NextResponse.json({ error: errorMessage }, { status: 401 });
+  }
+
+  // ✅ 加入 Recipe join，讓前端能顯示餐點細節
+  const { data, error } = await supabase
+    .from("Calendar")
+    .select(
+      `
+      id,
+      date,
+      meal_type,
+      status,
+      recipe_id,
+      Recipe: recipe_id(
+        id,
+        name,
+        image_url,
+        description,
+        min_prep_time,
+        green_score
+      )
+
+--- web/src/app/api/recipes/route.ts ---
+import { supabase } from "@/lib/supabaseClient";
+import { NextResponse } from "next/server";
+import { Recipe } from "../../../types/data";
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+
+  // ✅ parse query parameters
+  const query = searchParams.get("query") || "";
+  const ingredientIds = searchParams.getAll("ingredientIds").map(Number).filter(Boolean);
+  const tagIds = searchParams.getAll("tagIds").map(Number).filter(Boolean);
+  const userIngredientIds = searchParams.getAll("userIngredientIds").map(Number).filter(Boolean);
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "20");
+  const offset = (page - 1) * limit;
+
+  const sortBy = searchParams.get("sortBy") || "default";
+  const matchFilter = searchParams.get("matchFilter") || "all";
+
+  let recipes: Recipe[] = [];
+  let total = 0;
+
+  // Helper to calculate match percentage
+  const calculateMatch = (recipe: Recipe) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const recipeIngredients = (recipe as any)["Recipe-Ingredient_Map"] || [];
+    if (recipeIngredients.length === 0) return 0;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const matchedCount = recipeIngredients.filter((ri: any) =>
+      userIngredientIds.includes(ri.ingredient_id)
+    ).length;
+    return (matchedCount / recipeIngredients.length) * 100;
+  };
+
+  // Check if we need "Match Mode" (in-memory processing)
+  const isMatchMode =
+    sortBy === "match-high" || sortBy === "match-low" || (matchFilter && matchFilter !== "all");
+
+  // 1. Build base query
+  let queryBuilder = supabase.from("Recipe").select(
+    `
+    *,
+    "Recipe-Ingredient_Map" (
+      ingredient_id,
+      relative_unit_100
+    )
+  `,
+    { count: "exact" }
+  );
+
+  // Apply filters to the query builder
+  if (ingredientIds.length > 0) {
+    // Note: This is a simplified approach. For exact ingredient matching, we'd need a different query.
+    // Here we just filter recipes that contain *any* of the ingredients, or we can use the previous logic.
+    // Re-using the previous logic of fetching IDs first is better for "contains all" or "contains any".
+    // But for simplicity and consistency with the previous code, let's stick to the previous logic structure
+    // but adapted for the single query builder if possible.
+    // However, Supabase doesn't support complex "where exists" easily in one go without foreign keys filtering.
+    // So let's stick to the previous "fetch IDs first" approach if ingredientIds are present.
+    const { data: ingData } = await supabase
+      .from("Recipe-Ingredient_Map")
+      .select("recipe_id")
+      .in("ingredient_id", ingredientIds);
+    const recipeIds = Array.from(new Set((ingData || []).map((d) => d.recipe_id)));
+    queryBuilder = queryBuilder.in("id", recipeIds);
+  }
+
+  if (tagIds.length > 0) {
+    const { data: tagData } = await supabase
+      .from("Recipe-Tag_Map")
+      .select("recipe_id")
+      .in("tag_id", tagIds);
+    const recipeIds = Array.from(new Set((tagData || []).map((d) => d.recipe_id)));
+    queryBuilder = queryBuilder.in("id", recipeIds);
+  }
+
+  if (query.trim()) {
+    queryBuilder = queryBuilder.or(`name.ilike.%${query}%,description.ilike.%${query}%`);
+  }
+
+
+--- web/src/app/api/recipes/[id]/route.ts ---
+import { NextResponse } from "next/server";
+import { getRecipeDetail } from "../../../../lib/utils";
+
+export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
+  const recipeId = id;
+
+  const recipeDetail = await getRecipeDetail(recipeId);
+
+  if (!recipeDetail) {
+    return NextResponse.json({ error: "Recipe not found", id: +recipeId }, { status: 404 });
+  }
+
+  return NextResponse.json(recipeDetail);
+}
+
+--- web/src/app/api/inventory/route.ts ---
+import { createClient } from "@/utils/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import type {
+  CreateInventoryItemRequest,
+  InventoryLocation,
+  ExpirationStatus,
+  InventoryItemWithDetails,
+  InventorySummary,
+} from "@/types/data";
+
+/**
+ * Calculate expiration status based on expiration date
+ */
+function calculateExpirationStatus(expirationDate: string | null): {
+  status: ExpirationStatus;
+  daysUntil: number | null;
+} {
+  if (!expirationDate) {
+    return { status: "unknown", daysUntil: null };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const expDate = new Date(expirationDate);
+  expDate.setHours(0, 0, 0, 0);
+
+  const diffTime = expDate.getTime() - today.getTime();
+  const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (daysUntil < 0) {
+    return { status: "expired", daysUntil };
+  } else if (daysUntil <= 2) {
+    return { status: "critical", daysUntil };
+  } else if (daysUntil <= 7) {
+    return { status: "warning", daysUntil };
+  } else {
+    return { status: "good", daysUntil };
+  }
+}
+
+/**
+ * GET /api/inventory
+ * Get all inventory items for the authenticated user
+ *
+ * Query params:
+ * - location: filter by location (pantry, fridge, freezer, other)
+ * - expiring_within: filter items expiring within N days
+ * - search: search by ingredient name
+ */
+export async function GET(request: NextRequest) {
+  const supabase = await createClient();
+
+  // Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Parse query parameters
+  const { searchParams } = new URL(request.url);
+  const location = searchParams.get("location") as InventoryLocation | null;
+  const expiringWithin = searchParams.get("expiring_within");
+  const search = searchParams.get("search");
+
+  // Build query
+  let query = supabase
+    .from("user_inventory")
+    .select(
+      `
+      *,
+      ingredient:Ingredient (
+        id,
+        name
+      )
+    `
+    )
+
+--- web/src/app/api/inventory/[id]/route.ts ---
+import { createClient } from "@/utils/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import type { UpdateInventoryItemRequest, ExpirationStatus } from "@/types/data";
+
+/**
+ * Calculate expiration status based on expiration date
+ */
+function calculateExpirationStatus(expirationDate: string | null): {
+  status: ExpirationStatus;
+  daysUntil: number | null;
+} {
+  if (!expirationDate) {
+    return { status: "unknown", daysUntil: null };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const expDate = new Date(expirationDate);
+  expDate.setHours(0, 0, 0, 0);
+
+  const diffTime = expDate.getTime() - today.getTime();
+  const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (daysUntil < 0) {
+    return { status: "expired", daysUntil };
+  } else if (daysUntil <= 2) {
+    return { status: "critical", daysUntil };
+  } else if (daysUntil <= 7) {
+    return { status: "warning", daysUntil };
+  } else {
+    return { status: "good", daysUntil };
+  }
+}
+
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
+/**
+ * GET /api/inventory/[id]
+ * Get a single inventory item by ID
+ */
+export async function GET(request: NextRequest, { params }: RouteParams) {
+  const supabase = await createClient();
+  const { id } = await params;
+
+  // Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { data: item, error } = await supabase
+    .from("user_inventory")
+    .select(
+      `
+      *,
+      ingredient:Ingredient (id, name)
+    `
+    )
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (error || !item) {
+    return NextResponse.json({ error: "Inventory item not found" }, { status: 404 });
+  }
+
+  // Add computed properties
+  const { status, daysUntil } = calculateExpirationStatus(item.expiration_date);
+  const itemWithDetails = {
+    ...item,
+    expiration_status: status,
+    days_until_expiration: daysUntil,
+    is_low_stock: item.min_quantity !== null && item.quantity <= item.min_quantity,
+  };
+
+--- web/src/app/api/inventory/batch-delete/route.ts ---
+import { createClient } from "@/utils/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+
+/**
+ * POST /api/inventory/batch-delete
+ * Delete multiple inventory items at once
+ */
+export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+
+  // Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const { ids } = body;
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ error: "Invalid or empty ids array" }, { status: 400 });
+    }
+
+    // Validate all IDs are strings (UUIDs)
+    if (!ids.every((id) => typeof id === "string")) {
+      return NextResponse.json({ error: "All ids must be strings" }, { status: 400 });
+    }
+
+    // Delete items that belong to the current user
+    const { error: deleteError, count } = await supabase
+      .from("user_inventory")
+      .delete()
+      .eq("user_id", user.id)
+      .in("id", ids);
+
+    if (deleteError) {
+      console.error("Error batch deleting inventory items:", deleteError);
+      return NextResponse.json({ error: "Failed to delete inventory items" }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      deleted_count: count || ids.length,
+    });
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+}
+
+--- web/src/app/api/inventory/transfer/route.ts ---
+import { createClient } from "@/utils/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+
+import type { InventoryLocation, TransferToInventoryRequest } from "@/types/data";
+
+/**
+ * POST /api/inventory/transfer
+ * Transfer shopping list items to inventory
+ *
+ * Accepts an array of items to transfer:
+ * - Adds new items to inventory
+ * - Updates existing inventory quantities if item exists
+ * - Marks shopping items as checked
+ */
+export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+
+  // Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const { items } = body as { items: TransferToInventoryRequest[] };
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: "Items array is required" }, { status: 400 });
+    }
+
+    // Validate each item
+    for (const item of items) {
+      if (!item.shopping_item_id || !item.ingredient_id) {
+        return NextResponse.json(
+          { error: "Each item must have shopping_item_id and ingredient_id" },
+          { status: 400 }
+        );
+      }
+    }
+
+    const transferredItems: TransferToInventoryRequest[] = [];
+    const errors: string[] = [];
+
+    for (const item of items) {
+      try {
+        // Check if inventory item already exists for this ingredient
+        const { data: existingItem } = await supabase
+          .from("user_inventory")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("ingredient_id", item.ingredient_id)
+          .eq("location", item.location || "pantry")
+          .single();
+
+        if (existingItem) {
+          // Update existing inventory item (add quantity)
+          const { error: updateError } = await supabase
+            .from("user_inventory")
+            .update({
+              quantity: existingItem.quantity + (item.quantity || 1),
+              expiration_date: item.expiration_date || existingItem.expiration_date,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", existingItem.id);
+
+          if (updateError) {
+            errors.push(`Failed to update inventory for item ${item.shopping_item_id}`);
+            continue;
+          }
+        } else {
+          // Create new inventory item
+          const { error: insertError } = await supabase.from("user_inventory").insert({
+            user_id: user.id,
+            ingredient_id: item.ingredient_id,
+            quantity: item.quantity || 1,
+
+--- web/src/app/api/shopping-lists/route.ts ---
+import { createClient } from "@/utils/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+
+/**
+ * GET /api/shopping-lists
+ * Get all shopping lists for the authenticated user
+ */
+export async function GET() {
+  const supabase = await createClient();
+
+  // Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Fetch shopping lists with item counts (exclude archived)
+  const { data: lists, error } = await supabase
+    .from("shopping_lists")
+    .select(
+      `
+      *,
+      shopping_list_items (
+        id,
+        is_checked
+      )
+    `
+    )
+    .eq("user_id", user.id)
+    .eq("is_archived", false)
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching shopping lists:", error);
+    return NextResponse.json({ error: "Failed to fetch shopping lists" }, { status: 500 });
+  }
+
+  // Transform to include stats (matching ShoppingListWithStats type)
+  const listsWithStats = lists.map((list) => {
+    const items = list.shopping_list_items || [];
+    const itemCount = items.length;
+    const checkedCount = items.filter((item: { is_checked: boolean }) => item.is_checked).length;
+    return {
+      id: list.id,
+      user_id: list.user_id,
+      name: list.name,
+      description: list.description,
+      is_archived: list.is_archived,
+      created_at: list.created_at,
+      updated_at: list.updated_at,
+      item_count: itemCount,
+      checked_count: checkedCount,
+      progress_percentage: itemCount > 0 ? Math.round((checkedCount / itemCount) * 100) : 0,
+    };
+  });
+
+  return NextResponse.json(listsWithStats);
+}
+
+/**
+ * POST /api/shopping-lists
+ * Create a new shopping list
+ */
+export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+
+  // Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+
+--- web/src/app/api/shopping-lists/generate/route.ts ---
+import { createClient } from "@/utils/supabase/server";
+import { NextResponse } from "next/server";
+
+/**
+ * POST /api/shopping-lists/generate
+ * Generate a shopping list from calendar meals within a date range
+ *
+ * Request body:
+ * {
+ *   name?: string,           // Optional name for the new list
+ *   startDate: string,       // YYYY-MM-DD
+ *   endDate: string,         // YYYY-MM-DD
+ *   mealTypes?: string[]     // Optional filter: ["breakfast", "lunch", "dinner"]
+ * }
+ */
+export async function POST(req: Request) {
+  const supabase = await createClient();
+
+  // Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const { name, startDate, endDate, mealTypes } = body;
+
+    // Validate required fields
+    if (!startDate || !endDate) {
+      return NextResponse.json({ error: "startDate and endDate are required" }, { status: 400 });
+    }
+
+    // Get user's integer ID from User table (Calendar uses bigint user_id)
+    const { data: userRecord, error: userError } = await supabase
+      .from("User")
+      .select("id")
+      .eq("auth_id", user.id)
+      .single();
+
+    if (userError || !userRecord) {
+      console.error("Error fetching user record:", userError);
+      return NextResponse.json({ error: "User profile not found" }, { status: 404 });
+    }
+
+    const userId = userRecord.id;
+
+    // Fetch calendar entries within the date range
+    let calendarQuery = supabase
+      .from("Calendar")
+      .select(
+        `
+        id,
+        date,
+        meal_type,
+        Recipe (
+          id,
+          name
+        )
+      `
+      )
+      .eq("user_id", userId)
+      .gte("date", startDate)
+      .lte("date", endDate)
+      .not("recipe_id", "is", null);
+
+    // Filter by meal types if provided
+    if (mealTypes && Array.isArray(mealTypes) && mealTypes.length > 0) {
+      calendarQuery = calendarQuery.in("meal_type", mealTypes);
+    }
+
+    const { data: calendarEntries, error: calendarError } = await calendarQuery;
+
+    if (calendarError) {
+      console.error("Error fetching calendar entries:", calendarError);
+      return NextResponse.json({ error: "Failed to fetch calendar entries" }, { status: 500 });
+
+--- web/src/app/api/shopping-lists/[id]/route.ts ---
+import { createClient } from "@/utils/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
+/**
+ * GET /api/shopping-lists/[id]
+ * Get a single shopping list with all items
+ */
+export async function GET(request: NextRequest, { params }: RouteParams) {
+  const supabase = await createClient();
+  const { id } = await params;
+
+  // Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Fetch the shopping list with items
+  const { data: list, error } = await supabase
+    .from("shopping_lists")
+    .select(
+      `
+      *,
+      shopping_list_items (
+        *,
+        Ingredient:ingredient_id (
+          id,
+          name,
+          unit
+        )
+      )
+    `
+    )
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      return NextResponse.json({ error: "Shopping list not found" }, { status: 404 });
+    }
+    console.error("Error fetching shopping list:", error);
+    return NextResponse.json({ error: "Failed to fetch shopping list" }, { status: 500 });
+  }
+
+  // Sort items by position
+  if (list.shopping_list_items) {
+    list.shopping_list_items.sort(
+      (a: { position: number }, b: { position: number }) => a.position - b.position
+    );
+  }
+
+  return NextResponse.json(list);
+}
+
+/**
+ * PUT /api/shopping-lists/[id]
+ * Update a shopping list (name, description, is_archived)
+ */
+export async function PUT(request: NextRequest, { params }: RouteParams) {
+  const supabase = await createClient();
+  const { id } = await params;
+
+  // Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+--- web/src/app/api/achievements/route.ts ---
+import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import { getUserIdentity } from "@/lib/auth";
+import { supabaseServer } from "@/lib/supabaseServer";
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase";
+import type {
+  Achievement,
+  AchievementsResponse,
+  AchievementProgress,
+  UserAchievement,
+} from "@/types/data";
+
+type UserAchievementWithDefinition = UserAchievement & {
+  achievement?: Achievement | null;
+};
+
+type CalendarMealWithTags = {
+  Recipe?: {
+    "Recipe-Tag_Map"?: Array<{
+      Tag?: { name?: string | null } | null;
+    }>;
+  } | null;
+};
+
+type CalendarDate = { date: string | null };
+
+type UserStats = {
+  meals_logged: number;
+  green_recipes: number;
+  days_tracked: number;
+  current_streak: number;
+  dashboard_views: number;
+  nutrient_aware_meals: number;
+  total_meals: number;
+};
+
+/**
+ * GET /api/achievements
+ *
+ * Returns all achievements for the current user:
+ * - earned: Array of unlocked achievements with earned_at timestamp
+ * - available: Array of locked achievements with progress
+ * - progress: Map of achievement names to progress data
+ *
+ * Progress calculation based on achievement criteria:
+ * - count: Count of completed actions (meals_logged, dashboard_views, etc.)
+ * - streak: Current consecutive days streak
+ * - threshold: Percentage of nutrient-aware meals
+ */
+export async function GET() {
+  const supabase = await createClient();
+  let publicUserId: number;
+  let authUserId: string;
+
+  try {
+    ({ publicUserId, authUserId } = await getUserIdentity(supabase));
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Unauthorized";
+    console.warn("GET /api/achievements auth error:", errorMessage);
+    return NextResponse.json({ error: errorMessage }, { status: 401 });
+  }
+
+  try {
+    // Fetch all achievement definitions
+    const { data: achievements, error: achievementsError } = await supabase
+      .from("achievement_definitions")
+      .select("*")
+      .order("tier", { ascending: true })
+      .order("name", { ascending: true });
+
+    if (achievementsError) {
+      console.error("Error fetching achievement definitions:", achievementsError.message);
+      return NextResponse.json({ error: achievementsError.message }, { status: 500 });
+    }
+
+    // Fetch user's earned achievements
+    const { data: userAchievements, error: userAchievementsError } = await supabase
+      .from("user_achievements")
+
+--- web/src/app/api/achievements/check/route.ts ---
+import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import { getUserIdentity } from "@/lib/auth";
+import { supabaseServer } from "@/lib/supabaseServer";
+import { sendMultipleAchievementNotifications, isPushConfigured } from "@/lib/pushNotifications";
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase";
+import type { Achievement, AchievementCheckRequest, AchievementCheckResponse } from "@/types/data";
+
+type UserAchievementRow = {
+  achievement_id: number;
+};
+
+type CalendarMealWithTags = {
+  Recipe?: {
+    "Recipe-Tag_Map"?: Array<{
+      Tag?: { name?: string | null } | null;
+    }>;
+  } | null;
+};
+
+type CalendarDate = { date: string | null };
+
+type UserStats = {
+  meals_logged: number;
+  green_recipes: number;
+  days_tracked: number;
+  streak_days: number;
+  dashboard_views: number;
+  nutrient_aware_percentage: number;
+};
+
+/**
+ * POST /api/achievements/check
+ *
+ * Checks and awards new achievements based on user's current progress.
+ * Called after user performs actions (meal_logged, nutrient_viewed, etc.)
+ *
+ * Request body:
+ * - trigger: "meal_logged" | "nutrient_viewed" | "manual"
+ *
+ * Returns:
+ * - newly_earned: Array of newly unlocked achievements
+ * - message: Success message
+ */
+export async function POST(request: Request) {
+  const supabase = await createClient();
+  let publicUserId: number;
+  let authUserId: string;
+
+  try {
+    ({ publicUserId, authUserId } = await getUserIdentity(supabase));
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Unauthorized";
+    console.warn("POST /api/achievements/check auth error:", errorMessage);
+    return NextResponse.json({ error: errorMessage }, { status: 401 });
+  }
+
+  let body: AchievementCheckRequest;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  if (!body.trigger) {
+    return NextResponse.json({ error: "Missing trigger field" }, { status: 400 });
+  }
+
+  try {
+    // Fetch all achievement definitions
+    const { data: achievements, error: achievementsError } = await supabase
+      .from("achievement_definitions")
+      .select("*");
+
+    if (achievementsError) {
+      console.error("Error fetching achievements:", achievementsError.message);
+      return NextResponse.json({ error: achievementsError.message }, { status: 500 });
+    }
+
+--- web/src/app/api/challenges/route.ts ---
+import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import { getUserIdentity } from "@/lib/auth";
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase";
+import type {
+  Challenge,
+  ChallengeWithStatus,
+  ChallengeProgress,
+  ChallengesResponse,
+  Achievement,
+} from "@/types/data";
+
+type UserChallengeRow = {
+  id: number;
+  user_id: string;
+  challenge_id: number;
+  joined_at: string;
+  progress: ChallengeProgress | null;
+  completed_at: string | null;
+};
+
+type CalendarMealWithTags = {
+  date: string | null;
+  Recipe?: {
+    "Recipe-Tag_Map"?: Array<{
+      RecipeTag?: { name?: string | null } | null;
+    }>;
+  } | null;
+};
+
+/**
+ * GET /api/challenges
+ *
+ * Returns all challenges for the current user:
+ * - active: Array of active challenges user hasn't joined
+ * - joined: Array of challenges user has joined (in progress)
+ * - completed: Array of challenges user has completed
+ *
+ * Each challenge includes progress data and days remaining.
+ */
+export async function GET() {
+  const supabase = await createClient();
+  let publicUserId: number;
+  let authUserId: string;
+
+  try {
+    ({ publicUserId, authUserId } = await getUserIdentity(supabase));
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Unauthorized";
+    console.warn("GET /api/challenges auth error:", errorMessage);
+    return NextResponse.json({ error: errorMessage }, { status: 401 });
+  }
+
+  try {
+    // Fetch all active challenges
+    const { data: challenges, error: challengesError } = await supabase
+      .from("challenges")
+      .select("*")
+      .eq("is_active", true)
+      .order("type", { ascending: true })
+      .order("name", { ascending: true });
+
+    if (challengesError) {
+      console.error("Error fetching challenges:", challengesError.message);
+      return NextResponse.json({ error: challengesError.message }, { status: 500 });
+    }
+
+    // Fetch user's challenge participation
+    const { data: userChallenges, error: userChallengesError } = await supabase
+      .from("user_challenges")
+      .select("*")
+      .eq("user_id", authUserId);
+
+    if (userChallengesError) {
+      console.error("Error fetching user challenges:", userChallengesError.message);
+      return NextResponse.json({ error: userChallengesError.message }, { status: 500 });
+    }
+
+
+--- web/src/app/api/challenges/join/route.ts ---
+import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import { getUserIdentity } from "@/lib/auth";
+
+import type { ChallengeJoinRequest, ChallengeJoinResponse, UserChallenge } from "@/types/data";
+
+/**
+ * POST /api/challenges/join
+ *
+ * Join a challenge. Creates a user_challenges record.
+ *
+ * Request body:
+ * - challenge_id: number - The ID of the challenge to join
+ *
+ * Returns:
+ * - success: boolean
+ * - user_challenge: UserChallenge record
+ * - message: string
+ */
+export async function POST(request: Request) {
+  const supabase = await createClient();
+  let authUserId: string;
+
+  try {
+    ({ authUserId } = await getUserIdentity(supabase));
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Unauthorized";
+    console.warn("POST /api/challenges/join auth error:", errorMessage);
+    return NextResponse.json({ error: errorMessage }, { status: 401 });
+  }
+
+  try {
+    // Parse request body
+    const body = (await request.json()) as ChallengeJoinRequest;
+    const { challenge_id } = body;
+
+    if (!challenge_id || typeof challenge_id !== "number") {
+      return NextResponse.json(
+        { error: "challenge_id is required and must be a number" },
+        { status: 400 }
+      );
+    }
+
+    // Check if challenge exists and is active
+    const { data: challenge, error: challengeError } = await supabase
+      .from("challenges")
+      .select("*")
+      .eq("id", challenge_id)
+      .eq("is_active", true)
+      .single();
+
+    if (challengeError || !challenge) {
+      return NextResponse.json({ error: "Challenge not found or not active" }, { status: 404 });
+    }
+
+    // Check if user already joined this challenge
+    const { data: existingJoin, error: existingError } = await supabase
+      .from("user_challenges")
+      .select("*")
+      .eq("user_id", authUserId)
+      .eq("challenge_id", challenge_id)
+      .order("joined_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existingError) {
+      console.error("Error checking existing join:", existingError.message);
+      return NextResponse.json({ error: existingError.message }, { status: 500 });
+    }
+
+    if (existingJoin) {
+      // Check if the existing join is stale
+      const joinedAt = new Date(existingJoin.joined_at);
+      const now = new Date();
+      let isStale = false;
+
+      if (challenge.type === "weekly") {
+        const startOfWeek = getStartOfWeek(now);
+        if (joinedAt < startOfWeek) {
+          isStale = true;
+
+--- web/src/app/api/nutrients/goals/route.ts ---
+import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+
+const GOAL_FIELDS = [
+  "calories_kcal",
+  "protein_g",
+  "carbs_g",
+  "fats_g",
+  "sodium_mg",
+  "fiber_g",
+] as const;
+type GoalField = (typeof GOAL_FIELDS)[number];
+
+type GoalValues = Partial<Record<GoalField, number>>;
+
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
+
+type NutrientGoalRow = Record<GoalField, number | null> & {
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
+async function requireAuthUserId(supabase: SupabaseServerClient): Promise<string> {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    throw new Error("User not authenticated");
+  }
+
+  return user.id;
+}
+
+function parseGoalPayload(body: unknown): { payload?: GoalValues; error?: string } {
+  if (!body || typeof body !== "object") {
+    return { error: "Invalid payload" };
+  }
+
+  const payload: GoalValues = {};
+  let hasField = false;
+
+  for (const field of GOAL_FIELDS) {
+    if (Object.prototype.hasOwnProperty.call(body, field)) {
+      const value = (body as Record<string, unknown>)[field];
+      if (typeof value !== "number" || Number.isNaN(value)) {
+        return { error: `Invalid value for ${field}` };
+      }
+      payload[field] = value;
+      hasField = true;
+    }
+  }
+
+  if (!hasField) {
+    return { error: "At least one goal field must be provided" };
+  }
+
+  return { payload };
+}
+
+export async function GET() {
+  const supabase = await createClient();
+
+  let userId: string;
+  try {
+    userId = await requireAuthUserId(supabase);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unauthorized";
+    return NextResponse.json({ error: message }, { status: 401 });
+  }
+
+  const { data: goal, error } = await supabase
+    .from("nutrient_goals")
+    .select(
+      "user_id, calories_kcal, protein_g, carbs_g, fats_g, sodium_mg, fiber_g, created_at, updated_at"
+    )
+    .eq("user_id", userId)
+    .maybeSingle();
+
+
+--- web/src/app/api/nutrients/export/route.ts ---
+import { createClient } from "@/utils/supabase/server";
+import { getPublicUserId } from "@/lib/auth";
+import { NextResponse } from "next/server";
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase";
+
+interface NutrientRow {
+  date: string;
+  calories_kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fats_g: number;
+  meal_count: number;
+  sugar_g: number;
+  fiber_g: number;
+  sodium_mg: number;
+}
+
+type IngredientRow = {
+  agg_fats_g: number | null;
+  calories_kcal: number | null;
+  carbs_g: number | null;
+  protein_g: number | null;
+  sugars_g: number | null;
+  fiber_g?: number | null;
+  sodium_mg?: number | null;
+};
+
+type RecipeIngredientMapRow = {
+  relative_unit_100: number | null;
+  Ingredient: IngredientRow | null;
+};
+
+type CalendarMealRow = {
+  date: string | null;
+  Recipe: {
+    "Recipe-Ingredient_Map": RecipeIngredientMapRow[];
+  } | null;
+};
+
+// Normalize a Date to UTC midnight and return YYYY-MM-DD
+const toDateKey = (date: Date) => date.toISOString().split("T")[0];
+
+const normalizeDate = (input: Date) => {
+  return new Date(Date.UTC(input.getFullYear(), input.getMonth(), input.getDate()));
+};
+
+const buildDateRange = (start: Date, end: Date) => {
+  const days: string[] = [];
+  const cursor = new Date(start);
+
+  while (cursor <= end) {
+    days.push(toDateKey(cursor));
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+
+  return days;
+};
+
+const createEmptyRow = (date: string): NutrientRow => ({
+  date,
+  calories_kcal: 0,
+  protein_g: 0,
+  carbs_g: 0,
+  fats_g: 0,
+  meal_count: 0,
+  sugar_g: 0,
+  fiber_g: 0,
+  sodium_mg: 0,
+});
+
+/**
+ * Fetch nutrient data for a date range
+ */
+async function fetchNutrientData(
+  supabase: SupabaseClient<Database>,
+  publicUserId: number,
+  startDate: Date,
+  endDate: Date
+
+--- web/src/app/api/nutrients/daily/route.ts ---
+import { getPublicUserId } from "@/lib/auth";
+import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+
+import type { NutrientData, NutrientSummaryResponse } from "@/types/data";
+
+/**
+ * Types for Supabase query response
+ */
+type IngredientRow = {
+  agg_fats_g: number | null;
+  calories_kcal: number | null;
+  carbs_g: number | null;
+  protein_g: number | null;
+  sugars_g: number | null;
+};
+
+type RecipeIngredientMapRow = {
+  relative_unit_100: number | null;
+  Ingredient: IngredientRow | null;
+};
+
+type CalendarMealRow = {
+  id: number;
+  date: string | null;
+  meal_type: string | null;
+  recipe_id: number | null;
+  Recipe: {
+    id: number;
+    name: string;
+    "Recipe-Ingredient_Map": RecipeIngredientMapRow[];
+  } | null;
+};
+
+/**
+ * GET /api/nutrients/daily?period=day|week|month&date=YYYY-MM-DD
+ *
+ * Query parameters:
+ * - period: "day" (default), "week", or "month"
+ * - date: Target date in YYYY-MM-DD format (defaults to today)
+ *
+ * Returns aggregated nutrient data from user's meal logs.
+ */
+export async function GET(request: Request) {
+  const supabase = await createClient();
+  let publicUserId: number;
+
+  try {
+    publicUserId = await getPublicUserId(supabase);
+  } catch (err: unknown) {
+    let errorMessage = "Unauthorized";
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    }
+    console.warn("GET /api/nutrients/daily auth error:", errorMessage);
+    return NextResponse.json({ error: errorMessage }, { status: 401 });
+  }
+
+  // Parse query parameters
+  const { searchParams } = new URL(request.url);
+  const period = searchParams.get("period") || "day";
+  const dateParam = searchParams.get("date");
+
+  const targetDate = dateParam ? new Date(dateParam) : new Date();
+
+  if (isNaN(targetDate.getTime())) {
+    return NextResponse.json({ error: "Invalid date format" }, { status: 400 });
+  }
+
+  let startDate: Date;
+  let endDate: Date;
+
+  // Calculate date range based on period
+  switch (period) {
+    case "day":
+      startDate = new Date(targetDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate = new Date(targetDate);
+      endDate.setHours(23, 59, 59, 999);
+      break;
+
+--- web/src/app/api/events/[id]/route.ts ---
+import { createClient } from "@/utils/supabase/server";
+import { NextResponse } from "next/server";
+
+import { syncDailyNutrientTracking } from "@/app/api/nutrients/tracking";
+import type { Database } from "@/types/supabase";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+/**
+ * 輔助函數：(與 route.ts 中的版本相同)
+ */
+async function getUserContext(
+  supabase: SupabaseClient<Database>
+): Promise<{ publicUserId: number; authUserId: string }> {
+  const {
+    data: { user: authUser },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !authUser) {
+    throw new Error("User not authenticated");
+  }
+
+  if (!authUser.email) {
+    throw new Error("Authenticated user does not have an email.");
+  }
+
+  // 【修正】: 不使用 .single()，改用 .limit(1)
+  const { data: publicUsers, error: profileError } = await supabase
+    .from("User")
+    .select("id")
+    .eq("email", authUser.email)
+    .limit(1);
+
+  if (profileError) {
+    console.error("Error fetching public user profile:", profileError.message);
+    throw new Error("Error fetching user profile.");
+  }
+
+  if (!publicUsers || publicUsers.length === 0) {
+    throw new Error("Public user profile not found.");
+  }
+
+  const publicUser = publicUsers[0];
+  return { publicUserId: publicUser.id, authUserId: authUser.id };
+}
+
+/**
+ * PATCH /api/events/[id]
+ */
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const supabase = await createClient();
+  const _params = await params;
+  const entryId = _params.id;
+  let userContext: { publicUserId: number; authUserId: string };
+
+  try {
+    userContext = await getUserContext(supabase);
+  } catch (err: unknown) {
+    let errorMessage = "Unauthorized";
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 401 });
+  }
+
+  const { status } = await request.json();
+
+  if (typeof status !== "boolean") {
+    return NextResponse.json(
+      { error: "Invalid 'status' field; expected boolean" },
+      { status: 400 }
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("Calendar")
+    .update({ status: status })
+    .eq("id", entryId)
+    .eq("user_id", userContext.publicUserId)
+    .select();
+
+--- web/src/app/api/users/route.ts ---
+import { NextResponse } from "next/server";
+import { supabaseServer } from "@/lib/supabaseServer";
+
+/**
+ * GET /api/users
+ * get all user list
+ */
+export async function GET() {
+  try {
+    const { data, error } = await supabaseServer
+      .from("User")
+      .select("id, fullname, email")
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+    return NextResponse.json(data ?? []);
+  } catch (err: unknown) {
+    console.error("GET /api/users error:", err);
+
+    let errorMessage = "Unknown error";
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
+}
+
+/**
+ * POST /api/users
+ * 新增一位使用者
+ * body: { fullname: string, email: string }
+ */
+
+/**
+ * export async function POST(req: Request) {
+ *   try {
+ *     const body = await req.json();
+ *     const { fullname, email } = body;
+ *
+ *     if (!fullname || !email) {
+ *       return NextResponse.json({ error: "Missing fullname or email" }, { status: 400 });
+ *     }
+ *
+ *     const { data, error } = await supabaseServer
+ *       .from("User")
+ *       .insert([{ fullname, email }])
+ *       .select("id, fullname, email")
+ *       .single();
+ *
+ *     if (error) throw error;
+ *     return NextResponse.json(data);
+ *   } catch (err: any) {
+ *     console.error("POST /api/users error:", err);
+ *     return NextResponse.json({ error: err.message }, { status: 500 });
+ *   }
+ * }
+ */
+
+--- web/src/app/api/recommender/route.tsx ---
+import { NextResponse } from "next/server";
+
+const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:8000";
+
+export async function POST(req: Request) {
+  try {
+    const { goal, numMeals } = await req.json();
+
+    // Call FastAPI backend directly
+    const res = await fetch(`${BACKEND_URL}/recommender`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ goal, numMeals }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      return NextResponse.json({ error: `FastAPI error: ${text}` }, { status: res.status });
+    }
+
+    const data = await res.json();
+    return NextResponse.json(data);
+  } catch (err: unknown) {
+    return NextResponse.json({ error: (err as { message: string }).message }, { status: 500 });
+  }
+}
+
+=== Backend API ===
+
+--- backend/api/recommender.py ---
+"""
+recommender.py — Lazy-load + Render-safe version
+"""
+
+import os
+from functools import lru_cache
+
+import pandas as pd
+import torch
+from dotenv import load_dotenv
+from google import genai
+from sentence_transformers import SentenceTransformer, util
+from sklearn.cluster import KMeans
+from supabase import create_client
+
+# --------------------------------------------------
+# 1. Global setup
+# --------------------------------------------------
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {DEVICE}")
+
+load_dotenv()
+SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
+SUPABASE_KEY = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+GEMINI_KEY = os.getenv("GEMINI_KEY")
+
+
+# --------------------------------------------------
+# 2. Lazy loaders
+# --------------------------------------------------
+@lru_cache()
+def load_supabase():
+    print("Connecting to Supabase ...")
+    return create_client(SUPABASE_URL, SUPABASE_KEY)
+
+
+@lru_cache()
+def load_recipe_data():
+    """Load and merge recipe data only once."""
+    print("Loading recipe data from Supabase ...")
+    supabase = load_supabase()
+
+    ingredients = pd.DataFrame(supabase.table("Ingredient").select("*").execute().data)
+    recipes = pd.DataFrame(supabase.table("Recipe").select("*").execute().data)
+    recipe_ing_map = pd.DataFrame(
+        supabase.table("Recipe-Ingredient_Map").select("*").execute().data
+    )
+    tags = pd.DataFrame(supabase.table("RecipeTag").select("*").execute().data)
+    recipe_tag_map = pd.DataFrame(
+        supabase.table("Recipe-Tag_Map").select("*").execute().data
+    )
+
+    # Merge metadata
+    recipe_tags = recipe_tag_map.merge(
+        tags, left_on="tag_id", right_on="id", suffixes=("", "_tag")
+    )
+    recipe_tags = (
+        recipe_tags.groupby("recipe_id")["name"].apply(list).reset_index(name="tags")
+    )
+
+    recipe_ing = recipe_ing_map.merge(
+        ingredients, left_on="ingredient_id", right_on="id", suffixes=("", "_ing")
+    )
+    recipe_ing = (
+        recipe_ing.groupby("recipe_id")["name"]
+        .apply(list)
+        .reset_index(name="ingredients")
+    )
+
+    recipe_data = recipes.merge(
+        recipe_tags, left_on="id", right_on="recipe_id", how="left"
+    )
+    recipe_data = recipe_data.merge(
+        recipe_ing, left_on="id", right_on="recipe_id", how="left"
+    )
+
+    recipe_data["tags"] = recipe_data["tags"].apply(
+        lambda x: x if isinstance(x, list) else []
+    )
+    recipe_data["ingredients"] = recipe_data["ingredients"].apply(
+
+--- backend/api/inventory_recommender.py ---
+"""
+inventory_recommender.py — Gemini-powered recipe recommendations from inventory
+
+Uses Gemini 2.5 Flash to intelligently recommend recipes based on:
+1. Available ingredients in user's inventory
+2. Expiration dates (prioritize soon-to-expire items)
+3. User preferences (optional)
+"""
+
+import json
+import os
+from datetime import datetime, timedelta
+from typing import List, Optional
+
+from dotenv import load_dotenv
+from google import genai
+from pydantic import BaseModel, Field
+
+from api.recommender import load_gemini_client, load_recipe_data
+
+load_dotenv()
+
+
+# --------------------------------------------------
+# 1. Request/Response Models
+# --------------------------------------------------
+class InventoryItem(BaseModel):
+    """Single inventory item with optional expiration date."""
+
+    ingredient_id: int
+    name: str
+    quantity: float
+    unit: Optional[str] = None  # Can be null from frontend
+    expiration_date: Optional[str] = None  # ISO date string (YYYY-MM-DD)
+
+
+class InventoryRecommendRequest(BaseModel):
+    """Request body for inventory-based recommendations."""
+
+    inventory: List[InventoryItem]
+    preferences: Optional[str] = None  # e.g., "low carb", "high protein"
+    num_recipes: int = Field(default=5, ge=1, le=10)
+
+
+class RecommendedRecipe(BaseModel):
+    """Single recipe recommendation."""
+
+    recipe_id: int
+    recipe_name: str
+    match_score: int  # 0-100
+    ingredients_available: List[str]
+    ingredients_missing: List[str]
+    expiring_ingredients_used: List[str]
+    reason: str
+
+
+class InventoryRecommendResponse(BaseModel):
+    """Response body for inventory recommendations."""
+
+    recommendations: List[RecommendedRecipe]
+    shopping_suggestions: List[str]
+    overall_reasoning: str
+
+
+# --------------------------------------------------
+# 2. Expiration Formatting
+# --------------------------------------------------
+def format_inventory_with_expiration(inventory: List[InventoryItem]) -> str:
+    """
+    Format inventory items with expiration urgency indicators.
+
+    - ❌ EXPIRED: Already expired
+    - ⚠️ EXPIRING SOON: Expires within 3 days
+    - ⏰ USE SOON: Expires within 7 days
+    """
+    today = datetime.now().date()
+    lines = []
+
+    for item in inventory:
+        unit_str = item.unit if item.unit else "units"
+
+=== Key components ===
+
+--- web/src/components/ui/AddMealModal.tsx ---
+"use client";
+
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+
+interface AddMealModalProps {
+  recipe: {
+    id: number;
+    name: string;
+  };
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+
+export default function AddMealModal({ recipe, isOpen, onClose, onSuccess }: AddMealModalProps) {
+  const [selectedDate, setSelectedDate] = useState("");
+  const [mealType, setMealType] = useState("breakfast");
+  const { toast } = useToast();
+
+  const handleConfirm = async () => {
+    if (!selectedDate) {
+      toast({
+        title: "⚠️ Date Required",
+        description: "Please select a date",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const res = await fetch("/api/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        recipe_id: recipe.id,
+        date: selectedDate,
+        meal_type: mealType,
+        status: false,
+      }),
+    });
+
+    if (res.ok) {
+      toast({
+        title: "✅ Success",
+        description: "Added to Calendar!",
+      });
+      onClose();
+      onSuccess?.();
+    } else {
+      const err = await res.json();
+      console.error(err);
+      toast({
+        title: "❌ Failed",
+        description: `Failed to add: ${err.error ?? "Unknown error"}`,
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="border-4 border-black bg-amber-50 p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:max-w-md">
+        <DialogHeader className="border-b-4 border-black bg-yellow-300 p-6">
+          <DialogTitle className="text-xl font-black uppercase">Add to Calendar</DialogTitle>
+          <DialogDescription className="text-sm font-bold text-gray-800">
+            {recipe.name}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 p-6">
+          <div>
+            <label htmlFor="meal-date" className="mb-2 block text-sm font-bold">
+
+--- web/src/components/inventory/AddInventoryModal.tsx ---
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2, Search, X } from "lucide-react";
+import type { InventoryLocation, Ingredient } from "@/types/data";
+
+interface AddInventoryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+const LOCATIONS: { value: InventoryLocation; label: string; emoji: string }[] = [
+  { value: "pantry", label: "Pantry", emoji: "🥫" },
+  { value: "fridge", label: "Fridge", emoji: "❄️" },
+  { value: "freezer", label: "Freezer", emoji: "🧊" },
+  { value: "other", label: "Other", emoji: "📍" },
+];
+
+/**
+ * Modal for adding a new item to inventory
+ *
+ * Features:
+ * - Ingredient search with autocomplete
+ * - Quantity and unit input
+ * - Location selection (pantry/fridge/freezer)
+ * - Expiration date picker
+ * - Min quantity threshold
+ * - Notes field
+ */
+export default function AddInventoryModal({ isOpen, onClose, onSuccess }: AddInventoryModalProps) {
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Ingredient[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | null>(null);
+
+  // Form state
+  const [quantity, setQuantity] = useState("1");
+  const [unit, setUnit] = useState("");
+  const [location, setLocation] = useState<InventoryLocation>("fridge");
+  const [expirationDate, setExpirationDate] = useState("");
+  const [minQuantity, setMinQuantity] = useState("");
+  const [notes, setNotes] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { toast } = useToast();
+
+  // Debounced search for ingredients
+  const searchIngredients = useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setSearching(true);
+    try {
+      const response = await fetch(`/api/ingredients?query=${encodeURIComponent(query)}&limit=10`);
+      if (response.ok) {
+        const data = await response.json();
+        setSearchResults(data.data || []);
+      }
+    } catch (error) {
+      console.error("Error searching ingredients:", error);
+    } finally {
+      setSearching(false);
+    }
+  }, []);
+
+  // Debounce search
+  useEffect(() => {
+
+--- web/src/components/inventory/EditInventoryModal.tsx ---
+"use client";
+
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
+import type { InventoryLocation, InventoryItemWithDetails } from "@/types/data";
+
+interface EditInventoryModalProps {
+  isOpen: boolean;
+  item: InventoryItemWithDetails | null;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+const LOCATIONS: { value: InventoryLocation; label: string; emoji: string }[] = [
+  { value: "pantry", label: "Pantry", emoji: "🥫" },
+  { value: "fridge", label: "Fridge", emoji: "❄️" },
+  { value: "freezer", label: "Freezer", emoji: "🧊" },
+  { value: "other", label: "Other", emoji: "📍" },
+];
+
+/**
+ * Modal for editing an existing inventory item
+ */
+export default function EditInventoryModal({
+  isOpen,
+  item,
+  onClose,
+  onSuccess,
+}: EditInventoryModalProps) {
+  const [quantity, setQuantity] = useState("");
+  const [unit, setUnit] = useState("");
+  const [location, setLocation] = useState<InventoryLocation>("fridge");
+  const [expirationDate, setExpirationDate] = useState("");
+  const [minQuantity, setMinQuantity] = useState("");
+  const [notes, setNotes] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { toast } = useToast();
+
+  // Populate form when item changes
+  useEffect(() => {
+    if (item) {
+      setQuantity(String(item.quantity));
+      setUnit(item.unit || "");
+      setLocation(item.location);
+      setExpirationDate(item.expiration_date || "");
+      setMinQuantity(item.min_quantity !== null ? String(item.min_quantity) : "");
+      setNotes(item.notes || "");
+    }
+  }, [item]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!item) return;
+
+    const qty = parseFloat(quantity);
+    if (isNaN(qty) || qty <= 0) {
+      toast({
+        title: "⚠️ Invalid Quantity",
+        description: "Please enter a valid quantity",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(`/api/inventory/${item.id}`, {
+        method: "PUT",
+
+--- web/src/components/shopping/CreateListModal.tsx ---
+"use client";
+
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { createClient } from "@/utils/supabase/client";
+
+interface CreateListModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+/**
+ * Modal for creating a new shopping list
+ *
+ * Features:
+ * - Name input (required)
+ * - Description input (optional)
+ * - Form validation
+ * - Loading state during creation
+ */
+export default function CreateListModal({ isOpen, onClose, onSuccess }: CreateListModalProps) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const supabase = createClient();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!name.trim()) {
+      toast({
+        title: "⚠️ Name Required",
+        description: "Please enter a list name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        toast({
+          title: "⚠️ Authentication Required",
+          description: "Please sign in to create a shopping list",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase.from("shopping_lists").insert({
+        user_id: user.id,
+        name: name.trim(),
+        description: description.trim() || null,
+        is_archived: false,
+      });
+
+      if (error) {
+        console.error("Error creating shopping list:", error);
+        toast({
+          title: "❌ Error",
+          description: "Failed to create shopping list",
+          variant: "destructive",
+        });
+        return;
+      }
+
+--- web/src/components/shopping/GenerateShoppingListModal.tsx ---
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { ShoppingCart, Loader2, CalendarDays } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+interface GenerateShoppingListModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function GenerateShoppingListModal({
+  isOpen,
+  onClose,
+}: GenerateShoppingListModalProps) {
+  const { toast } = useToast();
+  const router = useRouter();
+
+  // Default to current week
+  const today = new Date();
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay()); // Sunday
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6); // Saturday
+
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+  const [startDate, setStartDate] = useState(formatDate(weekStart));
+  const [endDate, setEndDate] = useState(formatDate(weekEnd));
+  const [listName, setListName] = useState("");
+  const [selectedMealTypes, setSelectedMealTypes] = useState<Set<string>>(
+    new Set(["breakfast", "lunch", "dinner"])
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const mealTypes = [
+    { id: "breakfast", label: "Breakfast", emoji: "🌅" },
+    { id: "lunch", label: "Lunch", emoji: "☀️" },
+    { id: "dinner", label: "Dinner", emoji: "🌙" },
+    { id: "snack", label: "Snack", emoji: "🍿" },
+  ];
+
+  const toggleMealType = (type: string) => {
+    setSelectedMealTypes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(type)) {
+        newSet.delete(type);
+      } else {
+        newSet.add(type);
+      }
+      return newSet;
+    });
+  };
+
+  const setThisWeek = () => {
+    setStartDate(formatDate(weekStart));
+    setEndDate(formatDate(weekEnd));
+  };
+
+  const setNextWeek = () => {
+    const nextWeekStart = new Date(weekStart);
+    nextWeekStart.setDate(weekStart.getDate() + 7);
+    const nextWeekEnd = new Date(nextWeekStart);
+    nextWeekEnd.setDate(nextWeekStart.getDate() + 6);
+    setStartDate(formatDate(nextWeekStart));
+    setEndDate(formatDate(nextWeekEnd));
+  };
