@@ -83,43 +83,59 @@ unprompted.
 spot-checked against the line it names. It is reliable about *what the code does*
 and unreliable about *where it said the code was*, unless the citation is re-opened.
 
-## Local model
+## Local model, and where the authoritative Step 8 table lives
 
-None was run. No Ollama-class model was installed on the machine used, and the
-Gemini and Supabase credentials needed to exercise the backend were not available
-either, so a local run would have added a fourth opinion on static reading only.
-Recorded as absent rather than claimed.
+This run did not execute a local model. That is a statement about this run only:
+the team's fourth model, **qwen2.5:32b served locally through Ollama**, was run by
+another member via `p1a/scripts/run_local_model.py`, with its prompt, raw
+completion, and extracted use cases preserved under `p1a/prompts/qwen2.5/` and
+`p1a/use-cases/p1a_qwen2.5/`. The D5 local-model requirement is satisfied at team
+level.
 
-## Step 8 — prompt × model, as it stands
+**The canonical Step 8 prompt x model table is `p1a/prompts/step8-prompt-model-table.md`,
+not this file.** That table covers all four runs (Codex, Gemini, Claude,
+qwen2.5:32b), records caught errors per model, and adjudicates the disagreements
+against source. Where this document and that table differ, the table governs.
 
-Two models have run the clean-room prompt so far.
+What this document adds that the table does not repeat is the run-level detail
+above: which prompts earned their keep in this session, what this model got wrong
+and how it was caught, and what was verified by executing the product rather than
+by reading it.
 
-| | Codex (Sihao) | Claude (this run) |
-|---|---|---|
-| Use cases produced | 20 | 20 |
-| Substantively corresponding | 18 of 20 | 18 of 20 |
-| Independent agreement | UC6-UC20 only | UC6-UC20 only |
-| Found `Edit inventory item` | **Yes** | No — missed it. Behaviour is real: `web/src/app/api/inventory/[id]/route.ts:89-183` |
-| Found `Add items to a shopping list` | No — missed it | **Yes.** Behaviour is real: `web/src/app/api/shopping-lists/[id]/items/route.ts:12-121` |
-| Found the share-feature defect | Partially — its attack tests probe share auth, but it placed sharing outside the top 20 | Yes — recorded as F1, including the dead `/share/shopping/` link and the absent UI caller |
-| Ran the product | Not evidenced in its output | Yes — build, dev server, both suites |
+## This run's contribution to the cross-model picture
 
-**How disagreements were settled.** Both divergences were adjudicated by opening
-the route file named above. Neither model hallucinated: each omitted a real
-behaviour the other found. That is the more useful result. A hallucination is
-caught by one careful reader; **an omission is invisible to a single model no
-matter how careful it is**, which is the argument for running three or more.
+Two points from this run that bear on the team table:
 
-**Contamination affecting this table.** UC1-UC5 must be struck from the agreement
-count. The first sixty lines of the Codex output, including those five headings,
-were visible during drafting. Agreement on UC1-UC5 measures exposure, not
-convergence. The independent agreement figure is therefore 13 of 15 on UC6-UC20,
-not 18 of 20.
+- **Both divergences involving this run were omissions, not hallucinations.** Codex
+  named `Edit inventory item`, which this run missed (`web/src/app/api/inventory/[id]/route.ts:89-183`).
+  This run named `Add items to a shopping list`, which Codex missed
+  (`web/src/app/api/shopping-lists/[id]/items/route.ts:12-121`); Gemini named it too.
+  Neither model invented anything. A hallucination is caught by one careful reader;
+  **an omission is invisible to a single model no matter how careful it is.** That is
+  the argument for running four rather than one, and it is confirmed by the team
+  table's own conclusion that no model's set is a superset of the others.
 
-## What a third model should be pointed at
+- **UC1-UC5 from this run must be excluded from any agreement count.** The first sixty
+  lines of the Codex output, including those five headings, were visible during
+  drafting. Agreement on UC1-UC5 measures exposure, not convergence. Independent
+  agreement between this run and Codex is therefore 13 of 15 on UC6-UC20, not 18 of 20.
+  The team table records this disclosure; it is repeated here so the figure is not
+  quoted from this document without it.
 
-Not another full pass. The cheapest high-value target is the set the two runs
-disagree on plus the set neither covered: single-item inventory editing, checking
-an item off a list, push-notification subscription, streak maintenance, and
-sign-out. If a third model independently promotes any of those into its top 20,
-that is evidence both existing runs under-weighted a real workflow.
+## Step 7 — the inherited test suite
+
+Performed after the use cases were fixed, with the clean-room constraint lifted as
+the assignment directs. Full analysis in `p1a/traceability/p1a_claude_step7.md`;
+raw runs in `p1a/evidence/baseline/2026-08-29-claude-step7-*.txt`.
+
+Headline: the inherited web suite is 1095 passing tests in 3.6 seconds and is
+genuinely healthy at the component layer, but **11 of the 34 API routes are imported
+by no inherited test**, and five of those carry use cases from this run - UC3 browse
+recipes, UC4 recipe detail, UC5 personalized meal plan, UC8 nutrient trends, UC18
+add items to a list. The three the product markets itself on are among them.
+16 percent of the suite tests Radix and shadcn wrappers that map to no use case.
+The backend suite cannot be collected without a Gemini key and fails 24 of 44 with
+network errors when given a dummy one, which is why `ci-pytest.yml` runs Ruff and
+never invokes pytest. No workflow runs `npm run build`.
+
+**The green badge covers the frontend unit tests and nothing else.**
