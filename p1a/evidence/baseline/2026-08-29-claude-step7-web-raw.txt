@@ -1,0 +1,1693 @@
+# Claude Step 7 — project's own web test suite, raw run
+# Date: 2026-08-29
+# Command: cd web && npx jest --verbose --testPathIgnorePatterns "/node_modules/" "tests/p1a"
+# Scope: the project's ORIGINAL suites only (web/__tests__). Our team's added
+#        tests under web/tests/p1a were excluded, so this measures the
+#        inherited codebase, not our own work.
+# Run in a clean copy with dependencies installed via 'npm ci'.
+
+PASS __tests__/node/gamificationIntegration.test.ts
+  Gamification Integration Tests
+    Challenge System Logic
+      Challenge Progress Calculation
+        ✓ calculates weekly challenge progress correctly (7 ms)
+        ✓ calculates monthly challenge progress correctly (1 ms)
+        ✓ caps progress at 100% (1 ms)
+      Challenge Completion Detection
+        ✓ detects when challenge is completed
+        ✓ detects incomplete challenge (1 ms)
+      Days Remaining Calculation
+        ✓ calculates days remaining for weekly challenge (4 ms)
+        ✓ calculates days remaining with explicit end date (1 ms)
+        ✓ returns 0 for past end date (1 ms)
+    Achievement System Logic
+      Achievement Criteria Evaluation
+        ✓ evaluates count-based criteria correctly (1 ms)
+        ✓ evaluates streak-based criteria correctly (3 ms)
+        ✓ evaluates threshold-based criteria correctly (1 ms)
+      Multiple Achievement Processing
+        ✓ identifies all earned achievements from definitions (1 ms)
+      Achievement Tier Progression
+        ✓ identifies tier progression path (1 ms)
+    Streak System Logic
+      Streak Calculation
+        ✓ calculates streak from consecutive dates
+        ✓ returns 0 when no recent activity (1 ms)
+        ✓ handles gap in dates (streak break) (1 ms)
+        ✓ includes today if active today (2 ms)
+      Longest Streak Tracking
+        ✓ updates longest when current exceeds it
+        ✓ preserves longest when current is lower
+      Activity Today Detection
+        ✓ detects activity on current day (15 ms)
+        ✓ detects no activity today
+    Cross-Feature Integration
+      Challenge Completion → Achievement Unlock
+        ✓ links challenge reward to achievement (1 ms)
+      Streak → Achievement Unlock
+        ✓ streak milestone triggers achievement check
+      Meal Log → Multiple Updates
+        ✓ meal log affects challenges, achievements, and streaks (1 ms)
+    Edge Cases
+      Empty Data Handling
+        ✓ handles user with no data gracefully
+      First-Time User
+        ✓ initializes with default values
+      Timezone Edge Cases
+        ✓ handles date boundary correctly (1 ms)
+
+PASS __tests__/node/smartCartWidgetApi.test.ts
+  Smart Cart Widget API
+    GET /api/smart-cart-widget
+      ✓ should return 401 for unauthenticated users (4 ms)
+      ✓ should return empty data when user has no lists or inventory (2 ms)
+      ✓ should return active list summary (1 ms)
+      ✓ should calculate inventory alerts for expiring items (4 ms)
+      ✓ should calculate low stock alerts (2 ms)
+      ✓ should generate use_expiring suggested action for items expiring within 3 days (2 ms)
+      ✓ should generate complete_shopping action when list is 75%+ done (1 ms)
+      ✓ should generate restock action for low stock items when no other action (14 ms)
+      ✓ should handle database errors gracefully (1 ms)
+
+PASS __tests__/node/streaksApi.test.ts
+  Streak API Tests
+    GET /api/streaks
+      ✓ should return 401 when user is not authenticated (4 ms)
+      ✓ should return empty streaks for new user (8 ms)
+      ✓ should return existing streak data (1 ms)
+      ✓ should handle database errors gracefully (1 ms)
+      ✓ should include correct labels for all streak types (1 ms)
+    POST /api/streaks/update
+      ✓ should return 401 when user is not authenticated (2 ms)
+      ✓ should return 400 for invalid streak_type (15 ms)
+      ✓ should return 400 for missing streak_type
+      ✓ should successfully update daily_log streak (9 ms)
+      ✓ should successfully update nutrient_goal streak (1 ms)
+      ✓ should successfully update green_recipe streak (1 ms)
+      ✓ should handle RPC errors (1 ms)
+      ✓ should handle fetch errors after RPC success
+      ✓ should return 400 for invalid JSON body (1 ms)
+      ✓ should call RPC with correct parameters (1 ms)
+    Streak Type Validation
+      ✓ should accept valid streak type: "daily_log" (2 ms)
+      ✓ should accept valid streak type: "nutrient_goal"
+      ✓ should accept valid streak type: "green_recipe" (1 ms)
+      ✓ should reject invalid streak type: "invalid" (2 ms)
+      ✓ should reject invalid streak type: "weekly" (1 ms)
+      ✓ should reject invalid streak type: "monthly" (1 ms)
+      ✓ should reject invalid streak type: "" (2 ms)
+      ✓ should reject invalid streak type: "null" (1 ms)
+      ✓ should reject invalid streak type: "undefined"
+
+PASS __tests__/node/shoppingListsApi.test.ts
+  Shopping Lists API
+    GET /api/shopping-lists
+      ✓ should return 401 if user is not authenticated (4 ms)
+      ✓ should return shopping lists with stats for authenticated user (1 ms)
+      ✓ should return empty array if no shopping lists exist (1 ms)
+    POST /api/shopping-lists
+      ✓ should return 401 if user is not authenticated (2 ms)
+      ✓ should return 400 if name is missing (1 ms)
+      ✓ should create a new shopping list (1 ms)
+    GET /api/shopping-lists/[id]
+      ✓ should return 401 if user is not authenticated (1 ms)
+      ✓ should return 404 if shopping list not found (14 ms)
+      ✓ should return shopping list with items (5 ms)
+    PUT /api/shopping-lists/[id]
+      ✓ should update shopping list name (3 ms)
+      ✓ should archive a shopping list
+    DELETE /api/shopping-lists/[id]
+      ✓ should delete a shopping list (1 ms)
+    POST /api/shopping-lists/generate
+      ✓ should return 401 if user is not authenticated (19 ms)
+      ✓ should return 400 if startDate or endDate is missing (2 ms)
+      ✓ should return 404 if user profile not found (1 ms)
+      ✓ should return 404 if no meals found in date range
+      ✓ should successfully generate shopping list from calendar meals
+
+PASS __tests__/node/inventoryApi.test.ts
+  Inventory API
+    GET /api/inventory
+      ✓ should return 401 if user is not authenticated (5 ms)
+      ✓ should return inventory items with summary for authenticated user (6 ms)
+      ✓ should filter by location when location param is provided (1 ms)
+      ✓ should filter by search term (1 ms)
+      ✓ should calculate expiration status correctly (1 ms)
+      ✓ should calculate low stock status correctly (9 ms)
+      ✓ should filter by expiring_within parameter (1 ms)
+      ✓ should return 500 when database error occurs (2 ms)
+      ✓ should handle null expiration_date (unknown status)
+    POST /api/inventory
+      ✓ should return 401 if user is not authenticated
+      ✓ should return 400 if ingredient_id is missing
+      ✓ should return 400 if quantity is invalid (3 ms)
+      ✓ should create a new inventory item successfully (4 ms)
+      ✓ should return 404 if ingredient not found (3 ms)
+      ✓ should update existing item quantity when adding same ingredient to same location (2 ms)
+      ✓ should return 500 when update fails on existing item (5 ms)
+      ✓ should return 500 when create fails (5 ms)
+    GET /api/inventory/[id]
+      ✓ should return 401 if user is not authenticated
+      ✓ should return 404 if item not found (1 ms)
+      ✓ should return inventory item by id
+    PUT /api/inventory/[id]
+      ✓ should return 401 if user is not authenticated (1 ms)
+      ✓ should return 404 if item not found (1 ms)
+      ✓ should update inventory item successfully
+      ✓ should return 400 for invalid quantity
+      ✓ should return 400 for invalid location (1 ms)
+      ✓ should update multiple fields including unit, notes, location
+      ✓ should return 500 when update fails (1 ms)
+    DELETE /api/inventory/[id]
+      ✓ should return 401 if user is not authenticated
+      ✓ should delete inventory item successfully
+      ✓ should return 500 when delete fails (1 ms)
+    GET /api/inventory/expiring
+      ✓ should return 401 if user is not authenticated
+      ✓ should return expiring items grouped by status
+      ✓ should accept days parameter (1 ms)
+      ✓ should return 400 for invalid days parameter
+      ✓ should return 500 when database error occurs
+
+PASS __tests__/node/challengesApi.test.ts
+  Challenges API
+    GET /api/challenges
+      ✓ returns 401 when auth fails (5 ms)
+      ✓ returns challenges categorized by status (4 ms)
+      ✓ returns joined challenges with progress (24 ms)
+      ✓ returns 500 when challenges query fails (3 ms)
+      ✓ returns 500 when user challenges query fails (4 ms)
+      ✓ returns empty lists when no challenges exist (1 ms)
+      ✓ includes reward achievement when present (1 ms)
+      ✓ calculates days remaining for weekly challenge (4 ms)
+      ✓ shows completed challenges separately (1 ms)
+    POST /api/challenges/join
+      ✓ returns 401 when auth fails (2 ms)
+      ✓ returns 400 when challenge_id is missing (2 ms)
+      ✓ returns 400 when challenge_id is not a number (2 ms)
+      ✓ returns 404 when challenge not found (2 ms)
+      ✓ returns 409 when already joined
+      ✓ successfully joins a challenge (1 ms)
+      ✓ returns 500 when insert fails (1 ms)
+    GET /api/challenges/[id]
+      ✓ returns 401 when auth fails
+      ✓ returns 400 for invalid ID (1 ms)
+      ✓ returns 404 when challenge not found
+      ✓ returns challenge details with progress (2 ms)
+      ✓ returns challenge details with reward achievement (1 ms)
+    Progress Calculation
+      ✓ returns progress with correct structure for joined challenges (1 ms)
+      ✓ returns progress with weekly green recipes metric (1 ms)
+      ✓ handles monthly challenges progress
+      ✓ handles streak-based challenges (1 ms)
+      ✓ handles nutrient_goal_days metric for monthly challenges (13 ms)
+    Green Recipe Tag Matching
+      ✓ does not count recipes without green tags (2 ms)
+      ✓ handles meals without Recipe data (1 ms)
+      ✓ handles meals without Recipe-Tag_Map
+      ✓ handles Tag with null name (1 ms)
+    Days Remaining Calculation
+      ✓ calculates days remaining with explicit end_date (1 ms)
+      ✓ returns 0 days remaining for past end_date
+      ✓ returns 0 days remaining for unknown challenge type without end_date (1 ms)
+    Progress Calculation - Default Cases
+      ✓ uses default current=0 for unknown weekly metric
+      ✓ uses default current=0 for unknown monthly metric (1 ms)
+    Error Handling in Stats Calculation
+      ✓ continues with default stats when Calendar query fails (1 ms)
+      ✓ handles nutrient_tracking error gracefully (1 ms)
+    Progress Sync to Database
+      ✓ does not sync progress for completed challenges (1 ms)
+
+  console.error
+    Error fetching achievements: defs fail
+
+      76 |
+      77 |     if (achievementsError) {
+    > 78 |       console.error("Error fetching achievements:", achievementsError.message);
+         |               ^
+      79 |       return NextResponse.json({ error: achievementsError.message }, { status: 500 });
+      80 |     }
+      81 |
+
+      at error (src/app/api/achievements/check/route.ts:78:15)
+      at Object.<anonymous> (__tests__/node/achievementsApi.test.ts:888:19)
+
+  console.error
+    Error fetching user achievements: ua fail
+
+      87 |
+      88 |     if (userAchievementsError) {
+    > 89 |       console.error("Error fetching user achievements:", userAchievementsError.message);
+         |               ^
+      90 |       return NextResponse.json({ error: userAchievementsError.message }, { status: 500 });
+      91 |     }
+      92 |
+
+      at error (src/app/api/achievements/check/route.ts:89:15)
+      at Object.<anonymous> (__tests__/node/achievementsApi.test.ts:906:19)
+
+PASS __tests__/node/achievementsApi.test.ts
+  Achievements API
+    GET /api/achievements
+      ✓ returns 401 when auth fails (5 ms)
+      ✓ returns available achievements with progress when none earned (18 ms)
+      ✓ returns 500 when definitions query fails (1 ms)
+      ✓ returns 500 when user achievements query fails (2 ms)
+      ✓ keeps available list when refresh after insert fails (2 ms)
+      ✓ auto-awards achievements when criteria met (1 ms)
+      ✓ returns progress when auto-award insert fails (2 ms)
+      ✓ handles generic catch block error (non-Error instance) (1 ms)
+      ✓ continues with default stats when calculateUserStats has internal errors (1 ms)
+      ✓ returns progress for streak type achievement (4 ms)
+      ✓ returns progress for threshold type achievement (10 ms)
+      ✓ returns progress for green_recipes metric (1 ms)
+      ✓ returns progress for days_tracked metric (2 ms)
+      ✓ returns progress for dashboard_views metric (3 ms)
+      ✓ returns 0 for unknown metric (1 ms)
+      ✓ calculates broken streak correctly (last log > 1 day ago) (1 ms)
+      ✓ handles streak calculation with gap in consecutive days (1 ms)
+      ✓ filters green recipes correctly with various tag patterns
+      ✓ maps earned achievements with achievement object correctly (1 ms)
+      ✓ maps earned achievements without achievement object (1 ms)
+      ✓ returns 500 when outer try-catch catches unexpected error
+      ✓ handles hasMetCriteria with unknown criteria type returning false (1 ms)
+    POST /api/achievements/check
+      ✓ returns 401 when auth fails (6 ms)
+      ✓ returns 400 for missing trigger
+      ✓ awards new achievements when criteria are met (1 ms)
+      ✓ skips insert when achievement already earned (1 ms)
+      ✓ returns 400 for invalid JSON body (1 ms)
+      ✓ returns 500 when definitions fetch fails (39 ms)
+      ✓ returns 500 when user achievements fetch fails (4 ms)
+      ✓ logs insert error but continues response
+      ✓ handles streak type achievements (1 ms)
+      ✓ handles threshold type achievements for nutrient awareness (1 ms)
+    Achievement metrics coverage
+      ✓ handles green_recipes metric
+      ✓ handles days_tracked metric (1 ms)
+      ✓ handles dashboard_views metric (1 ms)
+      ✓ handles unknown metric type gracefully
+      ✓ filters out meals with no recipe (1 ms)
+      ✓ returns 0 streak when last logged day is more than 1 day ago
+      ✓ handles non-consecutive streak days correctly (1 ms)
+      ✓ handles achievement with unknown criteria type in checkAchievementCriteria (1 ms)
+      ✓ returns 500 when outer try-catch catches unexpected error
+      ✓ continues with default stats when internal calculateUserStats error occurs (1 ms)
+
+PASS __tests__/node/notificationsApi.test.ts
+  Notifications API
+    POST /api/notifications/subscribe
+      ✓ returns 401 when not authenticated (4 ms)
+      ✓ returns 400 for invalid JSON body (1 ms)
+      ✓ returns 400 when subscription endpoint is missing (7 ms)
+      ✓ returns 400 when keys are missing (2 ms)
+      ✓ creates new subscription successfully (5 ms)
+      ✓ updates existing subscription successfully (3 ms)
+      ✓ returns 500 when insert fails (1 ms)
+      ✓ returns 500 when update fails (1 ms)
+    GET /api/notifications/subscribe
+      ✓ returns 401 when not authenticated (1 ms)
+      ✓ returns subscription status when user has subscriptions
+      ✓ returns subscribed false when no subscriptions (1 ms)
+      ✓ returns 500 when database error occurs (6 ms)
+    POST /api/notifications/unsubscribe
+      ✓ returns 401 when not authenticated (1 ms)
+      ✓ returns 400 for invalid JSON
+      ✓ returns 400 when endpoint is missing (1 ms)
+      ✓ successfully unsubscribes from specific endpoint
+      ✓ returns 500 when delete fails (1 ms)
+    DELETE /api/notifications/unsubscribe
+      ✓ returns 401 when not authenticated (5 ms)
+      ✓ successfully removes all subscriptions (1 ms)
+      ✓ returns 500 when delete fails
+    GET /api/notifications/vapid-key
+      ✓ returns VAPID public key when configured
+      ✓ returns 503 when VAPID key is not configured (1 ms)
+
+PASS __tests__/node/eventsApi.test.ts
+  GET /api/events
+    ✓ returns 401 if user is not authenticated (5 ms)
+    ✓ returns 401 if authenticated user does not have an email
+    ✓ returns 401 if profile fetch fails (1 ms)
+    ✓ returns 401 if public user profile not found (1 ms)
+    ✓ returns 401 with default error message when non-Error is thrown (2 ms)
+    ✓ returns 200 with data when authenticated (1 ms)
+    ✓ returns 500 if Supabase throws error during fetch (1 ms)
+  POST /api/events
+    ✓ returns 401 if user is not authenticated
+    ✓ returns 401 if authenticated user does not have an email
+    ✓ returns 401 if profile fetch fails
+    ✓ returns 401 if public user profile not found (1 ms)
+    ✓ returns 401 with default error message when non-Error is thrown (1 ms)
+    ✓ returns 400 if required fields are missing
+    ✓ returns 200 with inserted data (1 ms)
+    ✓ returns 200 with inserted data when status is explicitly true
+    ✓ returns 500 if Supabase insert fails
+
+PASS __tests__/node/nutrientsExportApi.test.ts
+  GET /api/nutrients/export
+    ✓ returns 401 when authentication fails (2 ms)
+    ✓ returns 400 when format is invalid
+    ✓ returns 400 when start date is missing
+    ✓ returns 400 when end date is missing
+    ✓ returns 400 when date format is invalid (4 ms)
+    ✓ returns 400 when start date is after end date (3 ms)
+    ✓ returns CSV data with correct headers and content (16 ms)
+    ✓ returns PDF data with correct content (29 ms)
+    ✓ handles empty data gracefully (2 ms)
+    ✓ returns 500 when calendar data fetch fails
+    ✓ skips meals without date (8 ms)
+    ✓ skips meals with date outside requested range (2 ms)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      199 |         ]);
+      200 |
+    > 201 |       setDaily(todaySummary.daily);
+          |       ^
+      202 |
+      203 |       const sevenTrend: TrendPoint[] = dailyTrendSummaries
+      204 |         .map((res) => res.daily)
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setDaily (src/app/dashboard/nutrients/useNutrientDashboard.ts:201:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      211 |           fats: d.fats_g,
+      212 |         }));
+    > 213 |       setPastSeven(sevenTrend);
+          |       ^
+      214 |
+      215 |       const weeklyTrendData: WeeklyNutrient[] = weeklySummaries
+      216 |         .map((res) => res.weekly?.[0])
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setPastSeven (src/app/dashboard/nutrients/useNutrientDashboard.ts:213:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      216 |         .map((res) => res.weekly?.[0])
+      217 |         .filter((w): w is WeeklyNutrient => Boolean(w));
+    > 218 |       setWeekly(weeklyTrendData);
+          |       ^
+      219 |
+      220 |       const monthlyTrendData: MonthlyNutrient[] = monthlySummaries
+      221 |         .map((res) => res.monthly?.[0])
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setWeekly (src/app/dashboard/nutrients/useNutrientDashboard.ts:218:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      221 |         .map((res) => res.monthly?.[0])
+      222 |         .filter((m): m is MonthlyNutrient => Boolean(m));
+    > 223 |       setMonthly(monthlyTrendData);
+          |       ^
+      224 |     } catch (err) {
+      225 |       console.error("Error fetching nutrient data:", err);
+      226 |       setError(err instanceof Error ? err.message : "Unknown error");
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setMonthly (src/app/dashboard/nutrients/useNutrientDashboard.ts:223:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      226 |       setError(err instanceof Error ? err.message : "Unknown error");
+      227 |     } finally {
+    > 228 |       setSummaryLoading(false);
+          |       ^
+      229 |     }
+      230 |   }, [fetchSummary, monthRange]);
+      231 |
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setSummaryLoading (src/app/dashboard/nutrients/useNutrientDashboard.ts:228:7)
+
+PASS __tests__/jsdom/use-toast.test.tsx
+  use-toast
+    reducer
+      ✓ should handle ADD_TOAST action (26 ms)
+      ✓ should limit toasts to TOAST_LIMIT (1) (10 ms)
+      ✓ should handle UPDATE_TOAST action (2 ms)
+      ✓ should not update non-existent toast (11 ms)
+      ✓ should handle DISMISS_TOAST action with specific id (17 ms)
+      ✓ should handle DISMISS_TOAST action without id (dismiss all) (8 ms)
+      ✓ should handle REMOVE_TOAST action with specific id
+      ✓ should handle REMOVE_TOAST action without id (remove all)
+      ✓ should not remove toast with non-matching id (1 ms)
+    toast function
+      ✓ should create a toast with generated id (7 ms)
+      ✓ should return toast controls (id, dismiss, update)
+      ✓ should create toast with description (1 ms)
+      ✓ should create toast with variant (19 ms)
+      ✓ should dismiss toast using returned dismiss function (2 ms)
+      ✓ should update toast using returned update function (1 ms)
+      ✓ should generate unique ids for each toast
+      ✓ should call onOpenChange when toast is dismissed (2 ms)
+    useToast hook
+      ✓ should return initial empty state (1 ms)
+      ✓ should provide toast function (1 ms)
+      ✓ should provide dismiss function (1 ms)
+      ✓ should update state when toast is added (22 ms)
+      ✓ should dismiss specific toast by id (2 ms)
+      ✓ should dismiss all toasts when no id provided (1 ms)
+      ✓ should sync state across multiple hook instances (1 ms)
+      ✓ should clean up listener on unmount (1 ms)
+    toast timeout behavior
+      ✓ should add toast to remove queue after dismiss
+      ✓ should not add duplicate timeouts for same toast (1 ms)
+      ✓ should remove toast after TOAST_REMOVE_DELAY
+    edge cases
+      ✓ should handle rapid toast creation (1 ms)
+      ✓ should handle toast with all optional props
+      ✓ should handle toast with only title (1 ms)
+      ✓ should handle empty toast props
+
+PASS __tests__/jsdom/PushNotifications.test.tsx
+  usePushNotifications
+    Support Detection
+      ✓ detects when push notifications are supported (13 ms)
+      ✓ detects when push notifications are not supported
+    Permission Management
+      ✓ returns current notification permission (3 ms)
+      ✓ requests permission when called (4 ms)
+      ✓ handles denied permission (36 ms)
+    Subscription Management
+      ✓ checks subscription status on mount (7 ms)
+      ✓ reports subscribed when subscription exists (57 ms)
+      ✓ handles subscription check error gracefully (9 ms)
+    Subscribe Flow
+      ✓ handles VAPID key fetch failure (6 ms)
+      ✓ handles empty VAPID key response (3 ms)
+    Unsubscribe Flow
+      ✓ unsubscribes from push notifications successfully (21 ms)
+      ✓ handles unsubscribe when no subscription exists (12 ms)
+      ✓ handles unsubscribe error gracefully (4 ms)
+      ✓ returns false when not supported (1 ms)
+    Error Handling
+      ✓ sets error state when permission request fails (5 ms)
+  NotificationPrompt
+    ✓ renders enable notifications button when not subscribed (37 ms)
+    ✓ shows not now button for dismissal (7 ms)
+    ✓ renders compact version correctly (3 ms)
+    ✓ calls onEnabled callback when notifications are enabled (9 ms)
+    ✓ calls onDisabled callback when dismissed (7 ms)
+  Push Notification Types
+    ✓ validates BrowserPushSubscription shape
+    ✓ validates AchievementNotificationPayload shape
+
+PASS __tests__/jsdom/useNutrientDashboard.test.tsx
+  useNutrientDashboard
+    ✓ normalizes trend data against stored goals and formats tooltip labels (48 ms)
+    ✓ falls back to recommended goals when user goal is missing (10 ms)
+    numericField schema preprocessing
+      ✓ handles empty string as 0 (52 ms)
+      ✓ handles null as 0 (5 ms)
+      ✓ handles undefined as 0 (14 ms)
+      ✓ converts string number to number (8 ms)
+      ✓ rejects NaN input (13 ms)
+      ✓ rejects negative numbers (5 ms)
+    error handling
+      ✓ handles fetch error and sets error state (6 ms)
+      ✓ handles non-Error exception in fetchNutrientData (8 ms)
+      ✓ handles goal fetch error (12 ms)
+      ✓ handles non-Error exception in fetchGoal (7 ms)
+    goal modal and submission
+      ✓ opens goal modal (8 ms)
+      ✓ resets form when modal opens with existing goal (7 ms)
+      ✓ resets form when modal opens with no goal (uses 0) (7 ms)
+      ✓ saves goal successfully and shows toast (10 ms)
+      ✓ handles save error and shows error toast (22 ms)
+      ✓ handles non-Error exception in save (14 ms)
+      ✓ handles save response with null goal (2 ms)
+    monthRange changes
+      ✓ refetches data when monthRange changes (55 ms)
+    formatTooltipLabel edge cases
+      ✓ returns label when payload has no rangeLabel (4 ms)
+      ✓ returns label when payload is empty (3 ms)
+    getMonthDaysFromLabel
+      ✓ handles invalid month label format (7 ms)
+    daily data fallback
+      ✓ uses emptyDaily when daily is null (2 ms)
+    percentOfGoal edge cases
+      ✓ handles zero goal value (3 ms)
+
+PASS __tests__/jsdom/GoalDialog.test.tsx
+  GoalDialog
+    Rendering
+      ✓ renders when open is true (40 ms)
+      ✓ does not render when open is false (4 ms)
+      ✓ renders dialog header with icon and title (8 ms)
+      ✓ renders dialog description (26 ms)
+      ✓ displays 'Set Daily Goals' when calories is 0 (9 ms)
+      ✓ displays 'Edit Daily Goals' when calories has value (9 ms)
+      ✓ renders all field inputs (33 ms)
+      ✓ renders 'Use Recommended' button (27 ms)
+    Buttons
+      ✓ renders Cancel button (7 ms)
+      ✓ renders 'Save Goal' button when calories is 0 (14 ms)
+      ✓ renders 'Update Goal' button when calories has value (6 ms)
+      ✓ renders 'Saving...' button when goalSaving is true (6 ms)
+      ✓ disables buttons when goalSaving is true (20 ms)
+    Interactions
+      ✓ calls onOpenChange when Cancel button is clicked (8 ms)
+      ✓ calls onUseRecommended when 'Use Recommended' button is clicked (12 ms)
+      ✓ calls onSubmit when form is submitted (12 ms)
+      ✓ updates input value when changed (6 ms)
+      ✓ sets value to 0 when input is cleared (6 ms)
+    Error State
+      ✓ displays error message when goalError is set (11 ms)
+      ✓ does not display error message when goalError is null (6 ms)
+    Field Labels and Units
+      ✓ renders field labels correctly (30 ms)
+      ✓ renders unit text correctly (5 ms)
+      ✓ renders field descriptions (11 ms)
+    Custom Fields
+      ✓ renders custom fields configuration (3 ms)
+    Fallback Values
+      ✓ uses 0 as fallback when field.value is undefined (64 ms)
+
+PASS __tests__/jsdom/useNutrientExport.test.tsx
+  useNutrientExport
+    Initial State
+      ✓ returns exporting as false initially (7 ms)
+      ✓ returns exportData function (2 ms)
+    CSV Export
+      ✓ exports data as CSV successfully (5 ms)
+      ✓ uses fallback filename for CSV when Content-Disposition is missing (8 ms)
+    PDF Export
+      ✓ exports data as PDF successfully (3 ms)
+      ✓ uses fallback filename for PDF when Content-Disposition is missing (2 ms)
+    Date Range Options
+      ✓ uses custom start and end dates (5 ms)
+      ✓ uses default 30-day range when no dates provided (3 ms)
+      ✓ uses only endDate and calculates startDate (3 ms)
+    Error Handling
+      ✓ handles API error response (4 ms)
+      ✓ handles API error without message (3 ms)
+      ✓ handles network error (6 ms)
+      ✓ handles non-Error thrown values (2 ms)
+    Exporting State
+      ✓ sets exporting to true during export (9 ms)
+      ✓ resets exporting to false after error (1 ms)
+    URL Construction
+      ✓ constructs correct URL with format and dates (2 ms)
+      ✓ constructs correct URL for PDF format (3 ms)
+    Download Link Cleanup
+      ✓ properly cleans up download link after use (1 ms)
+
+PASS __tests__/jsdom/ChallengeCard.test.tsx
+  ChallengeCard Component
+    Basic Rendering
+      ✓ renders challenge title and description (51 ms)
+      ✓ renders type badge correctly for weekly challenge (6 ms)
+      ✓ renders type badge correctly for monthly challenge (22 ms)
+      ✓ renders type badge correctly for special challenge (3 ms)
+      ✓ renders days remaining when available (27 ms)
+      ✓ renders singular 'day' when 1 day remaining (3 ms)
+      ✓ does not render days remaining when zero or undefined (6 ms)
+    Join Button
+      ✓ renders Join button when not joined and onJoin provided (25 ms)
+      ✓ calls onJoin when Join button is clicked (7 ms)
+      ✓ shows 'Joining...' text when isJoining is true (43 ms)
+      ✓ does not render Join button when no onJoin provided (16 ms)
+      ✓ does not render Join button when already joined (3 ms)
+    Progress Display
+      ✓ renders progress bar when joined with progress (18 ms)
+      ✓ shows participating message for joined but incomplete challenge (4 ms)
+      ✓ caps progress percentage at 100% (3 ms)
+      ✓ does not render progress when not joined (2 ms)
+    Completion State
+      ✓ shows completion message when challenge is completed (2 ms)
+      ✓ shows completion when current exceeds target (2 ms)
+    Reward Achievement Display
+      ✓ renders reward achievement when available (2 ms)
+      ✓ does not render reward section when no reward achievement (4 ms)
+    Metric Icons
+      ✓ renders green_recipes metric icon (15 ms)
+      ✓ renders meals_logged metric icon (2 ms)
+      ✓ renders streak_days metric icon (11 ms)
+      ✓ renders nutrient_goal_days metric icon (12 ms)
+      ✓ renders default icon for unknown metric (10 ms)
+    Styling and CSS Classes
+      ✓ applies completion ring style when completed (7 ms)
+      ✓ does not apply completion ring when not completed (2 ms)
+      ✓ applies brutalism styling classes (2 ms)
+    Edge Cases
+      ✓ handles zero progress correctly (2 ms)
+      ✓ handles undefined progress for joined challenge gracefully (1 ms)
+      ✓ truncates long titles (2 ms)
+      ✓ limits description to two lines (3 ms)
+
+PASS __tests__/jsdom/SmartCartWidget.test.tsx
+  SmartCartWidget
+    Loading State
+      ✓ should show loading skeleton initially (29 ms)
+      ✓ should display title while loading (9 ms)
+    Error State
+      ✓ should display error message on fetch failure (22 ms)
+      ✓ should display generic error for non-Error objects (8 ms)
+    Unauthorized State
+      ✓ should show login prompt when API returns 401 (57 ms)
+    Empty State
+      ✓ should show empty state when no data exists (8 ms)
+    Active Shopping List Summary
+      ✓ should display shopping list name (20 ms)
+      ✓ should display item count and progress (9 ms)
+      ✓ should display progress bar with correct percentage (56 ms)
+      ✓ should display next items (33 ms)
+      ✓ should have link to open the list (22 ms)
+      ✓ should show complete badge when all items checked (27 ms)
+    Inventory Alerts
+      ✓ should display expiring items count (8 ms)
+      ✓ should display expired items count (8 ms)
+      ✓ should display low stock count (14 ms)
+      ✓ should display all alerts when multiple exist (14 ms)
+      ✓ should show positive message when no alerts (11 ms)
+      ✓ should have link to view inventory in header (18 ms)
+    Suggested Actions
+      ✓ should display use expiring action (19 ms)
+      ✓ should display complete shopping action (16 ms)
+      ✓ should display restock action (6 ms)
+    Custom Props
+      ✓ should display default title (3 ms)
+      ✓ should display custom title when provided (4 ms)
+      ✓ should apply custom className (11 ms)
+    API Call
+      ✓ should call /api/smart-cart-widget endpoint (13 ms)
+      ✓ should only call API once on mount (9 ms)
+
+PASS __tests__/node/utils/recipeMatch.test.ts
+  calculateRecipeMatch
+    ✓ returns 100% when all ingredients available (2 ms)
+    ✓ returns correct percentage for partial match
+    ✓ identifies missing ingredients correctly (1 ms)
+    ✓ returns 0% when no ingredients available
+    ✓ handles empty recipe ingredients (1 ms)
+    ✓ handles empty inventory
+    ✓ uses ingredient ID when name is not available
+    ✓ rounds match percentage to nearest integer
+  calculateRecipeMatchFromDetail
+    ✓ calculates match from RecipeDetail object (1 ms)
+  getMatchLabel
+    ✓ returns correct label for 100%
+    ✓ returns correct label for 75-99%
+    ✓ returns correct label for 50-74% (1 ms)
+    ✓ returns correct label for 1-49%
+    ✓ returns correct label for 0%
+  getMatchColor
+    ✓ returns green for 100%
+    ✓ returns yellow for 75-99% (1 ms)
+    ✓ returns orange for 50-74%
+    ✓ returns red for 0-49%
+  getRecipesByAvailability
+    ✓ sorts recipes by match percentage (highest first)
+    ✓ filters by minimum match percentage (1 ms)
+    ✓ returns empty array when no recipes meet minimum
+  getFullMatchRecipes
+    ✓ returns only recipes with 100% match
+  calculateCoverageScore
+    ✓ returns 1 for 100% coverage
+    ✓ returns 0.5 for 50% coverage (1 ms)
+    ✓ returns 0 for no coverage
+    ✓ returns 1 for empty recipe ingredients
+
+PASS __tests__/node/utils/expiration.test.ts
+  getDaysUntilExpiration
+    ✓ returns null for null date (2 ms)
+    ✓ returns null for undefined date
+    ✓ returns null for invalid date string (1 ms)
+    ✓ returns 0 for today
+    ✓ returns positive number for future dates (3 ms)
+    ✓ returns negative number for past dates (7 ms)
+    ✓ works with string date format (YYYY-MM-DD) (1 ms)
+    ✓ works with ISO string format (1 ms)
+  getExpirationStatus
+    ✓ returns expired for past dates (1 ms)
+    ✓ returns critical for 0-2 days (1 ms)
+    ✓ returns warning for 3-7 days (3 ms)
+    ✓ returns good for >7 days
+    ✓ returns unknown for null date (1 ms)
+    ✓ returns unknown for undefined date
+    ✓ returns unknown for invalid date
+  getExpirationStatusLabel
+    ✓ returns correct labels for each status
+    ✓ returns Unknown for invalid status
+  getExpirationStatusColor
+    ✓ returns correct colors for each status (1 ms)
+    ✓ returns gray for invalid status
+  formatExpirationDate
+    ✓ returns 'No expiration date' for null
+    ✓ returns 'No expiration date' for undefined
+    ✓ returns 'Invalid date' for invalid date string (1 ms)
+    ✓ returns 'Expires today' for today (1 ms)
+    ✓ returns 'Expires tomorrow' for tomorrow (1 ms)
+    ✓ returns 'Expires in X days' for future dates
+    ✓ returns 'Expired X day(s) ago' for past dates
+  sortByExpiration
+    ✓ sorts items by expiration date (soonest first) (1 ms)
+    ✓ puts expired items first
+    ✓ puts items without expiration dates at the end (9 ms)
+    ✓ handles empty array (3 ms)
+    ✓ handles array with only null dates
+    ✓ does not mutate original array
+  getExpiringItems
+    ✓ returns items expiring within default 7 days
+    ✓ returns items expiring within custom days
+    ✓ excludes expired items
+    ✓ returns empty array when no items are expiring
+    ✓ includes items expiring tomorrow (1 day)
+  getExpiredItems
+    ✓ returns only expired items
+    ✓ returns empty array when nothing is expired
+    ✓ excludes items expiring tomorrow from expired list
+
+PASS __tests__/node/eventsIdApi.test.ts
+  PATCH /api/events/[id]
+    ✓ returns 401 if user not authenticated (1 ms)
+    ✓ returns 401 if authenticated user does not have an email (1 ms)
+    ✓ returns 401 if profile fetch fails
+    ✓ returns 401 if public user profile not found (1 ms)
+    ✓ returns 401 with default error message when non-Error is thrown (1 ms)
+    ✓ returns 400 if status is not boolean
+    ✓ returns 200 when update succeeds (19 ms)
+    ✓ returns 200 and skips sync when entry has no date (2 ms)
+    ✓ returns 500 when supabase update fails (2 ms)
+    ✓ returns 404 when no data is returned (9 ms)
+    ✓ returns 500 when nutrient tracking sync fails (2 ms)
+    ✓ returns 500 with default message when nutrient tracking sync fails with non-Error (3 ms)
+
+PASS __tests__/jsdom/PercentLineChart.test.tsx
+  PercentLineChart
+    Rendering
+      ✓ renders with title and subtitle (41 ms)
+      ✓ renders icon (4 ms)
+      ✓ renders with data-testid when provided (14 ms)
+      ✓ renders action buttons when provided (7 ms)
+    Loading State
+      ✓ shows loading indicator when loading is true (2 ms)
+      ✓ does not show loading indicator when loading is false (10 ms)
+    Empty State
+      ✓ shows empty text when data is empty array (2 ms)
+      ✓ shows empty text when data is null/undefined-like (5 ms)
+    Chart with Data
+      ✓ renders chart when data is provided (11 ms)
+      ✓ renders all chart components (3 ms)
+      ✓ renders lines for each macro (2 ms)
+      ✓ applies correct colors to lines (8 ms)
+      ✓ renders reference line at 100% (2 ms)
+    Custom Label Formatter
+      ✓ uses custom labelFormatter when provided (2 ms)
+    YAxis Formatting
+      ✓ formats Y-axis values as percentages (4 ms)
+    Default Props
+      ✓ defaults loading to false (6 ms)
+    Edge Cases
+      ✓ handles single data point (1 ms)
+      ✓ handles zero values in data (1 ms)
+      ✓ handles large data values (1 ms)
+
+PASS __tests__/node/inventoryTransferApi.test.ts
+  Inventory Transfer API
+    POST /api/inventory/transfer
+      ✓ should return 401 if user is not authenticated (3 ms)
+      ✓ should return 400 if items array is missing (2 ms)
+      ✓ should return 400 if items array is empty (1 ms)
+      ✓ should return 400 if item is missing required fields (5 ms)
+      ✓ should transfer items to inventory (new item) (1 ms)
+      ✓ should update existing inventory item quantity (2 ms)
+    DELETE /api/inventory/transfer
+      ✓ should return 401 if user is not authenticated
+      ✓ should return 400 if items array is missing
+      ✓ should undo transfer (uncheck shopping item and remove inventory) (1 ms)
+
+PASS __tests__/node/nutrientGoalsApi.test.ts
+  GET /api/nutrients/goals
+    ✓ returns 401 when authentication fails (1 ms)
+    ✓ returns 401 with default message when non-Error is thrown (1 ms)
+    ✓ returns null goal when no record exists (1 ms)
+    ✓ returns 500 when database fetch fails (16 ms)
+  PUT /api/nutrients/goals
+    ✓ returns 401 when authentication fails (2 ms)
+    ✓ returns 401 with default message when non-Error is thrown
+    ✓ returns 400 when JSON body is invalid
+    ✓ returns 400 when payload is not an object (1 ms)
+    ✓ returns 400 when field value is not a number
+    ✓ returns 400 when field value is NaN
+    ✓ returns 400 when no goal fields are provided (1 ms)
+    ✓ returns 500 when fetch existing goal fails (4 ms)
+    ✓ returns 500 when upsert fails (1 ms)
+    ✓ merges existing values and upserts new goals (1 ms)
+
+PASS __tests__/jsdom/hooks/useTransferToInventory.test.tsx
+  useTransferToInventory
+    transfer
+      ✓ should return false for empty items array (7 ms)
+      ✓ should successfully transfer items (6 ms)
+      ✓ should show error toast on transfer failure (8 ms)
+      ✓ should set canUndo to true after successful transfer (4 ms)
+      ✓ should update lastTransferredItems after successful transfer (3 ms)
+      ✓ should set isTransferring to true during transfer (5 ms)
+      ✓ should clear undo state after 10 seconds (5 ms)
+    undo
+      ✓ should return false if canUndo is false (3 ms)
+      ✓ should successfully undo transfer (4 ms)
+      ✓ should show error toast on undo failure (2 ms)
+    toast action with undo
+      ✓ should include undo action in success toast (2 ms)
+      ✓ should include inventory link in success toast description (4 ms)
+
+PASS __tests__/jsdom/ui-field.test.tsx
+  Field Components
+    FieldSet
+      ✓ renders fieldset element (10 ms)
+      ✓ applies custom className (6 ms)
+    FieldLegend
+      ✓ renders legend element with default variant (5 ms)
+      ✓ renders with label variant (2 ms)
+      ✓ applies custom className (2 ms)
+    FieldGroup
+      ✓ renders div with correct data-slot (5 ms)
+      ✓ applies custom className (1 ms)
+    Field
+      ✓ renders with default vertical orientation (1 ms)
+      ✓ renders with horizontal orientation (7 ms)
+      ✓ renders with responsive orientation (19 ms)
+      ✓ applies custom className (2 ms)
+    FieldContent
+      ✓ renders div with correct data-slot
+      ✓ applies custom className
+    FieldLabel
+      ✓ renders label with correct data-slot (8 ms)
+      ✓ applies custom className (4 ms)
+    FieldTitle
+      ✓ renders div with correct data-slot (1 ms)
+      ✓ applies custom className (3 ms)
+    FieldDescription
+      ✓ renders paragraph with correct data-slot (12 ms)
+      ✓ applies custom className (1 ms)
+    FieldSeparator
+      ✓ renders separator without content (2 ms)
+      ✓ renders separator with content (1 ms)
+      ✓ applies custom className (1 ms)
+    FieldError
+      ✓ renders nothing when no errors or children
+      ✓ renders children when provided (5 ms)
+      ✓ renders single error message from errors array (1 ms)
+      ✓ renders multiple error messages as list (1 ms)
+      ✓ filters out duplicate errors (1 ms)
+      ✓ handles errors with undefined messages
+      ✓ renders nothing when errors array is empty
+      ✓ prefers children over errors prop (1 ms)
+      ✓ applies custom className (1 ms)
+    Integration
+      ✓ renders complete field with all components (6 ms)
+
+PASS __tests__/jsdom/inventory/InventoryPage.test.tsx
+  InventoryPage
+    ✓ renders loading state initially (16 ms)
+    ✓ renders the page header after loading (48 ms)
+    ✓ shows item count in header (39 ms)
+    ✓ renders Suggest Recipes button (22 ms)
+    ✓ renders Add Item button (38 ms)
+    ✓ disables Suggest Recipes button when inventory is empty (74 ms)
+    ✓ shows empty state message (17 ms)
+    ✓ renders with brutalism styling classes (17 ms)
+    ✓ has Suggest Recipes button with disabled state when empty (39 ms)
+    ✓ shows Package icon in header (27 ms)
+    ✓ shows Add First Item button in empty state (21 ms)
+    ✓ opens add modal when Add Item button is clicked (72 ms)
+    ✓ shows toast when fetch fails (10 ms)
+    ✓ shows authentication toast when unauthorized (19 ms)
+    ✓ renders inventory items when available (15 ms)
+    ✓ shows location filter buttons with counts (24 ms)
+    ✓ filters items by search query (54 ms)
+
+PASS __tests__/node/challengeReset.test.ts
+  Challenge Reset Logic
+    ✓ identifies stale weekly challenges but keeps history (2 ms)
+    ✓ does not remove active weekly challenges (joined this week) (1 ms)
+    ✓ allows joining a challenge with a stale record (history preserved) (2 ms)
+
+PASS __tests__/jsdom/AchievementToast.test.tsx
+  AchievementToast
+    Rendering
+      ✓ renders achievement title and description (47 ms)
+      ✓ displays "Achievement Unlocked!" header (33 ms)
+      ✓ displays celebration emoji (18 ms)
+      ✓ displays tier badge (9 ms)
+      ✓ has close button (33 ms)
+    Tier Styling
+      ✓ applies bronze styling for bronze tier (3 ms)
+      ✓ applies gold styling for gold tier (10 ms)
+      ✓ applies platinum styling for platinum tier (4 ms)
+    Close Behavior
+      ✓ calls onClose when close button is clicked (19 ms)
+      ✓ auto-dismisses after duration (5 ms)
+    Accessibility
+      ✓ has alert role (3 ms)
+      ✓ has polite aria-live (3 ms)
+  useAchievementNotification
+    ✓ throws error when used outside provider (23 ms)
+    ✓ shows single achievement notification (9 ms)
+    ✓ shows multiple achievements sequentially (16 ms)
+    ✓ respects maxVisible limit (21 ms)
+    ✓ dismisses all notifications (15 ms)
+  AchievementNotificationProvider
+    ✓ renders children
+    ✓ uses default configuration values (1 ms)
+    ✓ accepts custom configuration
+
+PASS __tests__/jsdom/ui-input-group.test.tsx
+  InputGroup Components
+    InputGroup
+      ✓ renders with correct data-slot and role (17 ms)
+      ✓ applies custom className (9 ms)
+    InputGroupAddon
+      ✓ renders with default inline-start alignment (7 ms)
+      ✓ renders with inline-end alignment (1 ms)
+      ✓ renders with block-start alignment (5 ms)
+      ✓ renders with block-end alignment (1 ms)
+      ✓ focuses input when addon is clicked (not on button) (4 ms)
+      ✓ does not focus input when button inside addon is clicked (3 ms)
+      ✓ applies custom className (2 ms)
+    InputGroupButton
+      ✓ renders button with default size xs (4 ms)
+      ✓ renders with size sm (3 ms)
+      ✓ renders with icon-xs size (1 ms)
+      ✓ renders with icon-sm size (7 ms)
+      ✓ applies custom className (1 ms)
+      ✓ passes variant prop to Button
+    InputGroupText
+      ✓ renders span element
+      ✓ applies custom className (1 ms)
+    InputGroupInput
+      ✓ renders input with correct data-slot (1 ms)
+      ✓ applies custom className
+      ✓ passes through input props (1 ms)
+    InputGroupTextarea
+      ✓ renders textarea with correct data-slot (1 ms)
+      ✓ applies custom className (1 ms)
+      ✓ passes through textarea props
+    Integration
+      ✓ renders complete input group with prefix addon (1 ms)
+      ✓ renders complete input group with suffix addon (1 ms)
+      ✓ renders input group with button (1 ms)
+      ✓ renders input group with text and icon (1 ms)
+      ✓ renders input group with textarea
+
+PASS __tests__/jsdom/ui-dropdown-menu.test.tsx
+  DropdownMenu Components
+    DropdownMenu
+      ✓ renders dropdown menu with trigger and content (177 ms)
+    DropdownMenuTrigger
+      ✓ renders with correct data-slot (2 ms)
+    DropdownMenuContent
+      ✓ renders content when menu is open (35 ms)
+      ✓ applies custom className (23 ms)
+    DropdownMenuItem
+      ✓ renders with default variant (27 ms)
+      ✓ renders with destructive variant (27 ms)
+      ✓ renders with inset (34 ms)
+      ✓ applies custom className (23 ms)
+    DropdownMenuCheckboxItem
+      ✓ renders checkbox item (44 ms)
+      ✓ renders unchecked state (30 ms)
+    DropdownMenuRadioGroup and DropdownMenuRadioItem
+      ✓ renders radio group with items (61 ms)
+    DropdownMenuLabel
+      ✓ renders label with correct data-slot (20 ms)
+      ✓ renders with inset (18 ms)
+    DropdownMenuSeparator
+      ✓ renders separator with correct data-slot (27 ms)
+    DropdownMenuShortcut
+      ✓ renders shortcut text (29 ms)
+    DropdownMenuGroup
+      ✓ renders group with correct data-slot (26 ms)
+    DropdownMenuSub
+      ✓ renders submenu with trigger and content (26 ms)
+      ✓ renders sub trigger with inset (30 ms)
+    DropdownMenuPortal
+      ✓ renders portal component (12 ms)
+    Integration
+      ✓ renders complete dropdown menu (17 ms)
+
+PASS __tests__/jsdom/inventory/EditInventoryModal.test.tsx
+  EditInventoryModal
+    ✓ renders nothing when item is null (20 ms)
+    ✓ renders modal when isOpen is true and item is provided (119 ms)
+    ✓ displays ingredient name in the description (20 ms)
+    ✓ populates form with item data (65 ms)
+    ✓ calls onClose when cancel button is clicked (21 ms)
+    ✓ validates quantity before submission (63 ms)
+    ✓ calls API with correct data when form is submitted (57 ms)
+    ✓ calls onSuccess after successful submission (51 ms)
+    ✓ shows error toast when API call fails (41 ms)
+    ✓ shows loading state when submitting (37 ms)
+    ✓ updates form when item prop changes (39 ms)
+    ✓ allows changing storage location (24 ms)
+    ✓ handles item without ingredient name gracefully (14 ms)
+    ✓ clears optional fields correctly when submitting (41 ms)
+
+PASS __tests__/jsdom/inventory/InventoryCard.test.tsx
+  InventoryCard
+    ✓ renders with data-testid (13 ms)
+    ✓ displays item name (3 ms)
+    ✓ displays fallback name when ingredient name is not available (13 ms)
+    ✓ displays quantity and unit (2 ms)
+    ✓ displays quantity without unit when unit is null (2 ms)
+    ✓ displays location badge (2 ms)
+    ✓ displays location badge for pantry (2 ms)
+    ✓ displays location badge for freezer (2 ms)
+    ✓ displays min quantity when set (2 ms)
+    ✓ does not display min quantity when null (3 ms)
+    ✓ displays stock status when min_quantity is set (2 ms)
+    ✓ displays Low Stock status when quantity is at or below min (2 ms)
+    ✓ displays Out of Stock status when quantity is 0 (5 ms)
+    ✓ does not display stock status when min_quantity is null (2 ms)
+    ✓ displays expiration badge with status (7 ms)
+    ✓ displays notes when available (3 ms)
+    ✓ does not display notes when null (3 ms)
+    ✓ shows edit button when onEdit is provided (7 ms)
+    ✓ hides edit button when onEdit is not provided (5 ms)
+    ✓ calls onEdit when edit button is clicked (3 ms)
+    ✓ shows delete button when onDelete is provided (2 ms)
+    ✓ hides delete button when onDelete is not provided (6 ms)
+    ✓ calls onDelete when delete button is clicked (3 ms)
+    ✓ sets data-item-id attribute (1 ms)
+    ✓ applies custom className (2 ms)
+    ✓ uses Neo-Brutalism card styling (1 ms)
+    ✓ has header accent color based on stock status - adequate (1 ms)
+    ✓ has header accent color based on stock status - low (9 ms)
+    ✓ has header accent color based on stock status - critical (3 ms)
+
+PASS __tests__/jsdom/RecipeRecommendationModal.test.tsx
+  RecipeRecommendationModal
+    Loading State
+      ✓ should display loading spinner when isLoading is true (166 ms)
+      ✓ should not display recommendations while loading (41 ms)
+    Empty State
+      ✓ should display empty state when recommendations is null (24 ms)
+    With Recommendations
+      ✓ should display overall reasoning (40 ms)
+      ✓ should display all recipe names (51 ms)
+      ✓ should display match scores (29 ms)
+      ✓ should display recipe reasons (55 ms)
+      ✓ should display shopping suggestions (41 ms)
+    Recipe Card Expansion
+      ✓ should render expandable recipe cards (75 ms)
+      ✓ should toggle expansion and show details when clicking recipe card (75 ms)
+      ✓ should show expiring ingredients badge before expansion (29 ms)
+      ✓ should show missing ingredients section when expanded (87 ms)
+      ✓ should show View Recipe link when expanded (41 ms)
+      ✓ should show Add Missing button when expanded with missing ingredients (32 ms)
+      ✓ should call onAddToShoppingList when Add Missing button is clicked (53 ms)
+    Match Score Colors
+      ✓ should show Great Match for score >= 70 (30 ms)
+      ✓ should show Good Match for score 40-69 (38 ms)
+      ✓ should show Needs Shopping for score < 40 (12 ms)
+    Close Button
+      ✓ should call onClose when close button is clicked (31 ms)
+    Shopping Suggestions
+      ✓ should display Add All button (14 ms)
+      ✓ should call onAddToShoppingList with all suggestions when Add All clicked (20 ms)
+      ✓ should call onAddToShoppingList when individual suggestion clicked (20 ms)
+    Edge Cases
+      ✓ should handle recipe with no expiring ingredients (11 ms)
+      ✓ should handle recipe with no available ingredients (40 ms)
+      ✓ should hide shopping suggestions when empty (9 ms)
+      ✓ should handle recipe with no missing ingredients - hide Missing section (39 ms)
+    Progress Bar
+      ✓ should display ingredient coverage text (12 ms)
+      ✓ should show correct count of available ingredients (25 ms)
+    Accessibility
+      ✓ should have dialog role (23 ms)
+      ✓ should have proper heading (12 ms)
+
+PASS __tests__/jsdom/ui-sidebar.test.tsx
+  Sidebar Components
+    ✓ SidebarProvider toggles open state and stores cookie (49 ms)
+    ✓ useSidebar throws error when used outside provider (38 ms)
+    ✓ Keyboard shortcut toggles sidebar (3 ms)
+    ✓ SidebarMenuButton without tooltip renders as plain button (6 ms)
+    ✓ SidebarMenuAction applies hover class when showOnHover (2 ms)
+    ✓ SidebarMenuSubButton renders for size=sm, md and isActive (2 ms)
+    ✓ SidebarRail click toggles sidebar (3 ms)
+    ✓ SidebarMenuBadge renders text (3 ms)
+    ✓ SidebarTrigger toggles sidebar in mobile mode (no dynamic import) (8 ms)
+    ✓ SidebarProvider uses internal state when no onOpenChange prop (18 ms)
+    ✓ SidebarGroupAction renders as Slot when asChild is true (1 ms)
+    ✓ SidebarGroupAction renders as button when asChild is false (1 ms)
+    ✓ SidebarMenuSkeleton renders with icon when showIcon is true (8 ms)
+    ✓ SidebarMenuSkeleton renders without icon when showIcon is false (1 ms)
+    ✓ SidebarGroupLabel renders as Slot when asChild is true (1 ms)
+    ✓ SidebarGroupLabel renders as div when asChild is false (1 ms)
+    ✓ SidebarMenuButton with string tooltip wraps in Tooltip (14 ms)
+    ✓ SidebarMenuButton with object tooltip wraps in Tooltip (5 ms)
+
+PASS __tests__/node/inventoryBatchDeleteApi.test.ts
+  Inventory Batch Delete API
+    Authentication
+      ✓ returns 401 when user is not authenticated (4 ms)
+    Validation
+      ✓ returns 400 when ids is not provided (2 ms)
+      ✓ returns 400 when ids is not an array (1 ms)
+      ✓ returns 400 when ids is an empty array (1 ms)
+      ✓ returns 400 when ids contains non-string values (3 ms)
+    Successful deletion
+      ✓ deletes items and returns success (5 ms)
+      ✓ filters by user_id for security (1 ms)
+      ✓ returns deleted_count from database (1 ms)
+      ✓ uses ids.length as fallback when count is null
+    Error handling
+      ✓ returns 500 when database error occurs (1 ms)
+      ✓ handles invalid JSON in request body (1 ms)
+
+PASS __tests__/jsdom/hooks/useInventory.test.ts
+  useInventory
+    ✓ fetches inventory on mount when autoFetch is true (63 ms)
+    ✓ does not fetch on mount when autoFetch is false (2 ms)
+    ✓ applies location filter to fetch URL (5 ms)
+    ✓ handles fetch errors (56 ms)
+    ✓ provides refresh function to refetch data (59 ms)
+    ✓ can change location filter (57 ms)
+    ✓ addItem makes POST request and refreshes (61 ms)
+    ✓ addItem handles errors (60 ms)
+    ✓ updateItem makes PATCH request and refreshes (57 ms)
+    ✓ updateItem handles errors (61 ms)
+    ✓ deleteItem makes DELETE request and refreshes (57 ms)
+    ✓ deleteItem handles errors (58 ms)
+    ✓ handles empty response data (62 ms)
+    ✓ refetches when setLocationFilter is called (59 ms)
+
+PASS __tests__/node/utils/lowStock.test.ts
+  isLowStock
+    ✓ returns true when quantity is at or below minimum (2 ms)
+    ✓ returns false when quantity is above minimum
+    ✓ returns false when minQuantity is null
+    ✓ returns false when minQuantity is zero (1 ms)
+  getLowStockItems
+    ✓ returns only items that are low on stock
+    ✓ returns empty array when nothing is low (1 ms)
+    ✓ handles empty array
+  getStockPercentage
+    ✓ returns 100 when at minimum quantity
+    ✓ returns percentage above 100 when well stocked
+    ✓ returns percentage below 100 when low (1 ms)
+    ✓ returns 0 when quantity is 0
+    ✓ returns null when minQuantity is null (1 ms)
+    ✓ returns null when minQuantity is 0
+    ✓ rounds to nearest integer
+  getStockStatus
+    ✓ returns critical when quantity is 0
+    ✓ returns low when at or below minimum
+    ✓ returns adequate when above minimum (1 ms)
+    ✓ returns unknown when minQuantity is null
+  getStockStatusLabel
+    ✓ returns correct labels
+    ✓ returns Unknown for invalid status
+  getStockStatusColor
+    ✓ returns correct colors
+    ✓ returns gray for invalid status
+  sortByStockStatus
+    ✓ sorts critical first, then low, then adequate, then unknown
+    ✓ does not mutate original array
+    ✓ handles empty array
+  getLowStockSummary
+    ✓ counts items by status correctly (1 ms)
+    ✓ handles empty array (1 ms)
+    ✓ handles all items having same status
+
+PASS __tests__/node/signup.action.ts
+  signup server action
+    ✓ returns error when user already exists (1 ms)
+    ✓ returns signup error when signUp fails (1 ms)
+    ✓ returns error when no user after signup
+    ✓ returns error when DB get fails after signup (17 ms)
+    ✓ returns error when DB update fails
+    ✓ returns success when signup and update succeed (1 ms)
+
+PASS __tests__/jsdom/hooks/useExpiringItems.test.ts
+  useExpiringItems
+    ✓ fetches inventory on mount when autoFetch is true (63 ms)
+    ✓ does not fetch on mount when autoFetch is false (2 ms)
+    ✓ returns items expiring within default 7 days (55 ms)
+    ✓ returns items expiring within custom days (55 ms)
+    ✓ returns expired items separately (55 ms)
+    ✓ calculates total count including expired when includeExpired is true (56 ms)
+    ✓ excludes expired from total count when includeExpired is false (58 ms)
+    ✓ sorts expiring items by expiration date (soonest first) (55 ms)
+    ✓ handles fetch errors (55 ms)
+    ✓ provides refresh function (60 ms)
+    ✓ handles items without expiration dates (61 ms)
+    ✓ handles empty response data (59 ms)
+    ✓ excludes items expiring today from expired list (54 ms)
+
+PASS __tests__/jsdom/nutrients-page.test.tsx
+  NutrientsPage
+    ✓ shows updating badge while summary is loading (88 ms)
+    ✓ renders error banner when summary request fails (69 ms)
+    ✓ renders nutrient data, goal status, and charts after success (57 ms)
+    ✓ re-fetches when refreshing or changing the month range (140 ms)
+    ✓ renders export buttons (26 ms)
+    ✓ calls export API when CSV button is clicked (26 ms)
+    ✓ calls export API when Report button is clicked (25 ms)
+    ✓ disables export buttons while exporting (54 ms)
+    ✓ calls goalForm.reset with RECOMMENDED_GOALS when clicking Use Recommended (127 ms)
+
+PASS __tests__/jsdom/use-recipe.test.tsx
+  useRecipes
+    ✓ fetches recipes on mount (64 ms)
+    ✓ passes query parameter to fetch (3 ms)
+    ✓ passes ingredientIds parameter to fetch (8 ms)
+    ✓ passes tagIds parameter to fetch (7 ms)
+    ✓ passes page and limit parameters (5 ms)
+    ✓ handles fetch errors (56 ms)
+    ✓ aborts previous request when filters change (13 ms)
+    ✓ does not set error on AbortError (63 ms)
+    ✓ returns empty recipes when data is null (2 ms)
+    ✓ handles missing pagination gracefully (5 ms)
+    ✓ refetches when ingredientIds change (19 ms)
+    ✓ refetches when tagIds change (5 ms)
+    ✓ uses default page 1 when page is not provided (61 ms)
+    ✓ does not append ingredientIds when array is empty (3 ms)
+    ✓ does not append tagIds when array is empty (4 ms)
+    ✓ handles error without message property (58 ms)
+    ✓ does not include query param when query is empty string (4 ms)
+
+PASS __tests__/jsdom/MealDetailModal.test.tsx
+  MealDetailModal – full coverage
+    ✓ renders first meal details (40 ms)
+    ✓ returns null when closed or no entries (2 ms)
+    ✓ navigates via ArrowRight and ArrowLeft keys (10 ms)
+    ✓ clicks arrow buttons to change meal (11 ms)
+    ✓ calls onUpdateStatus + reloadEvents when Mark as Completed clicked (8 ms)
+    ✓ calls onUpdateStatus with false when Mark as Incomplete clicked (34 ms)
+    ✓ renders Mark All as Incomplete when all meals completed (14 ms)
+    ✓ calls onUpdateStatus for all entries when Mark All clicked (20 ms)
+    ✓ shows past meal note when entry date is before today (5 ms)
+    ✓ disables Close button when busy=true (11 ms)
+
+PASS __tests__/node/smartCartComprehensive.test.ts
+  Inventory Utilities - Expiration Calculation
+    ✓ should correctly calculate days until expiration (1 ms)
+    ✓ should identify critical expiration (≤1 day)
+    ✓ should identify warning expiration (≤3 days)
+  Shopping List API - CRUD Operations
+    ✓ should create a new shopping list (1 ms)
+    ✓ should retrieve shopping list items
+    ✓ should update shopping list item status
+    ✓ should delete shopping list
+  Inventory Transfer - Shopping to Pantry
+    ✓ should transfer items from shopping list to inventory
+    ✓ should handle batch transfers
+    ✓ should validate expiration date format
+  Recipe Matching - Ingredient Coverage
+    ✓ should calculate ingredient coverage percentage
+    ✓ should color-code recipes by match percentage (1 ms)
+    ✓ should sort recipes by match percentage
+  Enhanced Recommendation Algorithm
+    ✓ should prioritize recipes with expiring ingredients
+    ✓ should filter recipes by cooking time
+    ✓ should estimate recipe cost from inventory
+  Smart Cart Widget - Dashboard Integration
+    ✓ should display expiring items count (1 ms)
+    ✓ should show recommendation summary
+    ✓ should render quick action buttons
+
+PASS __tests__/jsdom/inventory/ExpirationBadge.test.tsx
+  ExpirationBadge
+    status rendering
+      ✓ displays 'Expired' for expired status (19 ms)
+      ✓ displays 'Today' for critical status with 0 days (35 ms)
+      ✓ displays 'Tomorrow' for critical status with 1 day (9 ms)
+      ✓ displays days count for critical status with 2 days (9 ms)
+      ✓ displays days count for warning status (6 ms)
+      ✓ displays days count for good status (1 ms)
+      ✓ displays 'Good' when good status has null daysUntil (1 ms)
+      ✓ displays 'No date' for unknown status (1 ms)
+    showText prop
+      ✓ shows text by default (1 ms)
+      ✓ hides text when showText is false (1 ms)
+    styling
+      ✓ applies expired styling (red) (2 ms)
+      ✓ applies critical styling (orange) (6 ms)
+      ✓ applies warning styling (yellow) (4 ms)
+      ✓ applies good styling (green) (4 ms)
+      ✓ applies unknown styling (gray) (1 ms)
+      ✓ applies custom className
+      ✓ has base badge styling (1 ms)
+
+PASS __tests__/jsdom/inventory/RecipeMatchBadge.test.tsx
+  RecipeMatchBadge
+    ✓ renders with data-testid (10 ms)
+    ✓ displays percentage (19 ms)
+    ✓ sets data-percentage attribute (4 ms)
+    ✓ has green styling for 100% (1 ms)
+    ✓ has yellow styling for 75-99% (1 ms)
+    ✓ has orange styling for 50-74% (1 ms)
+    ✓ has red styling for 0-49% (1 ms)
+    ✓ shows icon by default (1 ms)
+    ✓ hides icon when showIcon is false (1 ms)
+    ✓ shows fraction when showFraction is true and counts are provided (2 ms)
+    ✓ does not show fraction when showFraction is false (1 ms)
+    ✓ does not show fraction when counts are not provided (5 ms)
+    ✓ applies small size styling (1 ms)
+    ✓ applies medium size styling by default (2 ms)
+    ✓ applies large size styling
+    ✓ applies custom className (2 ms)
+    ✓ has correct title attribute (1 ms)
+    ✓ shows correct title for partial match (1 ms)
+    ✓ shows correct title for few ingredients (1 ms)
+    ✓ shows correct title for no ingredients (1 ms)
+
+PASS __tests__/jsdom/signup.test.tsx
+  ✅ SignUp Component (stable tests)
+    ✓ renders all fields and button (29 ms)
+    ✓ shows required field errors (32 ms)
+    ✓ shows invalid email format error (54 ms)
+    ✓ shows password mismatch error (44 ms)
+    ✓ handles invalid password from validatePassword (49 ms)
+    ✓ shows error for short password (<8) (25 ms)
+    ✓ sets email field error when signup returns existing email (80 ms)
+    ✓ sets password field error when signup returns password issue (28 ms)
+    ✓ displays generic server error (38 ms)
+    ✓ handles signup success (toast + redirect) (66 ms)
+    ✓ handles thrown error (catch block) (28 ms)
+    ✓ clears field-specific errors when input changes (12 ms)
+
+PASS __tests__/jsdom/inventory/BatchDeleteDialog.test.tsx
+  BatchDeleteDialog
+    ✓ renders nothing when closed (21 ms)
+    ✓ renders dialog with item count when open (103 ms)
+    ✓ shows correct singular text for one item (17 ms)
+    ✓ shows expiration status badges (31 ms)
+    ✓ shows truncated list for more than 10 items (44 ms)
+    ✓ calls onClose when Cancel is clicked (24 ms)
+    ✓ calls API and onSuccess when delete is confirmed (61 ms)
+    ✓ shows error toast when delete fails (71 ms)
+    ✓ shows loading state while deleting (27 ms)
+    ✓ does not call API when items array is empty (115 ms)
+
+PASS __tests__/jsdom/TransferFlow.test.tsx
+  ExpirationInput
+    ✓ renders with provided value (36 ms)
+    ✓ calls onChange when date is selected (5 ms)
+    ✓ renders preset buttons (3 ms)
+    ✓ applies preset when clicked (3 ms)
+    ✓ has Suggest button that uses category preset (8 ms)
+  LocationSelector
+    ✓ renders with provided value (25 ms)
+    ✓ renders all location options (90 ms)
+  getDefaultExpiration
+    ✓ returns correct expiration for Produce category
+    ✓ returns correct expiration for Dairy category (1 ms)
+    ✓ returns correct expiration for Frozen category
+    ✓ returns default expiration for unknown category
+    ✓ returns default expiration when no category provided
+  EXPIRATION_PRESETS
+    ✓ has correct preset values (4 ms)
+
+PASS __tests__/jsdom/signin.test.tsx
+  SignIn Page
+    ✓ renders form fields and button (57 ms)
+    ✓ shows validation error when both fields are empty (43 ms)
+    ✓ shows only email error when only email is empty (18 ms)
+    ✓ shows only password error when only password is empty (19 ms)
+    ✓ shows validation error for invalid email format (33 ms)
+    ✓ calls login() and shows success toast on valid credentials (33 ms)
+    ✓ shows failure toast when login returns error (31 ms)
+    ✓ shows error toast when login throws unexpected error (19 ms)
+
+PASS __tests__/jsdom/ui-sheet.test.tsx
+  Sheet components (Radix Dialog wrapper)
+    ✓ renders overlay, header, footer, title, and description (51 ms)
+    ✓ applies variant classes for each side (38 ms)
+    ✓ renders overlay with custom class (16 ms)
+    ✓ closes when clicking close button (18 ms)
+    ✓ renders SheetTitle and SheetDescription correctly (13 ms)
+    ✓ renders the Close button with icon and sr-only text (50 ms)
+
+PASS __tests__/jsdom/inventory/AddInventoryModal.test.tsx
+  AddInventoryModal
+    ✓ renders nothing when isOpen is false (18 ms)
+    ✓ renders modal when isOpen is true (36 ms)
+    ✓ displays Add to Inventory title (37 ms)
+    ✓ displays ingredient search input (32 ms)
+    ✓ displays quantity input (24 ms)
+    ✓ displays location buttons (52 ms)
+    ✓ calls onClose when cancel button is clicked (48 ms)
+    ✓ shows validation error when adding without selecting ingredient (32 ms)
+    ✓ searches for ingredients when typing (102 ms)
+    ✓ shows search results dropdown (50 ms)
+    ✓ allows selecting an ingredient from search results (69 ms)
+    ✓ changes location when location button is clicked (24 ms)
+    ✓ submits form successfully (116 ms)
+
+PASS __tests__/node/util.test.ts
+  getRecipeDetail
+    ✓ returns full recipe detail when all data exist (1 ms)
+    ✓ returns null when recipe not found (1 ms)
+  validatePassword()
+    ✓ returns invalid when password is shorter than 8 characters (1 ms)
+    ✓ returns invalid when password has no uppercase letter
+    ✓ returns invalid when password has no lowercase letter
+    ✓ returns invalid when password has no number (7 ms)
+    ✓ returns invalid when password has no special character
+    ✓ returns valid when password meets all criteria
+
+PASS __tests__/jsdom/pagination.test.tsx
+  Pagination
+    ✓ renders current page and total pages (9 ms)
+    ✓ renders Prev and Next buttons (39 ms)
+    ✓ disables Prev button on first page (7 ms)
+    ✓ disables Next button on last page (3 ms)
+    ✓ enables both buttons on middle page (16 ms)
+    ✓ calls onPageChange with page-1 when Prev is clicked (4 ms)
+    ✓ calls onPageChange with page+1 when Next is clicked (10 ms)
+    ✓ does not call onPageChange when disabled Prev is clicked (6 ms)
+    ✓ does not call onPageChange when disabled Next is clicked (4 ms)
+    ✓ handles single page correctly (5 ms)
+    ✓ handles zero total pages (1 ms)
+
+PASS __tests__/jsdom/use-mobile.test.tsx
+  useIsMobile
+    ✓ returns false when window width is >= 768px (6 ms)
+    ✓ returns true when window width is < 768px (1 ms)
+    ✓ responds to window resize events (1 ms)
+    ✓ returns false for undefined initial state (!!undefined === false) (1 ms)
+    ✓ removes event listener on unmount (2 ms)
+
+PASS __tests__/jsdom/hooks/useLowStockItems.test.ts
+  useLowStockItems
+    ✓ fetches inventory on mount when autoFetch is true (66 ms)
+    ✓ does not fetch on mount when autoFetch is false (1 ms)
+    ✓ returns only low stock items (62 ms)
+    ✓ returns correct summary counts (62 ms)
+    ✓ sorts low stock items by status (critical first) (62 ms)
+    ✓ handles fetch errors (55 ms)
+    ✓ provides refresh function (55 ms)
+    ✓ handles empty response data (56 ms)
+    ✓ handles items without min_quantity threshold (60 ms)
+    ✓ correctly identifies out of stock (quantity 0) items (57 ms)
+
+PASS __tests__/node/constants.test.ts
+  NUTRIENT_NAME
+    ✓ has all expected nutrient keys (2 ms)
+    ✓ has human-readable labels for all nutrients (11 ms)
+    ✓ returns value for string index access
+
+PASS __tests__/jsdom/inventory/LowStockBanner.test.tsx
+  LowStockBanner
+    ✓ renders nothing when lowStockCount is 0 (6 ms)
+    ✓ renders banner when lowStockCount is greater than 0 (14 ms)
+    ✓ shows 'Low Stock Warning' title when no critical items (2 ms)
+    ✓ shows 'Stock Alert!' title when there are critical items (6 ms)
+    ✓ shows correct message for single item (2 ms)
+    ✓ shows correct message for multiple items (2 ms)
+    ✓ shows critical message for single out of stock item (5 ms)
+    ✓ shows critical message for multiple out of stock items (2 ms)
+    ✓ shows View Items button when onViewItems is provided (2 ms)
+    ✓ hides View Items button when onViewItems is not provided (1 ms)
+    ✓ calls onViewItems when button is clicked (3 ms)
+    ✓ has yellow styling when no critical items (1 ms)
+    ✓ has red styling when there are critical items (1 ms)
+    ✓ applies custom className (1 ms)
+    ✓ defaults criticalCount to 0 when not provided (1 ms)
+
+PASS __tests__/node/middleware.test.ts
+  Next.js middleware integration tests
+    ✓ redirects unauthenticated users (2 ms)
+    ✓ allows authenticated users (1 ms)
+    ✓ does not redirect on /signin
+  updateSession
+    ✓ calls cookies.getAll and setAll properly (1 ms)
+
+PASS __tests__/node/logout.action.test.ts
+  logout server action
+    ✓ returns error when signOut fails (2 ms)
+    ✓ revalidates and returns success when signOut succeeds
+
+PASS __tests__/jsdom/searchbar.test.tsx
+  SearchBar
+    ✓ renders input and button (38 ms)
+    ✓ updates input value on typing (4 ms)
+    ✓ calls onSearch when button is clicked (3 ms)
+    ✓ calls onSearch when Enter key is pressed (1 ms)
+    ✓ does not call onSearch when other keys are pressed (2 ms)
+    ✓ calls onSearch with empty string (11 ms)
+    ✓ maintains state across multiple searches (9 ms)
+
+PASS __tests__/node/signin.action.ts
+  login server action
+    ✓ returns error when signIn fails (1 ms)
+    ✓ revalidates and redirects to /recipes when signIn succeeds
+
+PASS __tests__/jsdom/AddMealModal.test.tsx
+  AddMealModal
+    ✓ renders correctly when open (82 ms)
+    ✓ does not render when isOpen=false (9 ms)
+    ✓ calls onClose when Cancel clicked (30 ms)
+    ✓ validates date is selected (24 ms)
+    ✓ submits successfully and calls onClose/onSuccess (78 ms)
+    ✓ shows alert on API error (91 ms)
+    ✓ shows 'Unknown error' when API error has no error field (87 ms)
+
+PASS __tests__/jsdom/ui-separator.test.tsx
+  Separator component
+    ✓ renders a horizontal separator by default (8 ms)
+    ✓ renders a vertical separator when orientation='vertical' (2 ms)
+
+PASS __tests__/jsdom/ui-button.test.tsx
+  Button
+    ✓ renders a basic button (30 ms)
+    ✓ renders with different variants (13 ms)
+    ✓ renders with different sizes (19 ms)
+    ✓ renders as a child component when asChild is true (2 ms)
+    ✓ applies custom className (12 ms)
+    ✓ passes through additional props (2 ms)
+    ✓ exports buttonVariants for external use (2 ms)
+
+PASS __tests__/jsdom/ui-skeleton.test.tsx
+  Skeleton component
+    ✓ renders a div with default skeleton classes (9 ms)
+    ✓ applies additional className properly (2 ms)
+
+PASS __tests__/jsdom/next-config.test.ts
+  next.config.ts
+    ✓ exports a valid NextConfig object (1 ms)
+    ✓ configures themealdb.com as allowed image domain
+    ✓ has images configuration
+    ✓ allows external images from themealdb (1 ms)
+
+PASS __tests__/jsdom/landing.test.tsx
+  AppDemo Section
+    ✓ renders heading, highlights, and app image (30 ms)
+  Features Section
+    ✓ renders all feature cards' svg icons (15 ms)
+  Hero Section
+    ✓ renders call-to-action link to signup page (5 ms)
+
+PASS __tests__/jsdom/ui-accordion.test.tsx
+  ✓ renders Accordion with trigger and content (24 ms)
+
+PASS __tests__/jsdom/page.test.tsx
+  Page
+    ✓ renders a title (52 ms)
+
+PASS __tests__/jsdom/layout.test.tsx
+  DashboardLayout
+    ✓ renders the home link (71 ms)
+    ✓ renders the user dropdown trigger (35 ms)
+    ✓ renders the SidebarTrigger (88 ms)
+    ✓ renders the children content (46 ms)
+    ✓ logout function is available in layout (30 ms)
+    ✓ router is configured for navigation (87 ms)
+    ✓ toast is configured for notifications (21 ms)
+    handleLogout callback
+      ✓ redirects to signin on successful logout (130 ms)
+      ✓ shows error toast on logout failure (73 ms)
+      ✓ does nothing when logout returns no success and no error (62 ms)
+
+Test Suites: 1 skipped, 70 passed, 70 of 71 total
+Tests:       1 skipped, 1095 passed, 1096 total
+Snapshots:   0 total
+Time:        3.611 s
+Ran all test suites in 2 projects.
