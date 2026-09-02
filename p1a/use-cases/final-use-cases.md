@@ -65,7 +65,7 @@ This final set uses the Codex version as its baseline because its goal granulari
 | **Trigger** | User wants meal recommendations for a personal goal. |
 | **Main success scenario** | 1. User describes a goal. 2. User requests three, five, or seven meals. 3. System sends the goal and meal count to the recommender service. 4. System receives an expanded goal and recommended recipes. 5. System associates recommendations with known recipe records where possible. 6. System presents the plan and recipes. |
 | **Extensions** | 1a: Goal is blank → system asks the user to enter a goal (`web/src/app/dashboard/recommender/page.tsx:27-33`). 2a: Meal count is not three, five, or seven → system rejects the choice (`web/src/app/dashboard/recommender/page.tsx:34-37`). 3a: Backend returns a non-success response → system exposes the response status and error (`web/src/app/dashboard/recommender/page.tsx:42-50`). 5a: Recipe-record lookup fails → system retains the recommendation without the database identifier (`web/src/app/dashboard/recommender/page.tsx:63-95`). |
-| **Postconditions** | User has either a displayed personalized plan or a visible explanation that the request failed. |
+| **Postconditions** | A personalized meal plan, including the expanded goal and recommended recipes, is displayed to the user. |
 
 ## UC6: Schedule a meal
 
@@ -221,7 +221,7 @@ This final set uses the Codex version as its baseline because its goal granulari
 | **Trigger** | User requests recipe suggestions from the inventory page. |
 | **Main success scenario** | 1. System gathers the displayed inventory items. 2. System maps each item to ingredient, quantity, unit, and expiration data. 3. System requests five inventory-based recipes. 4. Recommendation service evaluates inventory fit and expiration urgency. 5. System receives recipe suggestions and missing-ingredient information. 6. System displays the recommendations. |
 | **Extensions** | 1a: Inventory is empty → system asks the user to add ingredients first (`web/src/app/dashboard/inventory/page.tsx:117-125`). 3a: Recommendation backend returns an error → system reports that suggestions failed and advises checking the backend (`web/src/app/dashboard/inventory/page.tsx:141-165`). 5a: User asks to add missing ingredients to shopping → system currently reports “Coming Soon” instead of performing the operation (`web/src/app/dashboard/inventory/page.tsx:171-176`). |
-| **Postconditions** | User has seen inventory-based suggestions, or a visible reason they could not be generated. |
+| **Postconditions** | Five inventory-based recipe suggestions, including inventory-fit and missing-ingredient information, are displayed to the user. |
 
 ## UC18: Create and populate shopping list
 
