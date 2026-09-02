@@ -71,7 +71,7 @@ Model records:
 
 | Model             | Prompt                                 | Response or run record                     | Derived use cases                               |
 | ----------------- | -------------------------------------- | ------------------------------------------ | ----------------------------------------------- |
-| Codex             | [prompt.md](prompts/codex/prompt.md)   | [response.md](prompts/codex/response.md)   | [Use cases](use-cases/p1a_codex/use-cases.md)   |
+| Codex | [P01 prompt](prompts/codex/prompt.md) | [Fresh P01 response](evidence/model-runs/codex-p01-response.md), [JSONL transcript](evidence/model-runs/codex-p01-transcript.jsonl), [metadata](evidence/model-runs/codex-p01-metadata.md), and [P05 response](prompts/codex/response.md) | [Original Codex use cases](use-cases/p1a_codex/use-cases.md) |
 | Gemini            | [prompt.md](prompts/gemini/prompt.md)  | [response.md](prompts/gemini/response.md)  | [Use cases](use-cases/p1a_gemini/use-cases.md)  |
 | Claude            | [prompt.md](prompts/claude/prompt.md)  | [response.md](prompts/claude/response.md)  | [Use cases](use-cases/p1a_claude/use-cases.md)  |
 | qwen2.5:32b local | [prompt.md](prompts/qwen2.5/prompt.md) | [response.md](prompts/qwen2.5/response.md) | [Use cases](use-cases/p1a_qwen2.5/use-cases.md) |
