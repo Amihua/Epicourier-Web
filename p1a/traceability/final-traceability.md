@@ -2,7 +2,7 @@
 
 ## Verification basis
 
-This is the corrected D4 artifact. The original Codex response is preserved unchanged at `p1a/prompts/codex/response.md`. Results below were checked against:
+This is the corrected D4 artifact. Its design baseline is the final reconciled set in `p1a/use-cases/final-use-cases.md`, not the earlier Codex-only set. The original Codex response is preserved unchanged at `p1a/prompts/codex/response.md`. Results below were checked against:
 
 - `p1a/evidence/own-tests/2026-08-29-web-p1a-all-with-security-raw.txt`: **44 executed, 33 PASS, 11 FAIL**.
 - `p1a/evidence/own-tests/2026-08-29-backend-p1a-all-with-security-raw.txt`: **25 executed, 18 PASS, 7 FAIL**.
@@ -10,7 +10,7 @@ This is the corrected D4 artifact. The original Codex response is preserved unch
 
 `Static contract` means executable inspection of a visible source guard; it does not execute the route. `Runtime` executes application functions/models, usually with external services mocked. A FAIL proves the expected protection was absent at the tested layer, not necessarily exploitable against deployed Supabase RLS.
 
-## Our tests ↔ use cases
+## Our tests ↔ final use cases
 
 | Test | UC | Type | Result | Evidence / interpretation |
 |---|---|---|---|---|
@@ -55,7 +55,7 @@ This is the corrected D4 artifact. The original Codex response is preserved unch
 | `test_uc15_rejects_an_invalid_inventory_location` | UC15 | Static contract | **PASS** | Expected closed location set exists; editing was not executed. |
 | `test_uc16_rejects_an_empty_batch_delete` | UC16 | Static contract | **PASS** | Expected empty-selection guard exists; deletion was not executed. |
 | `test_uc17_rejects_recipe_suggestions_for_empty_inventory` | UC17 | Static contract | **PASS** | Expected empty-inventory rejection exists; route was not executed. |
-| `test_uc18_requires_a_shopping_list_name` | UC18 | Static contract | **PASS** | Expected blank-name guard exists; list creation was not executed. |
+| `test_uc18_requires_a_shopping_list_name` | UC18 | Static contract | **PASS** | Expected blank-name guard exists; this covers only the list-creation branch of final UC18. It does not execute list creation or the recipe-to-shopping-list population flow. |
 | `test_uc19_rejects_generation_when_no_meals_exist` | UC19 | Static contract | **PASS** | Expected no-meals branch exists; generation was not executed. |
 | `test_uc20_rejects_transfer_of_another_users_shopping_item` | UC20 | Static contract | **FAIL** | Update is scoped only by item ID; expected ownership statement is absent. |
 | `test_attack_rejects_meal_goal_larger_than_4096_characters` | UC5 | Runtime | **FAIL** | Pydantic accepts the oversized goal; no maximum length is enforced. |
@@ -82,7 +82,7 @@ This is the corrected D4 artifact. The original Codex response is preserved unch
 
 ### Use cases with no mapped test
 
-None: every UC1–UC20 has at least one mapped function. This is not complete behavioral coverage. UC1–UC12 and UC14–UC20 rely partly or wholly on source-contract checks; the major remaining gap is happy-path actor-to-system runtime/E2E coverage.
+Every UC1–UC20 has at least one mapped function, but a mapped number does not mean every behavior in that final use case is covered. **UC18 is partially covered. Existing tests cover list creation and item updates, but no test executes the recipe-to-shopping-list population flow.** UC1–UC12 and UC14–UC20 otherwise rely partly or wholly on source-contract checks; the major remaining gap is happy-path actor-to-system runtime/E2E coverage.
 
 ### Tests with no mapped use case
 
@@ -107,7 +107,7 @@ These tests are valuable evidence that the current top-20 design may omit a real
 
 The Web PASS proves the mocked/unit/component/API assertions ran locally. It does not prove Supabase, Gemini, notifications, or the Playwright user journeys work against real services.
 
-### Per-use-case verdict
+### Per-final-use-case verdict
 
 | UC | Verdict | Original evidence that actually ran | Remaining blind spot |
 |---|---|---|---|
@@ -128,7 +128,7 @@ The Web PASS proves the mocked/unit/component/API assertions ran locally. It doe
 | UC15 | Partial – component/API | Edit modal and inventory API suites passed. | Concurrency and cross-user ownership unverified. |
 | UC16 | Partial – component/API | Batch-delete dialog/API suites passed. | Partial failure and transaction semantics unverified. |
 | UC17 | Partial but broad – Web unit/component; backend blocked | Recommendation modal and recipe-matching suites passed. | Original backend suite did not collect; real LLM and prompt attacks unverified. |
-| UC18 | Partial but broad – component/API/unit | Shopping-list API, smart-cart, and widgets passed. | Ownership boundaries and Boolean type confusion unverified. |
+| UC18 | **Partial** – creation and item-update component/API/unit coverage | Shopping-list creation, item update, smart-cart, and widget suites passed. | No test executes `AddToCartButton` → ingredient selection → existing/new list population; ownership boundaries and Boolean type confusion also remain unverified. |
 | UC19 | Partial – API-level | `shoppingListsApi.test.ts` generate-route assertions passed. | Real meal-plan/database integration unverified. |
 | UC20 | Partial but broad – component/API/unit | Transfer API/hook/component suites passed. | Per-item ownership is not enforced by visible application code; browser E2E not run. |
 
