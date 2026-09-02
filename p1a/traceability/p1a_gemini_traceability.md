@@ -152,7 +152,7 @@ The main blind spots are:
 
 ## Evidence inspected
 
-- Design baseline: `p1a/use-cases/p1a_gemini/use-cases.md`, with its verification table and post-verification corrections; derivation method in `p1a/prompts/gemini/derivation-record.md`
+- Design baseline: `p1a/use-cases/p1a_gemini/use-cases.md`, with its verification table and post-verification corrections; derivation method in `p1a/prompts/gemini/response.md`
 - Own frontend tests: `web/tests/p1a/security-attack-cases.test.ts`, `inventory-behavior.test.ts`, `use-case-contracts.test.ts`
 - Own backend tests: `backend/tests/sihao/p1a/test_adversarial_inputs.py`, `test_recommender_behavior.py`
 - Original backend tests: `backend/tests/test_recommender.py`, `test_inventory_recommender.py`
