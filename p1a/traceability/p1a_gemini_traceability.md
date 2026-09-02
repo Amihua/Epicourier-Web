@@ -54,7 +54,7 @@
 | `test_uc15_rejects_an_invalid_inventory_location` | UC12 | Updating an inventory item visibly rejects an unsupported storage location (static contract). |
 | `test_uc16_rejects_an_empty_batch_delete` | UC13 | Batch deletion visibly rejects an empty selection (static contract). |
 | `test_uc17_rejects_recipe_suggestions_for_empty_inventory` | UC14 | Suggestion generation visibly rejects an empty inventory, matching UC14 extension 1a (static contract). |
-| `test_uc18_requires_a_shopping_list_name` | UC15 | List creation visibly prompts for a name ("Please enter a list name"), which supports the "prompts for a name" half of UC15 extension 2a and contradicts the "provides a default name" half (static contract). |
+| `test_uc18_requires_a_shopping_list_name` | UC15 | List creation visibly prompts for a name ("Please enter a list name"), matching UC15 extension 2a as corrected. This test is what disproved the extension's original "provides a default name" alternative (static contract). |
 | `test_uc19_rejects_generation_when_no_meals_exist` | UC16 | Calendar-driven generation visibly handles a range with no meals, matching UC16 extension 3a (static contract). |
 | `test_uc20_rejects_transfer_of_another_users_shopping_item` | UC19 | The intended transfer contract requires item ownership; the check is currently absent. |
 | `test_attack_rejects_meal_goal_larger_than_4096_characters` | UC5 | The backend rejects an oversized natural-language meal goal. |

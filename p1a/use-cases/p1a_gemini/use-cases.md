@@ -9,9 +9,9 @@
 | **Stakeholders & interests** | **New user**: Wants to create a personalized account to track meals, manage inventory, and receive AI recommendations.<br>**System administrator**: Wants valid, secure user credentials and properly isolated user data. |
 | **Preconditions** | The user has internet access and is not currently authenticated. |
 | **Trigger** | The user chooses to sign up for a new account. |
-| **Main success scenario** | 1. The user provides a unique username, valid email address, and a secure password.<br>2. The user submits the registration request.<br>3. The system validates the uniqueness and format of the submitted information.<br>4. The system creates the new user account and confirms successful registration.<br>5. The system directs the user to sign in to their new account. |
+| **Main success scenario** | 1. The user provides a username, a valid email address, and a secure password.<br>2. The user submits the registration request.<br>3. The system validates the format of the submitted information and confirms that the email address is not already registered. (Corrected after source verification — see Corrections below.)<br>4. The system creates the new user account and confirms successful registration.<br>5. The system directs the user to sign in to their new account. |
 | **Extensions** | 3a: A required field is empty or the email format is invalid.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system displays a validation error indicating the missing or invalid field.<br>&nbsp;&nbsp;&nbsp;&nbsp;2. The user corrects the entry and resubmits.<br>3b: The chosen password does not meet security criteria or passwords do not match.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system alerts the user of the password constraint violation.<br>&nbsp;&nbsp;&nbsp;&nbsp;2. The user enters conforming matching passwords and resubmits.<br>3c: The email address is already registered.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system informs the user that an account with that email already exists.<br>&nbsp;&nbsp;&nbsp;&nbsp;2. The user provides a different email address or navigates to sign in. |
-| **Postconditions** | A user profile is established in the system, ready for authentication. |
+| **Postconditions** | A user account exists and is ready for authentication. The username is written in a separate update after account creation, so a failure at that step leaves an authenticable account without a username. (Corrected after source verification — see Corrections below.) |
 
 ---
 
@@ -220,7 +220,7 @@
 | **Preconditions** | The user is authenticated. |
 | **Trigger** | The user chooses to create a new shopping list. |
 | **Main success scenario** | 1. The user initiates shopping list creation.<br>2. The user enters a name for the list and an optional description.<br>3. The user submits the creation form.<br>4. The system creates the shopping list and displays it in the user's shopping list collection. |
-| **Extensions** | 2a: The user submits an empty list name.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system provides a default name or prompts for a name.<br>3a: The user cancels the creation modal.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system closes the dialog without creating a list. |
+| **Extensions** | 2a: The user submits an empty list name.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system prompts the user for a name and does not create the list. (Corrected after source verification — see Corrections below.)<br>3a: The user cancels the creation modal.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system closes the dialog without creating a list. |
 | **Postconditions** | A new empty shopping list is created and ready for item additions. |
 
 ---
@@ -279,9 +279,9 @@
 | **Stakeholders & interests** | **Authenticated user**: Wants to seamlessly transfer checked groceries into their home inventory without re-entering ingredient details manually.<br>**Smart Cart workflow**: Wants continuity between grocery shopping and pantry tracking. |
 | **Preconditions** | The shopping list contains checked (purchased) items linked to valid ingredients. |
 | **Trigger** | The user selects the transfer-to-inventory action on a shopping list. |
-| **Main success scenario** | 1. The user initiates transfer of purchased items from their shopping list.<br>2. The system displays a transfer review dialog listing checked items.<br>3. The user assigns or confirms storage locations (pantry, fridge, freezer) and optional expiration dates for each item.<br>4. The user confirms the transfer.<br>5. The system creates or updates corresponding inventory items in the user's pantry.<br>6. The system removes transferred items from the shopping list (or archives the completed list). |
-| **Extensions** | 3a: The user adjusts quantities or deselects specific items before confirming.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system transfers only the selected items with the adjusted quantities.<br>6a: All items in the list have been transferred.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system completes the list, archives it, and returns the user to the shopping overview. |
-| **Postconditions** | Transferred items are now tracked in the user's inventory and removed from the active shopping list. |
+| **Main success scenario** | 1. The user initiates transfer of purchased items from their shopping list.<br>2. The system displays a transfer review dialog listing checked items.<br>3. The user assigns or confirms storage locations (pantry, fridge, freezer) and optional expiration dates for each item.<br>4. The user confirms the transfer.<br>5. The system creates or updates corresponding inventory items in the user's pantry.<br>6. The system marks the transferred items as purchased on the shopping list. (Corrected after source verification — see Corrections below.) |
+| **Extensions** | 3a: The user adjusts quantities or deselects specific items before confirming.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system transfers only the selected items with the adjusted quantities.<br>6a: All items in the list have been transferred.<br>&nbsp;&nbsp;&nbsp;&nbsp;1. The system completes the list, permanently deletes it together with its items, and returns the user to the shopping overview. (Corrected after source verification — see Corrections below.) |
+| **Postconditions** | Transferred items are now tracked in the user's inventory and marked as purchased on the shopping list; the list itself is deleted only once every item has been transferred. (Corrected after source verification — see Corrections below.) |
 
 ---
 
@@ -329,10 +329,14 @@
 
 ## Corrections after human verification
 
-Two claims in the model's original output were found to contradict source during
+Five claims in the model's original output were found to contradict source during
 line-level verification and have been corrected above. The original wording is
-preserved here for the cross-model record; full evidence and method are in the
+preserved here for the record; full evidence and method are in the
 Gemini derivation record (`p1a/prompts/gemini/derivation-record.md`).
+
+Corrections 1 and 2 were made in the first verification pass. Corrections 3, 4,
+and 5 were made in a second pass that audited every claim in the document and
+all 55 file-and-line citations in the verification table.
 
 1. **UC12 extension 2a** originally claimed that reducing a quantity to zero makes
    the system prompt the user to confirm removal of the item. No such flow exists:
@@ -351,3 +355,40 @@ Gemini derivation record (`p1a/prompts/gemini/derivation-record.md`).
    scale with meal repetition. The postcondition was reworded to the guarantee the
    code actually provides: the aggregated ingredients of each distinct recipe
    scheduled in the period.
+
+3. **UC1 steps 1 and 3, and its postcondition,** originally claimed the user
+   provides a *unique* username and that the system validates *uniqueness*. Only
+   the email address is checked for uniqueness:
+   `web/src/app/signup/actions.ts` queries the `User` table with
+   `.eq("email", form_data.email)` before sign-up and returns "An account with
+   this email already exists". The username is never checked against existing
+   rows; it is written afterwards by
+   `.update({ username }).eq("id", dbGetData.id)`, so two accounts may hold the
+   same username. That same code path also means the username is set in a
+   separate update after the account exists — on failure the action returns
+   "Account created but failed to set username", leaving an authenticable
+   account with no username. Steps 1 and 3 were narrowed to email uniqueness and
+   format, and the postcondition now states the two-step reality.
+
+4. **UC15 extension 2a** originally claimed the system "provides a default name
+   or prompts for a name" when the list name is empty. No default name exists at
+   either layer: `web/src/components/shopping/CreateListModal.tsx` rejects an
+   empty name with "Please enter a list name" and disables its submit button
+   while `!name.trim()`, and `POST` in
+   `web/src/app/api/shopping-lists/route.ts` returns 400 for a missing, non-string,
+   or whitespace-only name. The extension was rewritten to the prompt-only
+   behavior.
+
+5. **UC19 step 6, extension 6a, and its postcondition** originally claimed that
+   transferred items are removed from the shopping list and that a fully
+   transferred list is *archived*. Neither holds. `POST` in
+   `web/src/app/api/inventory/transfer/route.ts` only marks each transferred item
+   with `.update({ is_checked: true })`; the item stays on the list. When no items
+   remain, `handleTransferToInventory` in
+   `web/src/app/dashboard/shopping/[id]/page.tsx` calls `handleCompleteList`,
+   which sends `DELETE /api/shopping-lists/{id}`; that route performs a hard
+   `.delete()` and the list's items cascade with it. The toast shown to the user
+   says "List has been removed". A `is_archived` column exists on the list type
+   but this path never sets it, so nothing is archived and a completed list is
+   not recoverable. Step 6, extension 6a, and the postcondition were rewritten to
+   describe deletion.
