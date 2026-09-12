@@ -59,9 +59,9 @@ The initial blocked logs are retained as setup evidence. After dependencies were
 | `test_request_model_rejects_more_than_ten_inventory_recipes` | UC17 enforces the documented upper bound. | Model validation raises an error. | **PASS**. |
 | `test_returns_structured_inventory_recommendations` | UC17 UI needs structured recommendations. | Endpoint returns recipe and shopping suggestions. | **PASS**. |
 
-## Required rerun
+## Reproduction commands
 
-After installing the repository's declared runtimes and locked dependencies, rerun exactly:
+Run the suites from the repository root:
 
 ```bash
 cd web
@@ -71,4 +71,4 @@ cd ../backend
 uv run pytest tests/sihao/p1a -q
 ```
 
-Replace neither raw log. Save the rerun as a new dated raw-output file so the setup failure remains auditable.
+The recorded reruns are preserved at `p1a/evidence/own-tests/2026-08-29-web-p1a-rerun-raw.txt` and `p1a/evidence/own-tests/2026-08-29-backend-p1a-rerun-raw.txt`. The Web rerun produced 31 PASS and 1 FAIL; the Backend rerun produced 18 PASS.
