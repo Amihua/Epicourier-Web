@@ -193,3 +193,7 @@ Decision: **stay the course, but narrow sharply**. Reuse the existing inventory/
 Most useful: prompts 1, 7, and 10, because they killed an unsupported gap; prompt 9 protected test/report capacity. Least useful: prompt 11, because member biographies were unavailable. Prompt 8 becomes useful only after gap and red-team checks.
 
 Codex strength: conservative source handling, explicit unknowns, measurable kill signals, and linkage to failing tests. Weakness: this is a single-model run, complaint sampling is small, some prices/features remain unknown, and no real user interviews were performed.
+
+## Follow-up market-support study
+
+New P13–P20 prompts and evidence for recipe-to-To-Buy, device/platform adaptation, and gym calorie-deficit features are summarized in `p1b/result/codex/market-support.md`. The study treats recipe-to-list and cross-platform support as established incumbent capabilities and recommends testing a narrower training-day target -> explained meal -> pantry-aware missing-item list workflow.

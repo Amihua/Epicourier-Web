@@ -68,3 +68,7 @@ Facts: four students and 160 hours; P1a showed a broad existing feature set plus
 - Conversation record: `p1b/evidence/codex/2026-09-12-transcript.md`
 - Metadata: `p1b/evidence/codex/metadata.md`
 - Adjudicated outputs: `p1b/result/codex/README.md`
+
+## New market-support prompt set
+
+The follow-up P13–P20 competitor-discovery prompts are in `p1b/prompts/codex/market-support-prompts.md`. They cover workflow proof, demand triangulation, device capability boundaries, substitutes, disconfirmation, review-to-requirement extraction, gym calorie-deficit safety, and one-month wedge selection.
