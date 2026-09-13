@@ -1,6 +1,7 @@
 # D1 — Market Survey (Claude analyst)
 **Run date:** 2026-09-13 · **Model:** Claude Opus 5 (1M context), `claude-opus-5[1m]` · **Method:** five independent discovery agents, each given a different search angle and no sight of the others' work, followed by an adversarial fact-checker that re-fetched every claim.
-**Audit trail:** 146 web searches, 238 pages fetched, recorded in [`../../evidence/claude/runs/`](../../evidence/claude/runs/) with the prompt as issued, the searches actually run, and the pages actually retrieved, per agent.
+**Audit trail across all five runs:** 220 web searches and 534 `WebFetch` retrievals (plus `curl`
+fetches, which are not counted), recorded in [`../../evidence/claude/runs/`](../../evidence/claude/runs/) with the prompt as issued, the searches actually run, and the pages actually retrieved, per agent.
 
 ---
 ## How this table was built, and why that matters
@@ -63,8 +64,42 @@ Five columns, chosen because they are where our product could differ. Cells are 
 | SuperCook | yes — "Visit the pantry page in the SuperCook app and choose | no — the pantry is an undated ingredient list; expiry appear | no — recipe matching keys off pantry membership only; "Super | unknown — CORRECTED from the analyst's 'yes'. The page describes a filter, never | unknown — the description has a '--Reduce food waste--' section but it |
 | Xpiry | yes - 'Xpiry looks at what's in your pantry and suggests rec | yes - 'Xpiry estimates a shelf life for every item based on | partial - recipe SUGGESTIONS are expiry-ranked: 'It prioriti | partial - the page describes an ingredient-coverage figure attached to each sugg | unknown - nothing on the site or the App Store description mentions tr |
 
+### Added by the fourth verification run (2026-09-13)
+
+Three rivals the first verification pass had dropped, verified afterwards because they turned out
+to be load-bearing. They are listed separately rather than spliced into the table above, so the
+record shows *when* each was checked.
+
+| Product | Status | Explains why? | Evidence | Adoption |
+|---|---|---|---|---|
+| **Cooklist** | ALIVE, v1.109.1 (2026-06-29) | **CLAIMED — vendor mockup** | Store screenshot 10, *"Expiration Reminders"*: *"Your parsley is 7 days old and may expire soon. Tap to see recipes you can cook with it."* **We opened the image: its status bar reads `Sketch` / `9:41 AM`, so it is marketing art, not a device capture** (screenshot 9 in the same listing *is* a real capture). Expresses age, not the date. Shows *what* it substituted but never *why*. Expiry dates are per-item and hand-correctable. | **11,297 iOS ratings, 4.73 avg** — a real incumbent |
+| **Remy** | ALIVE, v5.1.0 (2026-09-03) | **PARTIAL** | Verified from the live web bundle's i18n table and render function, not marketing copy: `expiringBadge.label = "Using up before they expire:"`, rendered as `<ingredient> · <qty> <unit>` directly above the suggested recipe cards. Inventory audit loop exists (*"Are these still good?"* → Used All / Wasted All / Keep). No date in the rationale, no nutrient reason, substitutions shown but never justified. | 2 US / 15 GB ratings, 1K+ Play installs — **prior art, not an incumbent** |
+| **Grocy** 4.7.1 | ALIVE, released 2026-09-04 | **PARTIAL** | Formula published in the changelog — *"1 point for each due soon ingredient … 10 points per overdue ingredient 20 points per expired ingredient"* — and confirmed verbatim in `migrations/0249.sql`. But the UI renders `due_score` as a bare integer plus a colour class, the ingredient carries no date and no tooltip, the API returns the aggregate undecomposed, and the recipe list is **not sorted by it** (`'order': [[1, 'asc']]`, alphabetical). No nutrient constraint anywhere. | 9,486 GitHub stars, ~87 contributors, MIT |
+
+### A fifteenth rival, added later still
+
+**Use It Up: Pantry Recipes** (US App Store id 6775112024, v1.0.8, updated 2026-07-28) surfaced in
+the P20 adjudication *after* the fourteen-product table was built, and it is cited in
+[`06`](06-disagreement-with-codex.md), [`12`](12-milestones.md) and
+[`15`](15-codex-prompt-reruns.md) as wounding our differentiation. It belongs here too, so the
+count is not wrong by one:
+
+> *"Use It Up tracks what's about to expire and tells you what to cook tonight using the food that
+> needs eating first."* — its own App Store description, re-fetched 2026-09-13.
+
+**Materiality: 3 ratings.** A solo-developer app with essentially no user base. Cite it as prior
+art demonstrating that the idea is being attempted, never as an incumbent — and note that the
+claim is a *policy statement* ("tracks what's about to expire"), not a per-recommendation
+rationale, so it does not reach the four-way conjunction either.
+
+Our own red team had named Grocy the number-one threat to this claim. It turned out to be the
+least dangerous of the three: it has the formula and does not show it. **Cooklist, which nobody
+flagged, is the one that endangers the claim** — and the only way to settle it is to install the
+app, which no one on this team has yet done for any rival.
+
 The matrix has one empty column. **`explains_why_recommended` is `unknown` or `partial` for all
-fourteen confirmed products.** The strongest thing anyone ships is Samsung Food's match score —
+fourteen products in the table above** — a finding that the fourth run then overturned for a
+fifteenth, Cooklist, which the cap had dropped. The strongest thing anyone ships is Samsung Food's match score —
 *"Each recipe will show how well it matches"* — which is a number, not a reason. SuperCook's
 apparent explanation was **corrected from `yes` to `unknown`** by the fact-checker: it is a
 filter (`missing one ingredient`), not an explanation, and the text supporting it turned out to
@@ -84,7 +119,7 @@ We wrote down four candidate gaps and then tried to kill each one. For each we l
 findable items that would *confirm* it and the evidence that would *refute* it, then went and
 looked for every item and marked it FOUND or NOT_FOUND. **Two of the four died.**
 
-### G1 — Auditable recommendation rationale · **SURVIVES**
+### G1 — Auditable recommendation rationale · **NARROWED TWICE** *(read the two amendments below before citing this)*
 
 > No shipped consumer meal or pantry product shows a per-recommendation rationale that names the
 > specific pantry item, its expiry date, the nutrient constraint and the substitution it made, in
@@ -92,7 +127,7 @@ looked for every item and marked it FOUND or NOT_FOUND. **Two of the four died.*
 
 | Evidence sought | Result |
 |---|---|
-| A review begging for auditable substitution logic | **FOUND** — Cooklist customer review, 2023-07-09, asking for "an option to choose how closely your pantry meets the recipe requirements instead of random broad matches" |
+| A review begging for auditable substitution logic | ~~FOUND~~ → **WITHDRAWN, 2026-09-13.** The citation was misattributed and we have pulled it. See [Amendment 2](#amendment-2-same-day--the-citation-we-pulled-and-the-second-narrowing). |
 | Systematic sweep of the live catalogue for explanation language | **FOUND (negative)** — 222 App Store listings, eight query families, zero hits |
 | The market leader's best "explanation" | **FOUND** — Samsung Food's match *score*, not a reason |
 | A dead product that shipped explanations and failed | **NOT_FOUND** — honest empty result |
@@ -129,6 +164,74 @@ thought of this" — we say the weaker thing.
 >
 > This is the single most useful thing the Claude run produced, and it came from a prompt
 > designed to make us lose.
+
+> #### Amendment 2, same day — the citation we pulled, and the second narrowing
+>
+> A fourth verification run went back for the three rivals the verification cap had dropped that
+> were actually load-bearing. Two things came out of it, and the first is a correction to
+> ourselves.
+>
+> **We withdrew a citation.** The G1 table above originally cited a Cooklist customer review dated
+> 2023-07-09 asking for "an option to choose how closely your pantry meets the recipe requirements
+> instead of random broad matches". The fact-checker pulled **272 unique Cooklist reviews** from
+> the iTunes review RSS (`itunes.apple.com/us/rss/customerreviews/id=1352600944`), spanning
+> 2018-06-14 to 2026-08-05 and including **all 45 reviews from calendar 2023**. There is exactly
+> one review dated 2023-07-09 — 4 stars, author `AngryNorsemen3`, titled *"Best app for food
+> management"* — and it is about autofill miscategorising cream cheese jalapeño. Searching the
+> whole 272-review corpus: `"how closely"` → 0 hits, `"recipe requirements"` → 0, `"broad match"`
+> → 0. The sentence is not there. 272 of 11,297 ratings is a sample and cannot prove the sentence
+> exists nowhere, but **the date we cited is covered and carries different text**, so the citation
+> is withdrawn rather than re-dated. Worse for us: the feature that quote asked for already ships
+> — *"You can set the level of substitution that you prefer"* (Cooklist review, 2024-09-08).
+>
+> **Cooklist wounds the narrow claim badly — and the evidence needs one caveat we found
+> ourselves.** Its US App Store listing (11,297 ratings, 4.73 avg, v1.109.1) carries a screenshot
+> headed *"Expiration Reminders / Get alerts when your food is about to expire"*, rendering a push
+> notification:
+>
+> > "Your parsley is 7 days old and may expire soon. Tap to see recipes you can cook with it."
+>
+> That is the named pantry item, a date-derived fact, a reason and a recommendation in one
+> sentence. **But we opened the image before citing it, and it is a Sketch mockup, not a device
+> capture** — its status bar reads `Sketch` at `9:41 AM`, Apple's default mockup values — while
+> other screenshots in the same listing (the receipt scanner, shot 9) are genuine captures with a
+> real status bar and a real photographed receipt. By our own evidence rules, a vendor artifact
+> proves *the claim was made*, not that the feature ships.
+>
+> Two further limits, stated so nobody over-reads this in either direction:
+> 1. It expresses **age** ("7 days old"), not the expiry date. The date exists on the item record
+>    and is hand-correctable, but it is not in the sentence.
+> 2. It is a **notification keyed to one item**, not a rationale attached to a ranked
+>    recommendation. Item → recipes, rather than recommendation → because.
+>
+> **Verdict: the narrow form of G1 is at serious risk and must not be asserted.** It is not
+> proven dead, and it is certainly not safe. The one action that settles it costs an afternoon:
+> **install Cooklist, trigger an expiration reminder, and screenshot the real behaviour.** Our own
+> red team already made this point in general — nobody on this team has installed a single rival —
+> and this is where it bites. Until someone does that, the honest poster sentence is the
+> conjunction below, not "nobody explains".
+>
+> **Remy and Grocy wound it further.** Remy's chat prints *"Using up before they expire:
+> &lt;ingredient&gt; · &lt;qty&gt;"* directly above the recipes it suggests — verified from the i18n
+> table and render function in its live web bundle, not from marketing copy. Grocy publishes its
+> due-score formula (*"1 point for each due soon ingredient … 10 points per overdue … 20 points
+> per expired"*), confirmed verbatim in `migrations/0249.sql`. Neither states the date in the
+> rationale; Grocy surfaces the score only as a bare integer plus a colour, and does not even sort
+> by it (`'order': [[1, 'asc']]` — alphabetical by name).
+>
+> **What we are still entitled to claim, and nothing more:**
+>
+> > No shipped consumer meal product joins all four facts in one auditable, correctable
+> > explanation: the **named pantry item**, its **actual expiry date**, the **nutrient constraint**
+> > the dish satisfies, and the **reason for the substitution** it made. Cooklist shows what it
+> > swapped but never why, and never argues from a nutrient target. RecipeFix argues about the
+> > swap but holds no inventory and no dates. Remy has the inventory and the dates but states
+> > neither the date nor a reason. Grocy has the formula but shows the user an integer.
+>
+> And the honest caveat the team must carry to the poster: **this is a conjunction gap, not a
+> moat.** Remy already holds every input — dates, macros, swaps — and a chat surface to say it in.
+> This is months of runway, not a defensible position, and claiming otherwise is the fastest way
+> to lose the argument at the poster session.
 
 ### G2 — Closing the loop on waste outcomes · **DEAD**
 
@@ -171,21 +274,43 @@ with 160 hours and no differentiator.
 
 ---
 
-## What we could not establish
+## What we could not establish — and what we went back and closed
 
-Recorded because a survey that reports only what it found is not a survey.
+Three of the four limitations first recorded here have since been closed. The full account, with
+the working routes so a teammate can reproduce them, is [`17-gap-closing.md`](17-gap-closing.md).
 
-- **Reddit was unreachable for the whole session.** `WebFetch` on `reddit.com` and `old.reddit.com`
-  failed on every attempt. Our forum evidence therefore comes from App Store review RSS feeds and
-  open-source issue trackers, both of which have permanent dated URLs — arguably better sources,
-  but they are not the ones we set out to use, and the r/-community voice is missing.
-- **`samsungfood.com/food-plus/` returned HTTP 403** to our agents. Everything we claim about
-  Samsung Food+ rests on its support centre and on third-party coverage, not on the vendor's own
-  feature page. The rival Codex analyst's Samsung claims are, for this reason, **unverified on our
-  run** — not contradicted, unverified.
-- **Verification was capped.** 54 candidate products were deduplicated out of the five sweeps;
-  18 were carried into adversarial verification. The other 36 were dropped by relevance ranking
-  and are *not* part of the confirmed set. We record the cap rather than presenting 18 as
-  exhaustive.
-- **No user interviews were performed.** Every claim about what users want is inferred from
-  written complaints by people who chose to write them.
+| First recorded as | Status now |
+|---|---|
+| **Reddit unreachable** — every `WebFetch` on reddit.com and old.reddit.com failed | **CLOSED.** The `.rss` search endpoint works with exponential backoff and *short* keyword queries. 851 entries indexed. Our original failure was three wrong choices, not a wall. |
+| **`samsungfood.com/food-plus/` returns HTTP 403** — every Samsung claim rested on third parties | **CLOSED.** The Wayback capture `20260827152331` serves it. Food+ price resolved ($6.99/mo, $59.99/yr), and every Food+ feature that matters is first-party confirmed as *"Exclusively on mobile app"*. |
+| **Verification capped at 18 of 48** | **CLOSED FOR THE RELEVANT SET.** 21 verified, then 9 more (Mealie, Tandoor, KitchenOwl, EverShelf, Nosh AI, ChefGPT, Pantry Check, MyFridgeFood, Jow). 10 more were deliberately skipped as irrelevant and named as skipped. ~7 remain unexamined. |
+| **No user interviews** | **STILL OPEN.** Unchanged, and now more important than it was — see below. |
+
+### The one that got worse when we looked
+
+Reopening Reddit was supposed to replace a citation we had withdrawn. It did the opposite.
+
+A regex sweep across **851 Reddit entries** for *"explain why"*, *"why it picked/chose/suggested"*,
+*"no idea why"*, *"black box"*, *"arbitrary"*, *"justify"* and eight more variants returned
+**zero hits in any meal, pantry or recipe context**. The withdrawn citation has **no replacement**.
+
+> **Our gap has no demand-side evidence.** We can show that no product joins the four facts. We
+> cannot show that anyone wants them joined. The absence is searched, not assumed, and it is
+> reported here rather than left for a marker to notice.
+
+Either the demand is latent — people cannot ask for an affordance no shipped product has taught
+them to expect — or explainability is not a felt pain in this category. Desk research cannot
+separate those, and only user research can. That makes it a Project 2 M0 task.
+
+### Still true, and still limiting
+
+- **No user interviews were performed.** Every claim about what users want is inferred from written
+  complaints by people who chose to write them.
+- **The paywall gap is our biggest single exposure.** EverShelf's recipe engine is Premium and was
+  not purchased; Nosh AI's generation is partly Pro-gated; ChefGPT sits behind a sign-in. For the
+  three closed products with the most plausible architecture we verified the marketing surface, not
+  the running paid feature. If a reviewer presses on one product, it will be EverShelf.
+- **No rival has been installed.** Not one, by anyone on this team. It is the cheapest remaining
+  improvement to our evidence and it is an hour's work.
+- **Complaint evidence remains a convenience sample.** More sources now, and better ones, but still
+  not a frequency estimate.

@@ -6,6 +6,31 @@ The Codex run closed with a list headed *"Evidence still required before the fin
 
 > **The headline result is a refutation of our own gap.** P17 was told to assume our gap was false and go prove it, and it succeeded in part — see §2.
 
+> ### Corrections applied 2026-09-13 (audit pass)
+>
+> This was the largest and least-reviewed file in the set. An audit of it returned twenty-one
+> findings; each is corrected **in place** below and carries a dated *Corrected 2026-09-13* clause
+> or a note block, so the correction is visible rather than silent. Three are structural and are
+> stated once, here:
+>
+> 1. **This file contains three mutually incompatible budgets** — P19 §6's ~40 h safety set,
+>    P20 §5's 7 h funding of it, and P13's competing 115 h recommendation. They are reconciled in
+>    the box at the head of **P20 §5**, with the arithmetic recomputed. Short version: **P20 §5
+>    governs** as the plan of record (it is the only estimate here with a per-task decomposition
+>    and it is this file's own final ruling); P13's block is superseded by P20 §2; P17 §4's numbers
+>    are first-pass guesses. The one thing P20 §5 does **not** do is fund P19's SR set, and that
+>    gap is left open rather than closed by edit.
+> 2. **Vendor-only evidence is now hedged to the standard [`01-market-survey.md`](01-market-survey.md)
+>    applies to Cooklist:** *a vendor artifact proves the claim was made, not that the feature
+>    ships.* Every
+>    RecipeFix and Use It Up claim in §2 and §4 rested on the vendor's own App Store copy, release
+>    notes or marketing site with no independent corroboration, and is re-worded accordingly.
+> 3. **Three of the team's four open forks run through this file** ([`18-self-audit.md`](18-self-audit.md),
+>    *"Not fixed, and deliberately left as an open list"*): **Python or TypeScript** for the
+>    scorer, **share route in or out** of scope, and **expired items excluded in code or scored at
+>    zero**. This file takes one side of each. Those are flagged at the point of use and are
+>    **not** settled here — they are the team's to decide.
+
 ---
 
 
@@ -28,8 +53,8 @@ For comparability, every product is scored on the same three decisive steps:
 
 | product | exact step 1 | exact step 2 | exact step 3 | fully supported? | evidence URL per step | evidence type | missing link |
 |---|---|---|---|---|---|---|---|
-| **Tandoor Recipes** (self-hosted, v2.6.15, 2026-09-07) | Auto-Planner dialog: picks recipes **at random** from keyword-filtered set, user hits Create; optional "Add to shopping" checkbox | User pref "Exclude Food On Hand" excludes on-hand foods when a meal plan goes to the list; on-hand = **boolean flag**, not quantity | Add-to-Shopping dialog lists every ingredient with checkboxes, on-hand/ignored foods **pre-unchecked**, servings scaler, "Add to Shopping" button; list entries "always grouped by food" | **YES** (with boolean-pantry caveat) | S1 `cookbook/views/api.py` L1546-1615 + `AutoPlanDialog.vue`; S2 `en.json` key `mealplan_autoexclude_onhand_desc` + `cookbook/helper/shopping_helper.py` L91-110; S3 `AddToShoppingDialog.vue` L123 + `vue3/src/stores/ShoppingStore.ts` L162-165 | FIRST-PARTY (vendor source + docs) | Pantry is on/off per food — no "have 200 g, need 500 g → buy 300 g" math |
-| **Mealie** (self-hosted, mealie-next) | Meal planner "random recipe buttons" + Planner Rules that shape which random recipe is inserted | Food-level "On Hand" flag makes that food **unchecked by default** when a recipe is added to a list (per household) | `RecipeDialogAddToShoppingList.vue`: per-ingredient checkboxes, on-hand pre-unchecked, submit = "Add to List"; backend `bulk_create_items` consolidates and merges with **unit conversion** | **YES** (with boolean-pantry caveat) | S1 docs.mealie.io features page; S2 `frontend/app/lang/messages/en-US.json` (`on-hand-checkbox-label`); S3 `RecipeDialogAddToShoppingList.vue` L309-330 + `mealie/services/household_services/shopping_lists.py` L45-205 | FIRST-PARTY (docs + vendor source) | Same: boolean on-hand, no quantity subtraction; "random" ≠ personalised recommendation |
+| **Tandoor Recipes** (self-hosted, v2.6.15, 2026-09-07) | Auto-Planner dialog: picks recipes **at random** from keyword-filtered set, user hits Create; optional "Add to shopping" checkbox | User pref "Exclude Food On Hand" excludes on-hand foods when a meal plan goes to the list; on-hand = **boolean flag**, not quantity | Add-to-Shopping dialog lists every ingredient with checkboxes, on-hand/ignored foods **pre-unchecked**, servings scaler, "Add to Shopping" button; list entries "always grouped by food" | **DIRECT-boolean** — all seven links present, but step 2 is a boolean flag, not subtraction (re-tiered 2026-09-13, see Verdicts) | S1 `cookbook/views/api.py` L1546-1615 + `AutoPlanDialog.vue`; S2 `en.json` key `mealplan_autoexclude_onhand_desc` + `cookbook/helper/shopping_helper.py` L91-110; S3 `AddToShoppingDialog.vue` L123 + `vue3/src/stores/ShoppingStore.ts` L162-165 | FIRST-PARTY (vendor source + docs) | Pantry is on/off per food — no "have 200 g, need 500 g → buy 300 g" math |
+| **Mealie** (self-hosted, mealie-next) | Meal planner "random recipe buttons" + Planner Rules that shape which random recipe is inserted | Food-level "On Hand" flag makes that food **unchecked by default** when a recipe is added to a list (per household) | `RecipeDialogAddToShoppingList.vue`: per-ingredient checkboxes, on-hand pre-unchecked, submit = "Add to List"; backend `bulk_create_items` consolidates and merges with **unit conversion** | **DIRECT-boolean** — all seven links present, but step 2 is a boolean flag, not subtraction (re-tiered 2026-09-13, see Verdicts) | S1 docs.mealie.io features page; S2 `frontend/app/lang/messages/en-US.json` (`on-hand-checkbox-label`); S3 `RecipeDialogAddToShoppingList.vue` L309-330 + `mealie/services/household_services/shopping_lists.py` L45-205 | FIRST-PARTY (docs + vendor source) | Same: boolean on-hand, no quantity subtraction; "random" ≠ personalised recommendation |
 | **Cooklist** (iOS, v1.109.1, 2026-06-29) | "AI Chef, get personalized suggestions for meals to make using your pantry ingredients"; recipe feed generated from auto-imported pantry | "choose the recipes you want to cook and Cooklist generates a grocery shopping list with only the ingredients that you are missing in your pantry" | Consolidation + selective add evidenced only by reviewers ("add certain items to a grocery list (with the measurements grouped together)") | **YES on the chain, but steps 4-5 rest on user reports** | S1+S2 apps.apple.com/us/app/id1352600944 (description + version history); S3 same page, customer reviews | STORE LISTING (first-party copy) + USER REPORT | No first-party doc for consolidation/preview; pantry fidelity depends on loyalty-card receipt lag (reviewer: "it thinks you don't have the groceries sometimes"); cooklist.com now titles itself "Agentic Commerce for Grocery" |
 | **Eat This Much** | "we'll automatically generate a complete meal plan to meet your targets" (generator can be disabled) | **Quantity-accurate**: "if your meal plans need 2 apples and you already have 1 in your pantry, the grocery list will only tell you to purchase 1 more apple" | Consolidation proven only for substitutions ("chunky and smooth peanut butter… we'll combine them to just a single type"); **no preview/confirm gate** — list auto-generates and auto-resets weekly | **PARTIAL** | S1 eatthismuch.com + apps.apple.com/us/app/id981637806; S2 help.eatthismuch.com/help/how-does-the-pantry-system-work; S3 help.eatthismuch.com/help/how-does-the-grocery-list-work | FIRST-PARTY (help centre, updated 05 May 2026) | No user-confirmed diff before the list is written; no evidence of unit-level consolidation |
 | **Grocy** (self-hosted) | **none** — no recommender anywhere in the string table (only ingredient search: "search through your recipes for one or more which use an ingredient that you already have") | "Put missing amount on shopping list"; amount added = **"needed amount - stock amount - shopping list amount"** | "Uncheck ingredients to not put them on the shopping list" + "Are you sure you want to put all missing ingredients for recipe "%s" on the shopping list?"; dedupes against what is already on the list | **PARTIAL** (steps 2-7 complete, step 1 absent) | S1 (absence) localization/strings.pot; S2 + S3 raw.githubusercontent.com/grocy/grocy/master/localization/strings.pot; docs github.com/grocy/grocy-docs/blob/master/tutorials/cooking.md | FIRST-PARTY (vendor source strings + docs) | Nothing recommends a dish — the actor always chooses |
@@ -74,13 +99,26 @@ For comparability, every product is scored on the same three decisive steps:
 
 ## Verdicts
 
-- **DIRECT:** Tandoor Recipes, Mealie, Cooklist
+- **DIRECT (quantity-aware):** *none.*
+- **DIRECT-boolean:** Tandoor Recipes, Mealie — every one of the seven links, but step 2 is a
+  boolean on-hand flag, not quantity subtraction.
+- **DIRECT (claimed, not first-party on every step):** Cooklist.
 - **PARTIAL:** Eat This Much, Grocy, Paprika, AnyList, KitchenPal, MealBoard
 - **ADJACENT:** Mealime, Plan to Eat, SuperCook
 - **NOT VERIFIED:** Samsung Food
 
+> *Corrected 2026-09-13: these verdicts previously read "**DIRECT:** Tandoor Recipes, Mealie,
+> Cooklist". That contradicted the table and the step definition. Step 2 of the workflow under test
+> is "compute ingredients **and subtract pantry stock**", and the table records Tandoor and Mealie
+> as boolean on-hand flags with "no quantity subtraction" in the missing-link column — they fail the
+> step as defined, so a flat DIRECT overstated them. The tier **DIRECT-boolean** is added rather
+> than demoting them to PARTIAL, because they do complete every other link including the confirm
+> gate. Cooklist is separated because its steps 4–5 rest on app-store reviewers, not first-party
+> documentation. **Carry this caveat into any sentence that cites the count** — the one downstream
+> use in this file, §4 (P20) §1 F3 ("P13 found three DIRECT implementations"), is corrected there.*
+
 **Separating the claim types.**
-*Fact:* Tandoor and Mealie ship every one of the seven links, proven in vendor source; Grocy and Paprika ship links 2-7 but have no recommender; Eat This Much ships links 1-3 with real quantity arithmetic but writes the list without a confirm gate; Cooklist's marketing asserts the whole chain, but its consolidation and preview steps are attested only by app-store reviewers.
+*Fact:* Tandoor and Mealie ship every one of the seven links, proven in vendor source — but step 2 is a boolean on-hand flag, not the quantity subtraction the step defines (re-tiered **DIRECT-boolean** 2026-09-13, see Verdicts); Grocy and Paprika ship links 2-7 but have no recommender; Eat This Much ships links 1-3 with real quantity arithmetic but writes the list without a confirm gate; Cooklist's marketing asserts the whole chain, but its consolidation and preview steps are attested only by app-store reviewers.
 *Inference:* "Has recipes + has lists" is common; *quantity-aware* subtraction is rare — only Grocy, Eat This Much and (claimed) Cooklist/KitchenPal do more than a boolean skip. Tandoor's new `InventoryEntry`/`PantryBookingDialog`/`FreezerExpiryDialog` classes in the shipped branch suggest quantity inventory is arriving there, which would close the gap below within a release or two.
 *Hypothesis (unverified):* Cooklist's consumer app is being de-prioritised in favour of a B2B "agentic commerce" business — supported only by cooklist.com now rendering as "Cooklist - Agentic Commerce for Grocery" with no consumer feature copy, plus a June-2026 last update. Do not cite this as fact.
 
@@ -88,10 +126,20 @@ For comparability, every product is scored on the same three decisive steps:
 
 ## Recommendations inside the 160-hour budget
 
+> **SUPERSEDED — corrected 2026-09-13.** Read this block as P13's first-pass output, not as a plan.
+> It allocates 55 + 35 + 25 = **115 h** of feature build against the ~100 h of feature capacity
+> established in [`12-milestones.md`](12-milestones.md) (160 h − 60 h fixed overhead), and its
+> residual line ("~45 h left for tests, traceability and the write-up") budgets **no poster and no
+> demo**. Its headline item is F3, which §4 (P20) §2 of this same file scores differentiation **0**,
+> saturation **−3**, and places in **NOT IN SCOPE**. **§4 (P20) §5 is the plan of record**; the
+> three items below are kept visible because P13's *market* findings are what P20 §2 scores, and
+> because deleting a superseded plan hides the disagreement instead of showing it. See the
+> correction box at the head of §4 §5.
+
 Epicourier already has the two expensive halves (Gemini expiry-aware recipe suggestions; inventory with expiry; one-click list generation). The gap above is a *small* build, not a new product.
 
 1. **Quantity-aware subtraction + unit normalisation engine — ~55 h.** Canonicalise units (mass/volume/count) with a density table for the top ~100 foods, merge duplicates across accepted dishes by `food_id × canonical_unit`, then write `max(0, needed − on_hand − already_on_list)` (Grocy's formula, which is public and battle-tested). Borrow Mealie's `can_merge`/`merge_items` shape rather than inventing one.
-2. **The confirm gate nobody else has — ~35 h.** A diff screen: *needed / you have / to buy*, per line, each toggleable, with a single Confirm that is the only path that writes. This is the differentiator against Eat This Much and Cooklist, and it is cheap because it is pure UI over the engine in (1).
+2. **The confirm gate Eat This Much and Cooklist lack — ~35 h.** A diff screen: *needed / you have / to buy*, per line, each toggleable, with a single Confirm that is the only path that writes. *Corrected 2026-09-13: this item previously read "the confirm gate nobody else has" and called it "the differentiator". It is not a differentiator — the table three rows above records four products shipping exactly this gate: **Grocy** ("Uncheck ingredients to not put them on the shopping list" + "Are you sure you want to put all missing ingredients for recipe \"%s\" on the shopping list?"), **Paprika** ("check/uncheck ingredients before they are added"), **Tandoor** (Add-to-Shopping dialog, on-hand foods pre-unchecked) and **Mealie** (`RecipeDialogAddToShoppingList.vue`, per-ingredient checkboxes). The "narrowest surviving gap" sentence above concedes it outright: "Grocy has the arithmetic and the confirm". What is true is the narrow form kept in the heading — Eat This Much writes the list with no confirm gate, and Cooklist's gate is attested only by reviewers.* It is cheap because it is pure UI over the engine in (1).
 3. **Truth-in-pantry safeguards — ~25 h.** Cooklist's worst reviews are all inventory-drift ("it thinks you don't have the groceries"); add a staleness indicator, a "treat as unknown" state, and consume-on-cook. ~45 h left for tests, traceability and the write-up — do **not** spend it building a better recommender, which is the one part of the market that is already crowded.
 
 ---
@@ -100,7 +148,7 @@ Epicourier already has the two expensive halves (Gemini expiry-aware recipe sugg
 
 ## STRONGEST REFUTATION FIRST
 
-**RecipeFix: Recipe Converter (live, v2.4.0, updated 2026‑07‑19, US App Store id 6759676502) ships the explanation‑of‑substitution half of our gap today, and explicitly markets against black‑box AI.**
+**RecipeFix: Recipe Converter (live, v2.4.0, updated 2026‑07‑19, US App Store id 6759676502) markets the explanation‑of‑substitution half of our gap today, and explicitly markets against black‑box AI.** *(Hedged 2026-09-13 from "ships": every artifact behind this section is the vendor's own — see the correction below.)*
 
 Verbatim from the live listing:
 
@@ -108,13 +156,39 @@ Verbatim from the live listing:
 
 > "REFINE ANY RECIPE — Don't like a substitution? Missing an ingredient? Just tell RecipeFix what to change and it re-adapts on the fly. 'Swap chicken for tofu.' 'I don't have olive oil.' Done."
 
-And a real rendered rationale from recipefix.app (Vegan Chicken Tacos):
+And an example rationale published on recipefix.app (Vegan Chicken Tacos):
 
 > "Jackfruit is the closest thing to shredded chicken in the plant-based world. The trick is to cook it long enough that it dries out slightly and crisps at the edges"
 
-It covers **the constraint** (celiac/dairy-free/vegan/**keto & low-carb** — a macronutrient constraint), **the substitution it made**, **a named reason per substitution**, and **user correction in natural language**. That is four of the six things our gap claims nobody ships. What it has **no trace of** is a pantry inventory or an expiry date — confirmed by fetching its own site: no inventory tracking, no expiry, no shelf-life.
+> *Corrected 2026-09-13:* this was introduced as "a real rendered rationale". It is not a capture
+> of the shipped app — it is a sample recipe page on the vendor's own marketing site, i.e.
+> vendor-authored collateral. Calling it "real rendered" asserted that the app produced the text
+> when the artifact shows only that the vendor published it: the same class of error as the
+> Cooklist `Sketch` / `9:41 AM` mockup [`01-market-survey.md`](01-market-survey.md) caught in our
+> own G1 table. The standard that file now applies holds here too — **a vendor artifact proves the
+> claim was made, not that the feature ships.** Everything in this section about RecipeFix rests on
+> two vendor surfaces (the App Store listing and recipefix.app) and on **no** independent artifact.
+> The only non-vendor artifact that exists for this app is the pair of review-RSS entries the
+> METHOD NOTE records ("RecipeFix: 2"); **this run did not read them**, and reading them is the
+> cheapest available corroboration. **Open question: does any non-vendor source show RecipeFix's
+> rationale as rendered by the app?** Two review entries and one install would settle it.
 
-**Consequence: our gap as written is too wide. The novel part is not "explains its recommendation" — that shipped. The novel part is "explains it against inventory state and a date."**
+It covers **the substitution it made**, **a named reason per substitution**, **user correction in natural language**, and a diet preset (celiac/dairy-free/vegan/keto & low-carb).
+
+> *Corrected 2026-09-13:* the original sentence read "That is four of the six things our gap claims
+> nobody ships." The denominator was undefined — the "six things" are enumerated nowhere in this
+> file. The conjunction the team actually claims is the **four-way** one fixed in
+> [`01-market-survey.md`](01-market-survey.md): *the named pantry item · its actual expiry date ·
+> the nutrient constraint the dish satisfies · the reason for the substitution it made*, all in one
+> auditable, correctable explanation. Scored against that, RecipeFix has **two of four** — the
+> substitution reason, and (weakly) the constraint. It has no pantry inventory and no date, as the
+> next sentence says. The constraint cell is the weak half: keto/low-carb on a listing is a **diet
+> preset, a filter label**, not a nutrient target, so counting it as "a macronutrient constraint"
+> was an over-read of the listing copy. Two of four, not four of six.
+
+What it has **no trace of** is a pantry inventory or an expiry date — confirmed by fetching its own site: no inventory tracking, no expiry, no shelf-life.
+
+**Consequence: our gap as written is too wide. The novel part is not "explains its recommendation" — at least one vendor is selling on that claim. The novel part is "explains it against inventory state and a date."** *(Hedged 2026-09-13 from "that shipped": the conclusion is unchanged, because a rival's marketed claim is enough to cost us the positioning whether or not the feature works as described.)*
 
 ---
 
@@ -137,18 +211,18 @@ Total distinct search formulations: **41**.
 |---|---|---|---|---|---|
 | 1 | iTunes sweep, 806 apps, regex `no black-box\|why we picked\|reasoning\|rationale` | **1 app**: RecipeFix. "No black-box AI. Every substitution comes with the culinary reasoning behind it" | apps.apple.com/us/app/recipefix-recipe-converter/id6759676502 | **REFUTES (partial)** | high |
 | 2 | recipefix.app — does it know a pantry? | No inventory, no expiry, no shelf-life anywhere on site. Rationale is culinary, not date- or gram-based | https://recipefix.app/ | confirms | high |
-| 3 | 806-app cross-tab: pantry ∧ expiry ∧ nutrition | **15 apps** (Use It Up, Sously, Trepo, Silo Kitchen, PantryOK, Fresh, PicMeal, Real Plans, Chef AI…). **0 of the 15** contain any explanation-of-recommendation language | (list on request) | **confirms, strongly** | high |
+| 3 | 806-app cross-tab: pantry ∧ expiry ∧ nutrition | **15 apps** (Use It Up, Sously, Trepo, Silo Kitchen, PantryOK, Fresh, PicMeal, Real Plans, Chef AI…). **0 of the 15** contain any explanation-of-recommendation language | (list on request) | **confirms, strongly — about listing *descriptions* only** (caveat added 2026-09-13: this instrument scans description text, not app behaviour; see VERDICT) | high **on the description text**, unknown on behaviour |
 | 4 | …of those 15, also mention substitution | 3 (Kitchen Sink, Fresh, Cookbook Master) — all use "swap" as a UI verb ("Swap dishes with one swipe"), none as an explained act | — | confirms | high |
-| 5 | 806 apps, rationale-*sentence* patterns: `because it expires`, `expires in X`, `you have X expiring`, `we picked this` | **0 genuine hits.** The 4 raw matches are "uses your phone's camera", "uses your shopping history", "use up your swipes" | — | **confirms** | high |
+| 5 | 806 apps, rationale-*sentence* patterns: `because it expires`, `expires in X`, `you have X expiring`, `we picked this` | **0 genuine hits.** The 4 raw matches are "uses your phone's camera", "uses your shopping history", "use up your swipes" | — | **confirms — for description text only** (caveat added 2026-09-13; a rationale can ship without being advertised, as Use It Up's version-history text showed) | high **on the description text**, unknown on behaviour |
 | 6 | Closest incumbent: Sously: Pantry & Meal Planner | "each one showing what you have and what to grab first"; "Every idea is scored against your actual kitchen"; "Sously flags what to use first" | apps.apple.com/us/app/sously-pantry-meal-planner/id6766727448 | **refutes (weak)** | med |
 | 7 | Closest incumbent: Use It Up: Pantry Recipes | "recipes from your real kitchen, **worst-expiring first**"; "See what's expiring, color-coded by urgency" | apps.apple.com/us/app/use-it-up-pantry-recipes/id6775112024 | **refutes (weak)** | med |
-| 8 | Google Play, 20 pantry/meal listings, same regex | **0/20 explanation hits** — SuperCook, Cooklist, Whisk/Samsung Food, SideChef, Eat This Much, Plan to Eat, FoodiePrep, Feastr, StashCook, PantryPal, SousChef AI, Delishable AI, PantryToPlate, PantryCheck all clean | play.google.com | confirms | high |
+| 8 | Google Play, 20 pantry/meal listings, same regex | **0/20 explanation hits** — SuperCook, Cooklist, Whisk/Samsung Food, SideChef, Eat This Much, Plan to Eat, FoodiePrep, Feastr, StashCook, PantryPal, SousChef AI, Delishable AI, PantryToPlate, PantryCheck all clean | play.google.com | confirms — for listing text only (caveat added 2026-09-13; see VERDICT) | high **on the listing text**, unknown on behaviour |
 | 9 | Grocy source — is the Due Score real? | **Verified verbatim** in `localization/strings.pot`: `msgid "Due score"` / "The higher this number is, the more ingredients currently in stock are due soon, overdue or already expired". Plus per-recipe strings: "Not enough in stock, %1$s missing, %2$s already on shopping list", "Requirements fulfilled" | raw.githubusercontent.com/grocy/grocy/master/localization/strings.pot | **refutes (strongest non-app)** | high |
 | 10 | Discontinued product that tried it — Plan to Eat | **Verified verbatim**: the Pantry meant "Any item that was listed on your Pantry would not appear on your shopping list with the assumption that you already have it"; removal caused "confusion, incorrect shopping lists, multiple trips to the grocery store, and anything but streamlining" | learn.plantoeat.com/help/a-digital-pantry-inventory-does-it-really-help | confirms | high |
 | 11 | **Correction to our own finding #1** | That page contains **no mention of a "Staples List."** Our claim that the Staples List is its named replacement and does not deduct is **not supported by this URL** — it must be sourced elsewhere or dropped | same | — | high |
 | 12 | Policy/technical reason for absence | Pak'nSave (Foodstuffs) "Savey Meal-bot" generated a chlorine-gas "aromatic water mix", "Mystery Meat Stew", "bleach-infused rice surprise". Vendor response: recipes "are not reviewed by a human being", no guarantee of meals "suitable for consumption", "You must use your own judgement before relying on or making any recipe produced by Savey Meal-bot" | foxnews.com/world/grocery-store-ai-app-suggests-bizarre-sometimes-dangerous-recipes-users-report | **explains absence** | high |
 | 13 | Substitute: ChatGPT — what it can't do | "ChatGPT has no pantry tracking capability. You can tell it what you have in a single conversation, but it forgets by the next session." / "It also can't track expiration dates, flag items running low, or prioritize ingredients that are about to go bad." | mealthinker.com/blog/chatgpt-vs-meal-planning-app | confirms | **low — competitor's own blog, self-serving** |
-| 14 | Substitute: ChatGPT — what it does do | "ChatGPT creates meals from existing fridge contents prioritized by expiration date"; photo upload of fridge/pantry (4-photo cap); suggests substitutions for missing items. Independent critique: it "swaps in substitutes, but now you've got a recipe designed around ingredients you don't have, with workarounds patched in" | search summary + mealthinker.com/blog/ai-meal-planner-vs-chatgpt | **refutes (serious)** | med |
+| 14 | Substitute: ChatGPT — what it does do | "ChatGPT creates meals from existing fridge contents prioritized by expiration date"; photo upload of fridge/pantry (4-photo cap); suggests substitutions for missing items. The "independent critique" ("swaps in substitutes, but now you've got a recipe designed around ingredients you don't have, with workarounds patched in") came from a **search summary — that page was never fetched**, so the quote is unretrieved | ~~search summary~~ (unretrieved) + mealthinker.com/blog/ai-meal-planner-vs-chatgpt | **refutes (weak)** — *downgraded 2026-09-13 from "refutes (serious)"* | **low — same competitor's own blog as row 13, self-serving; second source unretrieved** |
 | 15 | Substitute: AI accuracy in the wild | "it made errors identifying ingredients from photos" and "suggested unappetizing ingredient combinations" | healthline.com/health/how-to-use-ai-for-food-swaps-and-recipe-ideation | neutral | med |
 | 16 | Prior art check — is arXiv 2601.02374 real? | **REAL and correctly cited.** "A Lay User Explainable Food Recommendation System Based on Hybrid Feature Importance Extraction and Large Language Models", Tessa, Cidjeu, Carli, Abchiche, Aldarwishd, Tchappi, Najjar, submitted 10 Dec 2025. SHAP + LLM post-hoc explanation "to enhance user trust and transparency" | arxiv.org/abs/2601.02374 | confirms (no research novelty) | high |
 | 17 | Rationale format accepted at consumer scale? | America's Test Kitchen ships **"Why This Recipe Works"** on every recipe — "so you'll know every test kitchen discovery" | apps.apple.com/us/app/americas-test-kitchen/id1365223384 | **refutes the "users don't want reasons" objection** | high |
@@ -158,15 +232,28 @@ Total distinct search formulations: **41**.
 | 21 | Recipy 9-app head-to-head (independent test) | Ranking method disclosed to *reviewers*, never to users: "ranks recipes by ingredient coverage. Recipes using 100% of their ingredients from your pantry appear first." No app criticised for opacity — nobody is asking | recipyapp.com/blog/best-pantry-tracking-apps-2026 | confirms | med |
 | 22 | Complaints that users reject explanations | **NOT FOUND IN THIS SEARCH.** Apple's review RSS now returns empty for nearly every app; WebSearch budget gone. Untested, not absent | — | unknown | — |
 | 23 | Xpiry (our own CONFIRMED-LIVE list), re-verified independently | v1.8.1, updated 2026‑08‑31, live. Regex for why/explain/reason/because/prioriti/first: **no hits at all** | apps.apple.com/app/id6756198499 | confirms our "unknown" | high |
-| 24 | Samsung Food support centre | **HTTP 403**, same as our earlier block on samsungfood.com/food-plus/. Finding #3 still rests entirely on third parties | support.samsungfood.com | **provenance risk unchanged** | — |
+| 24 | Samsung Food support centre | **HTTP 403** to direct fetch — but **superseded 2026-09-13**: [`17-gap-closing.md`](17-gap-closing.md) retrieved `samsungfood.com/food-plus/` through the Wayback Machine. Food+ is $6.99/mo or $59.99/yr, and every Food+ feature is tagged *"Exclusively on mobile app"*. Finding #3 is first-party now, not third-party | web.archive.org capture of samsungfood.com/food-plus/ | ~~provenance risk unchanged~~ → **provenance risk closed** | high (archived vendor page) |
 
 ---
 
 ## VERDICT: **GAP SURVIVES, BUT MUST BE RE-SCOPED. Do not present G1 as written.**
 
-**FACT.** Across 806 live US iOS listings and 20 Android listings, exactly one product ships a named per-recommendation rationale with user correction — RecipeFix — and it has no pantry and no expiry. Exactly zero products combine pantry + expiry + nutrition *and* any explanation language; that intersection is 15 apps wide and 0 apps deep. Zero apps anywhere in the corpus contain a rationale sentence naming an item and a date.
+**FACT.** Across 806 live US iOS listings and 20 Android listings, exactly one product **advertises** a named per-recommendation rationale with user correction — RecipeFix — and its own site shows no pantry and no expiry. Exactly zero listings combine pantry + expiry + nutrition *and* any explanation language in their description text; that intersection is 15 apps wide and 0 apps deep. **Zero apps anywhere in the corpus *advertise* a rationale sentence naming an item and a date in their listing description.**
 
-**FACT.** The auditable-ranking half exists in Grocy (Due Score + "Not enough in stock, %1$s missing"), and the item-level date-reason half exists in SeePantry ("use this before Thursday"). The explained-substitution half exists in RecipeFix. **All three halves ship. Nobody has assembled them.**
+> *Corrected 2026-09-13 — the instrument, not the finding, was overstated.* This paragraph
+> originally read "exactly one product **ships**…" and "Zero apps anywhere in the corpus **contain**
+> a rationale sentence naming an item and a date." The corpus is App Store listing *descriptions*,
+> not app behaviour, so it can only support claims about what is **advertised**. §4 (P20) §0.1 of
+> this same file demolishes the stronger reading in the one case it tested — "P17 scored this a
+> weak refutation because its regex scanned only the description", and the decisive Use It Up text
+> turned out to be in the version history, outside the regex's reach. A description-scan cannot
+> prove absence of a behaviour; it proves absence of a marketing sentence. **The same caveat applies
+> to rows 3, 5 and 8 of the results table, which carry "confirms, strongly / high" on this
+> instrument and are annotated there.** What would upgrade any of these from *advertised* to
+> *shipped*: installing the apps, which nobody on the team has done for any rival
+> ([`01-market-survey.md`](01-market-survey.md) makes the same point about Cooklist).
+
+**FACT.** The auditable-ranking half exists in Grocy (Due Score + "Not enough in stock, %1$s missing"), and the item-level date-reason half exists in SeePantry ("use this before Thursday"). The explained-substitution half is **claimed by** RecipeFix. **All three halves exist in live products — Grocy's in vendor source, SeePantry's and RecipeFix's in vendor copy only (hedged 2026-09-13). Nobody has assembled them.**
 
 **INFERENCE.** The absence is not a capability gap and not a demand gap — ATK has sold "Why This Recipe Works" for decades. It is most likely a **liability gap**: a match score is not an assertion, but "cook this because your chicken expires Thursday" is a food-safety assertion a vendor must stand behind. Pak'nSave is the cautionary tale the whole category watched, and its answer was a disclaimer, not better reasoning. Confidence: medium — this is my reading of one incident plus a market-wide silence, not a vendor statement.
 
@@ -177,9 +264,20 @@ Total distinct search formulations: **41**.
 ## WHAT I'D CHANGE IN THE PLAN
 
 1. **Re-word G1** to: *"No product that maintains a pantry inventory shows a per-recommendation rationale naming the specific item, the date that drove the choice, and the substitution it made — and RecipeFix proves each element is individually shippable."* This is defensible; the old wording dies to RecipeFix in one screenshot.
-2. **Cite RecipeFix as your existence proof, not your competitor.** "No black-box AI" is a live, paying-customer-validated positioning statement in this exact category. It de-risks the build and it is the best slide you have.
+2. **Cite RecipeFix as your existence proof, not your competitor — and cite it for exactly what it proves.** "No black-box AI" is **a live listing that markets against black-box AI** in this exact category. *Corrected 2026-09-13: this item previously called it "a live, paying-customer-validated positioning statement". Nothing in this document establishes a single paying customer for RecipeFix. The only artifacts behind it are the vendor's own App Store description and the vendor's own marketing site; the iTunes payload this run fetched carries `userRatingCount` and `averageUserRating`, and **neither figure was recorded, so neither is reported here** — I will not supply a number I did not keep. **Open question: what are RecipeFix's rating count and average rating?** One re-fetch of `itunes.apple.com/lookup?id=6759676502` settles it, and the answer decides whether this is a slide at all: if the count is at or near zero, a months-old unrated app is weaker evidence than the Cooklist listing the team already treats as the confirmation bar, and building a slide on it repeats the Cooklist-mockup failure in [`01-market-survey.md`](01-market-survey.md).* What it de-risks is the **positioning**, not the demand: it shows a vendor betting that explanation sells, not that anyone bought.
 3. **Kill or re-source the Staples List claim** in finding #1 — I fetched that URL and it is not there.
-4. **Budget.** Within 160 h the honest build is the *joint* of three shipped halves, not novel reasoning: Grocy's due score (integer, auditable, ~4 h), a named-item + date rationale string (~12 h), RecipeFix-style natural-language correction (~20 h). Do **not** budget for the arXiv SHAP+LLM pipeline — it is published, post-hoc, and unnecessary. Do budget ~8 h for the disclaimer and correction affordance that Pak'nSave's incident says you will need.
+4. **Budget.** Within 160 h the honest build is the *joint* of three shipped halves, not novel reasoning: Grocy's due score (integer, auditable), a named-item + date rationale string, RecipeFix-style natural-language correction, plus the disclaimer and correction affordance that Pak'nSave's incident says you will need. Do **not** budget for the arXiv SHAP+LLM pipeline — it is published, post-hoc, and unnecessary.
+
+> *Corrected 2026-09-13 — the hours are removed, not re-derived.* This item originally priced those
+> four lines at ~4 h, ~12 h, ~20 h and ~8 h. None of the four figures had a stated basis: no task
+> decomposition, no comparable, no reference to a code path. They are **first-pass guesses,
+> superseded by §4 (P20) §5**, which is the only estimate in this file built from a per-task
+> decomposition against files that were read. Two of them were also wrong in kind, not just in
+> precision: the ~20 h line budgets an **LLM re-adaptation loop** that §3 (P19)'s SR-4 and SR-5
+> forbid (no model-derived target; model output is a proposal that must pass a validator), and §4
+> (P20) §5 never funds it. Restoring a number here would require re-deriving it, which is P20 §5's
+> job; the honest move is to leave this item as scope guidance and let one table carry the
+> estimates.
 5. **Still untested:** whether users *want* the reason. Apple's review feed is dead as an instrument; the ATK precedent is the only evidence either way and it is editorial, not personalized. Flag as the open risk.
 
 ---
@@ -312,6 +410,22 @@ Every constraint in SR-2..SR-10 must hold when the request bypasses the UI.
 The floor is a single named server-side constant (`MIN_DAILY_KCAL`) with a `SOURCE` comment naming a citable authority and a retrieval date. It is never an inline literal and never duplicated. *The team sources the number; this report does not prescribe one.* A defensible escalation anchor to start from — NHS, `https://www.nhs.uk/conditions/obesity/treatment/`, retrieved 2026-09-13: *"You may also be able to get support from a dietician to follow a very low calorie diet (under 800 or 1200 calories)"* and *"Very low calorie diets are not suitable or safe for everyone."* Note this frames sub-threshold intake as **dietician-supervised**, which is the refuse-and-refer design, not a clamp.
 **Test** `test_calorie_goal_below_floor_is_refused_not_clamped`: POST `MIN_DAILY_KCAL - 1`. Assert HTTP 400, assert the response body contains no calorie number at all (a clamp would leak one), and assert no row was written. Second assertion: `grep -rn` finds exactly one definition of `MIN_DAILY_KCAL` in the repo.
 
+> *Corrected 2026-09-13 — the blocker is narrower than it looks, and it is named rather than
+> filled.* An audit flagged that "the team sources the number" leaves the load-bearing constant of
+> the load-bearing safety rule unspecified, so the test above cannot be written. **Half of that is
+> wrong and half is right.** Wrong: the test *can* be written today — it is parameterised over
+> `MIN_DAILY_KCAL` and asserts refuse-not-clamp behaviour, which is independent of the value; it
+> will run against whatever constant is committed. Right: **nothing ships until a value is chosen,
+> and this report will not choose one.** The NHS page cited above is an anchor, not an answer — it
+> names *two* figures ("under 800 or 1200 calories") and frames sub-threshold intake as
+> dietician-supervised, which is a statement about supervision, not a product floor.
+> **Open question: what value does `MIN_DAILY_KCAL` take, and on whose authority?** Picking one is a
+> product-safety decision with a named owner, not a fact this rerun can supply, and inventing a
+> number here would be the exact failure this audit exists to stop. What would settle it: one named
+> team member selects a conservative threshold, records it in the `SOURCE` comment with the citable
+> authority, the retrieval date, and the sentence *"a conservative product-safety threshold, not a
+> clinical recommendation"* — and the choice is reviewed in a pull request rather than made inline.
+
 **SR-3 — Every nutrition number crossing a boundary is finite, positive, and bounded above.**
 Kills the `Infinity` and negative paths in F3, and caps absurd upper values that make downstream planning meaningless.
 **Test** `test_nutrition_fields_reject_non_finite_and_out_of_domain`: parametrize `PUT /api/nutrients/goals` over `[-500, 0, Infinity, -Infinity, NaN, 1e9, "2000"]` for every field in `GOAL_FIELDS`. Assert 400 for all. **Currently FAILS** for `-500`, `Infinity`, `-Infinity`, `1e9`.
@@ -329,6 +443,23 @@ Replace `return response.text.strip()` with structured output parsed into a Pyda
 Refuse and refer — never round-trip the refusal through the model, because the model is the thing being constrained. Minimum set, each an explicit test case: (a) disordered-eating indicators in the goal text; (b) stated pregnancy or lactation; (c) stated age under 18; (d) a named medical condition or a request to manage one by diet (diabetes, CKD, hypertension, coeliac, allergy severity); (e) drug, supplement or medication dosing; (f) any request for fasting duration or a supervised-only regime.
 **Test** `test_refusal_conditions_return_static_copy_without_model_call`: parametrize ≥3 phrasings per condition; assert HTTP 200-with-refusal or 422, assert the mocked model client recorded **zero** calls, and assert the body byte-matches a constant in a `REFUSAL_COPY` module. Separately assert that refusal copy contains a referral line and contains no number.
 **Note on scope:** this is a refusal boundary, not clinical triage. It exists so the product stops talking, not so it can assess anyone.
+
+> *Corrected 2026-09-13 — the detector is scoped down, and its weakness is stated up front.* As
+> written, (a)–(f) require detecting disordered-eating indicators, pregnancy, minors, named medical
+> conditions, drug dosing and fasting requests in **free text, before any model call** — i.e. a
+> non-LLM clinical-content classifier this team has never built — while being budgeted inside
+> "SR-4 through SR-8 … roughly 14–18 h" shared with four other rules. That is not buildable in that
+> envelope and should not be presented as though it were. **The rule is therefore: SR-6 is an
+> explicit keyword/phrase list, committed in the repo as data (`REFUSAL_TRIGGERS`), reviewed in a
+> pull request, with the matched trigger recorded on every refusal.** Its **false-negative rate is
+> high and unmeasured** — any paraphrase outside the list passes straight through, and no honest
+> number for that rate exists without a labelled test set the team does not have. It is a
+> coarse pre-filter, not a detector. **The real controls are SR-5's output validator (which sees
+> what the model actually produced) and SR-8's disclaimer**; SR-6 exists to catch the obvious cases
+> cheaply and to make the refusal path exist at all. **Open question: who reviews the trigger list,
+> and against what?** A named reviewer and a source for the disordered-eating terms (a published
+> screening vocabulary rather than terms invented by us) is what would make this defensible; this
+> report does not supply either.
 
 **SR-7 — Refusal precedes generation.** The check runs before any prompt is built or any token is spent; there is no path where a plan is generated and then suppressed.
 **Test** `test_refusal_short_circuits_before_prompt_construction`: spy on `build_recommendation_prompt` and the model client; for every SR-6 case assert both spies have zero calls.
@@ -353,7 +484,26 @@ Persist `{input, model+version, prompt hash, raw output, validator verdict, fina
 
 ### Why this is a safety rule, not a quality rule
 
-**FACT — the product currently does exactly the opposite, by design, with only a soft prompt string standing in the way.**
+**FACT — the product ships an unenforced path that permits exactly the opposite, with only a prompt sentence standing in the way.**
+
+> *Corrected 2026-09-13:* this heading previously read "**the product currently does exactly the
+> opposite, by design**, with only a soft prompt string standing in the way", labelled FACT. Two
+> things were wrong with that. (a) **"By design" is false as stated.** The prompt at
+> `inventory_recommender.py:152-157` directs the model to *prioritise* ⚠️ EXPIRING SOON and ⏰ USE
+> SOON items — not ❌ EXPIRED ones — and line 157 explicitly says *"**NEVER**: Do not recommend
+> recipes that ONLY use ❌ EXPIRED items"*. Nothing anywhere defines `expiring_ingredients_used` as
+> including expired rows. (b) **It was an inference about possible model behaviour carrying a FACT
+> label, with no observed instance.** §4 (P20) §0.3 of this same file grades the identical claim
+> about UC17 "**OVERSTATED**" and narrows it correctly; that narrowing governs, and this section is
+> restated to match it. **What is FACT, verified in the tree today:** expired rows are injected into
+> the prompt at `:89` as `(EXPIRED N days ago) ❌`; the only guard is prose at `:157`, and it blocks
+> only recipes made *entirely* of expired items; and nothing post-parse prevents an expired item
+> surfacing in the amber "expiring" badge — `RecommendedRecipe(**rec)` at `:239-243` accepts the
+> model's field values as given. That is an **unenforced path**, not an intended behaviour.
+> **Open question: does the model actually do it?** Unmeasured. One run of
+> `recommend_from_inventory` over an inventory containing past-date rows, with the output pasted
+> here, would earn the FACT label for the stronger claim; until someone runs it, the stronger claim
+> is not available.
 
 `backend/api/inventory_recommender.py:89` annotates expired stock and hands it to the model:
 
@@ -372,7 +522,7 @@ The frontend then **markets it as a feature**. `web/src/components/inventory/Rec
 
 > "Uses {N} expiring ingredient{s}: {names}"
 
-There is no expired/expiring distinction anywhere in that path — the field is named `expiring_ingredients_used`, and `web/src/app/dashboard/inventory/page.tsx:133-140` sends **every** inventory row including expired ones with zero filtering. An item 21 days past date arrives back as a green-flag selling point on a recipe card, in the same visual treatment as one expiring tomorrow.
+There is no expired/expiring distinction anywhere in that path — the field is named `expiring_ingredients_used`, and `web/src/app/dashboard/inventory/page.tsx:133-140` sends **every** inventory row including expired ones with zero filtering. An item 21 days past date **can** arrive back as a green-flag selling point on a recipe card, in the same visual treatment as one expiring tomorrow, and nothing in the path prevents it. *(Hedged 2026-09-13 from "arrives back": no instance has been observed — see the correction above. The absence of a control is verified; the frequency is not.)*
 
 ### The root cause the team will miss if it only patches the prompt
 
@@ -393,6 +543,17 @@ There is no expired/expiring distinction anywhere in that path — the field is 
 **SR-EXP-1 — `test_expired_items_are_excluded_from_the_recommender_payload` (server-side filter, not prompt text).**
 Build an inventory of 10 items, 4 with `expiration_date` in the past. Call `recommend_from_inventory` with a mocked model. Assert the string `EXPIRED` never appears in the prompt passed to the client, and assert the names of all 4 expired items are absent from `inventory_text`. *The filter must run in Python before prompt construction — a prompt instruction is not a control.* **Currently FAILS.**
 
+> **Open team fork, flagged 2026-09-13, not settled here.** This rule and
+> [`10-team-fit.md`](10-team-fit.md) **exclude expired items in code**;
+> [`11b-mission-final.md`](11b-mission-final.md) and [`13-name-the-test.md`](13-name-the-test.md)
+> instead **score them at zero** ([`18-self-audit.md`](18-self-audit.md), open-fork table). These
+> are not the same control: zero points is not exclusion, because a coverage term can still rank an
+> expired item into a recipe and into `ingredients_available`. The two positions imply different
+> tests — the test above asserts the string `EXPIRED` never reaches the prompt, whereas a
+> scored-at-zero design would assert a weight of 0 on a row that *is* still in the prompt. **The
+> team decides; this file does not.** Whoever decides should also fix which assertion SR-EXP-1 and
+> SR-EXP-2 carry, because as written they only make sense under exclusion.
+
 **SR-EXP-2 — `test_expired_item_never_appears_in_any_returned_recipe` (output enforcement, adversarial model).**
 Monkeypatch the model to return a recipe that lists an expired item in `ingredients_available` and in `expiring_ingredients_used` — i.e. simulate the model ignoring the prompt, which is the whole point. Assert `recommend_from_inventory` either drops that recipe or raises; assert no expired item name survives into any field of `InventoryRecommendResponse`. **Currently FAILS — there is no post-parse validation at all.**
 
@@ -410,6 +571,17 @@ Schema-level. Until `user_inventory` carries a label-type column distinguishing 
 ## 6. Budget
 
 **FACT.** SR-1 through SR-3 and SR-EXP-1/2 are validator + filter work against code paths I have read: roughly 18–22 h including the tests. SR-4 through SR-8 are refusal copy, a structured-output schema, disclaimer placement and jsdom coverage: roughly 14–18 h. SR-9 and SR-10 are a grep-guard and an audit table: 5–8 h. **Total ≈ 40 h, one quarter of the 160.**
+
+> *Corrected 2026-09-13 — this 40 h is not funded by the plan this same file ships.* §4 (P20) §5
+> below carries a single **7 h** "Safety" line, covering the code-level expired-row exclusion, the
+> `LEAST()` date merge and disclaimer copy — roughly SR-EXP-1 plus part of SR-8. Folding this
+> section's 40 h into that plan takes it from 142.25 h to **175.25 h against 160**, i.e. −15.25 h
+> of slack (37 h low end → 172.25; 48 h high end → 183.25). The two numbers are not reconcilable by
+> arithmetic, and this correction does **not** pick between them: see the correction box at the head
+> of §4 §5 for the full recompute and for the open question — *which SR rules ship this month and
+> which are explicitly deferred* — that the team has to answer. The estimates in this paragraph are
+> also range estimates from reading code, not measurements; SR-6's share of them is revised at the
+> rule itself.
 
 That quarter is affordable *because* P19 is dead: the build budget it would have consumed is free, and the team's own recommendation already routes it to G1. **INFERENCE:** SR-EXP-2 and SR-5 are also the same validator — "check every entity the model named against a real inventory row before surfacing it" — which is the identical mechanism G1's grounding-fidelity harness needs (`gap-interrogate.md`, G1 measurable claim: ">=95% of rationale sentences cite only inventory rows that actually exist"). Build it once, and the safety boundary and the G1 contribution share an implementation.
 
@@ -461,15 +633,43 @@ That quarter is affordable *because* P19 is dead: the build budget it would have
 
 > **Description:** "tracks what's about to expire and tells you what to cook tonight using the food that needs eating first… recipes from your real kitchen, **worst-expiring first**"
 
-That is a live app holding a pantry inventory with expiry dates, ranking worst-expiring-first, shipping a per-recommendation "why this dish" card, connecting a training signal, and emitting a grocery list. **It contains F1, F3 and F4 in one binary, shipped nine weeks ago.**
+That is a live app whose **listing and release notes claim** a pantry inventory with expiry dates, ranking worst-expiring-first, a per-recommendation "why this dish" card, a training signal, and a grocery list. **Its listing and release notes claim F1, F3 and F4 in one binary, last updated nine weeks ago.**
 
-**What is still unknown, and it is the whole question:** the v1.0.5 note ties "why this dish" to *WHOOP recovery*, not to expiry. No first-party text shows its rationale naming a pantry item and a date. The iTunes payload carries **no `sellerUrl`**, so there is no site to check. I could not resolve this and I will not guess.
+> *Corrected 2026-09-13 — hedged to the standard this team applies to Cooklist.* This paragraph
+> originally read "That is a live app holding a pantry inventory … **It contains F1, F3 and F4 in
+> one binary, shipped nine weeks ago**", and that unhedged reading is what cut F1's differentiation
+> from 3 to 2 and declared G1 "wounded". The entire artifact is **a solo developer's own App Store
+> description and release notes for a v1.0.8 app** — an assertion that features exist, not evidence
+> that they work. [`01-market-survey.md`](01-market-survey.md) sets the rule after the Cooklist
+> `Sketch` mockup: *a vendor artifact proves the claim was made, not that the feature ships.* It
+> applies here with more force, not less, because there is no independent artifact of any kind for
+> this app. **Neither `userRatingCount` nor `averageUserRating` was recorded from the iTunes payload
+> this run fetched, so neither is reported here** — no number is invented to fill the gap. **Open
+> question: how many ratings and reviews does Use It Up have?** One re-fetch of
+> `itunes.apple.com/lookup?id=6775112024` answers it, and it matters: a one-person v1.0.8 app with
+> no reviews is weaker evidence than the 11,297-rating Cooklist listing the team already treats as
+> the confirmation bar, and the F1 differentiation score was moved on the strength of it. **The
+> score is left at 2 rather than restored to 3** — restoring it would be a second unevidenced move
+> in the opposite direction — but the reader should know the −1 rests on vendor copy alone.
+
+**What is still unknown, and it is the whole question:** the v1.0.5 note ties "why this dish" to *WHOOP recovery*, not to expiry. No first-party text shows its rationale naming a pantry item and a date. The iTunes payload carries **no `sellerUrl`**, so there is no vendor site to check — *corrected 2026-09-13: that is not the same as "no remote instrument exists". The same payload carries `screenshotUrls` and `ipadScreenshotUrls`, which were never fetched; see §8 item 1.* I could not resolve this and I will not guess.
 
 **Consequence:** G1 as re-worded by P17 is **wounded, not dead**. "No product that maintains a pantry inventory shows a per-recommendation rationale" is now false in the general case — Use It Up maintains one and shows one. What survives is narrower and must be said precisely: *no product shows a rationale computed from, and checkable against, the specific inventory rows and dates that produced the ranking.*
 
 ### 0.2 CODE: our recommender already shows a rationale, and validates none of it
 
-**FACT, new in this audit, and worse than any of the 18 recorded defects.** `backend/api/inventory_recommender.py` is 245 lines. `grep -n "validate\|verify\|check"` returns **zero hits**. Line 231 parses Gemini's JSON; the parsed object carries `match_score`, `ingredients_available`, `ingredients_missing`, `expiring_ingredients_used` and `reason`. `web/src/components/inventory/RecipeRecommendationModal.tsx` renders them directly — `{recipe.reason}` at :298, the score at :303-307, and at :328-330:
+**FACT, new in this audit, and worse than any of the 18 recorded defects.** `backend/api/inventory_recommender.py` is 245 lines. The parsed object is **schema-validated** by Pydantic at `:239-243` (`RecommendedRecipe(**rec)`), **but no code compares `expiring_ingredients_used` or `ingredients_available` against the `user_inventory` rows that were sent in.** What is missing is not validation in general — it is **grounding** validation.
+
+> *Corrected 2026-09-13:* this sentence previously read `grep -n "validate\|verify\|check"` returns
+> **zero hits**, and used that as proof of absence. A case-sensitive grep is not proof of absence —
+> in a document whose own F5 case is that "most P1a security tests are source-text greps, not
+> executed attacks", that is the same failure mode. Re-run case-insensitively today:
+> `grep -in "validate\|verify\|check" backend/api/inventory_recommender.py` returns **one hit**,
+> `238:    # Validate and return`, and the two lines under it construct Pydantic models, which *is*
+> schema validation. The corrected claim above is both true and stronger, because it names the
+> specific thing that is absent rather than relying on a string search.
+
+Line 231 parses Gemini's JSON; the parsed object carries `match_score`, `ingredients_available`, `ingredients_missing`, `expiring_ingredients_used` and `reason`. `web/src/components/inventory/RecipeRecommendationModal.tsx` renders them directly — `{recipe.reason}` at :298, the score at :303-307, and at :328-330:
 
 > `Uses {recipe.expiring_ingredients_used.length} expiring ingredient… {recipe.expiring_ingredients_used.join(", ")}`
 
@@ -506,8 +706,8 @@ Penalties are shown as negatives and are **not** folded into a positive total. `
 ### Rationale, every cell
 
 **F1 — grounded rationale.**
-*Demand 2:* three vendors pay to say it — RecipeFix's listing, which I re-fetched today, leads with "**No black-box AI. Every substitution comes with the culinary reasoning behind it — why we picked that ingredient, how it affects the cooking process, and what to watch for**" (v2.4.0, live); ATK has sold "Why This Recipe Works" for decades; Use It Up added "'why this dish' on every card". Not 3: zero direct user voice. Apple's review RSS is dead as an instrument (P17 row 22) and I could not revive it.
-*Saturation −2 (higher than P17 concluded):* RecipeFix ships explained substitution **with natural-language correction**; Grocy ships the auditable ranking — I re-verified verbatim today: `msgid "The higher this number is, the more ingredients currently in stock are due soon, overdue or already expired"`; SeePantry ships item-level date reasons; Use It Up ships the per-card why *inside a pantry app*. Not −3 only because the specific cell — rationale naming the row **and** its date **and** correctable — is empty in every first-party text I could retrieve.
+*Demand 2:* three vendors pay to say it — RecipeFix's listing, which I re-fetched today, leads with "**No black-box AI. Every substitution comes with the culinary reasoning behind it — why we picked that ingredient, how it affects the cooking process, and what to watch for**" (v2.4.0, live); ATK has sold "Why This Recipe Works" for decades; Use It Up's release notes **claim** "'why this dish' on every card" (vendor copy only — see the hedge in §0.1). Not 3: zero direct user voice. Apple's review RSS is dead as an instrument (P17 row 22) and I could not revive it.
+*Saturation −2 (higher than P17 concluded):* RecipeFix ships explained substitution **with natural-language correction**; Grocy **publishes a due-score formula and shows the integer, but does not rank by it** — I re-verified the string verbatim today: `msgid "The higher this number is, the more ingredients currently in stock are due soon, overdue or already expired"` (*corrected 2026-09-13: this cell previously read "Grocy ships the auditable ranking". The artifact quoted does not support that — it is a **tooltip explaining what a number means**, which is neither a ranking nor an audit trail. Later runs established that Grocy surfaces a bare integer plus a colour and does not even sort by it: `'order': [[1, 'asc']]`, alphabetical by name — see [`01-market-survey.md`](01-market-survey.md). This **strengthens** the wedge rather than weakening it: the formula is public and the score is visible, but the user is never shown the ranking it would imply. The −2 saturation stands on the other three products in this cell.*); SeePantry ships item-level date reasons; Use It Up **claims**, in its own release notes, the per-card why *inside a pantry app* (see §0.1). Not −3 only because the specific cell — rationale naming the row **and** its date **and** correctable — is empty in every first-party text I could retrieve.
 *Differentiation 2, down from 3:* Use It Up costs us the "nobody explains" claim. The honest wedge is now *computed and checkable*, not *explained*.
 *Fit 3:* the highest in the table, and it is a port rather than a build. The UI contract already exists (`:298`, `:303`, `:328`); the data is already assembled (`format_inventory_with_expiration`, :68-100); the scoring rules already exist as English at :159-162 and need only move into Python.
 *Testability 3:* a deterministic integer scorer needs no network and no LLM. Hypothesis is already vendored in `backend/.venv`. "Every name in the rationale resolves to a row in the input" is a property test, not a study.
@@ -525,7 +725,7 @@ Penalties are shown as negatives and are **not** folded into a positive total. `
 
 **F3 — pantry-subtracted, missing-items-only list with preview.**
 *Demand 3, the highest in the table:* Plan to Eat's removal post is demand evidence *with a vendor-named failure mode that the preview gate directly answers*. Eat This Much, Grocy, Tandoor, Mealie, Paprika and Cooklist all ship a version.
-*Saturation −3, the maximum:* Grocy publishes the exact arithmetic, re-verified verbatim today: "**By default the amount to be added to the shopping list is \"needed amount - stock amount - shopping list amount\"**", plus "Not enough in stock, %s ingredient missing" and "Put missing products on shopping list". Eat This Much's help centre, re-fetched today: "**if your meal plans need 2 apples and you already have 1 in your pantry, the grocery list will only tell you to purchase 1 more apple**". P13 found three DIRECT implementations.
+*Saturation −3, the maximum:* Grocy publishes the exact arithmetic, re-verified verbatim today: "**By default the amount to be added to the shopping list is \"needed amount - stock amount - shopping list amount\"**", plus "Not enough in stock, %s ingredient missing" and "Put missing products on shopping list". Eat This Much's help centre, re-fetched today: "**if your meal plans need 2 apples and you already have 1 in your pantry, the grocery list will only tell you to purchase 1 more apple**". *Corrected 2026-09-13: this cell previously ended "P13 found three DIRECT implementations." P13's verdicts have been re-tiered (see §1 Verdicts): **no product is DIRECT with quantity subtraction** — Tandoor and Mealie are DIRECT-boolean (on-hand flag, no arithmetic) and Cooklist's later steps rest on reviewers. The saturation −3 does not depend on that count: Grocy and Eat This Much publish the arithmetic first-party and saturate the cell on their own, as the confidence note below already says.*
 *Differentiation 0:* there is nothing left to claim.
 *Fit 3:* cheap here. `generate/route.ts` already consolidates duplicates (`ingredientMap`, merging by `ingredient.id`), and `grep -rn "user_inventory" web/src/app/api/shopping-lists/` returns **nothing** — the subtraction is simply absent, and adding it is contained.
 *Testability 3:* pure arithmetic; demos beautifully.
@@ -534,7 +734,7 @@ Penalties are shown as negatives and are **not** folded into a positive total. `
 
 **F4 — training-day target → explained meal → list.**
 *Demand 2:* real but the market judges the mechanism harmful — MyFitnessPal ships negative adjustments off by default with an article talking users out of them.
-*Saturation −3:* Eat This Much publishes Mifflin-St Jeor and the ~500 kcal rule; Prospre publishes three BMR formulas; and as of §0.1, **Use It Up already ships our entire F4 chain plus our F1 rationale** — WHOOP recovery → ranked deck → "why this dish" → weekly plan → grocery list, since July 4.
+*Saturation −3:* Eat This Much publishes Mifflin-St Jeor and the ~500 kcal rule; Prospre publishes three BMR formulas; and as of §0.1, **Use It Up's own release notes claim our entire F4 chain plus our F1 rationale** — WHOOP recovery → ranked deck → "why this dish" → weekly plan → grocery list, since July 4. (Vendor copy, uncorroborated — see the hedge in §0.1. Note the −3 does not depend on it: Eat This Much and Prospre saturate this cell on published formulas alone.)
 *Differentiation 0.*
 *Fit 1:* needs an energy model, a training input and anthropometrics we do not have.
 *Testability 1:* the correctness of a calorie target is not testable in a month.
@@ -568,7 +768,32 @@ Penalties are shown as negatives and are **not** folded into a positive total. `
 
 **Market table stakes — explicitly deferred, and deferred as a pair:** the pantry-subtracted, missing-items-only list *with* preview and confirmation. Six or more products ship it; a product without it looks unfinished. It does not fit (§5), and it must never ship in its half form. Plan to Eat's own post-mortem is the reason, verbatim: "**Removing items from someone's shopping list without them knowing about it is never a good idea.**" Subtraction without the preview gate is the exact configuration a major vendor built, shipped, and withdrew. **Either both or neither. This month: neither.**
 
-**Engineering table stakes — non-negotiable, inside F5:** `shopping-lists/share/route.ts` is an unauthenticated write to a table with no RLS and no migration. Demoing a product with that endpoint live is not a risk to manage, it is a defect to remove before the demo exists.
+**Engineering table stakes — non-negotiable, inside F5:** `shopping-lists/share/route.ts` is **an unauthenticated insert path with no ownership check and no RLS behind it**. Demoing a product with that endpoint live is not a risk to manage, it is a defect to remove before the demo exists.
+
+> *Corrected 2026-09-13 — the claim is narrowed to what was actually established, and the gap is
+> named.* This previously read "is an unauthenticated **write** to a table with no RLS and no
+> migration". "Write" was asserted from source reading; **the request was never executed**, which is
+> the exact grep-not-attack failure mode F5 exists to fix. Re-read in the tree today, the code says:
+> the handler builds a client from `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+> (`:9-12`), never calls `auth.getUser`, takes `shoppingListId` and `expiryDays` straight from the
+> body (`:15`), inserts into `shopping_list_shares` (`:23-31`), and on any Supabase error does
+> `if (error) throw error` into a catch that returns **HTTP 500 "Failed to generate share link"**
+> (`:33`, `:44-47`). And `grep -rn "shopping_list_shares" supabase/` returns nothing — the table has
+> no migration in this repo. **So the document's own evidence implies the two outcomes are
+> different: if the table exists in the deployed project, this is an unauthenticated insert; if it
+> does not, the endpoint 500s and writes nothing.** **Open question: does `shopping_list_shares`
+> exist in the deployed Supabase project, and what status code does an unauthenticated POST
+> actually return?** One POST against a local or staging instance, with the status code recorded,
+> settles it — and that run is already funded as the executed adversarial test in §5. Note that
+> either answer leaves the defect worth fixing: an endpoint that inserts without an ownership check
+> is a hole, and one that 500s is a shipped route with no backing schema.
+
+> **Open team fork, flagged 2026-09-13, not settled here.** This file **gates the whole project** on
+> the share route (it is the week-1 security kill signal in §7 and 8.75 h of §5). Four other files
+> fund it; [`12-milestones.md`](12-milestones.md) and [`14-cut-list.md`](14-cut-list.md) **cut it**
+> — `12` says dropping N5b (8.75 h) is "no longer the prudent option, it is the required one" to
+> restore a margin. See the open-fork table in [`18-self-audit.md`](18-self-audit.md). Cutting it
+> and gating on it are not reconcilable; **the team decides.**
 
 ---
 
@@ -579,7 +804,7 @@ Stated in the only form that survives everything found today:
 > **Every recommendation Epicourier makes is ranked by an integer computed in Python from named `user_inventory` rows, and shows the rows, dates and constraints that produced that integer — each one traceable to a record the user can correct in one tap, with the ranking recomputed in front of them.**
 
 **What I am explicitly not claiming, and why:**
-- Not "no one explains" — RecipeFix ships explained substitution with NL correction, and Use It Up ships a per-card why *inside a pantry app*. **Cite RecipeFix as the existence proof that the positioning sells; cite Use It Up as the reason the claim is worded narrowly.**
+- Not "no one explains" — RecipeFix's listing markets explained substitution with NL correction, and Use It Up's release notes claim a per-card why *inside a pantry app*. (Both are vendor artifacts with no independent corroboration — §0.1 and §2's RecipeFix correction. Hedging them does **not** restore the claim: a rival's unverified marketing is still enough to lose an argument at a poster session, which is precisely why the wedge is worded narrowly rather than as "no one explains".) **Cite RecipeFix as the existence proof that the positioning sells; cite Use It Up as the reason the claim is worded narrowly.**
 - Not "novel" — arXiv 2601.02374 (verified real by P17) is published prior art. This is a **market** gap.
 - Not "lot" — the schema cannot represent one. **"Item."**
 - Not "we know the date is right" — §0.3 proves we sometimes do not. The rationale must say *earliest known date for this item*, and the merge must take the earlier date.
@@ -587,6 +812,49 @@ Stated in the only form that survives everything found today:
 ---
 
 ## 5. THE ONE-MONTH VERTICAL SLICE, WITH THE ESTIMATE
+
+> ### Corrected 2026-09-13 — this file prices the same month three incompatible ways
+>
+> An audit found three budgets in this one document that cannot all be true. They are set out here
+> rather than quietly harmonised, and the arithmetic is recomputed, not adjusted.
+>
+> | Budget | Where | What it spends | Against 160 h |
+> |---|---|---|---|
+> | **A — P20 §5 (below)** | this section | 64.25 implementation + 20 testing + 58 delivery | **142.25 → 17.75 h slack** |
+> | **B — P19 §6 safety set** | §3 (P19) §6 | SR-1..SR-10 ≈ **40 h**, declared binding *"regardless of the DEAD verdict"* | funded here at **7 h**, not 40 |
+> | **C — P13 recommendations** | §1 (P13) | 55 + 35 + 25 = **115 h** of feature build, "~45 h left" for everything else | 115 + 45 = 160, **no poster and no demo line at all** |
+>
+> **A and B are incompatible.** The single "Safety" line below is 7 h and covers only part of
+> P19's set (code exclusion of expired rows, the `LEAST()` date merge, disclaimer copy). Funding
+> P19's set as P19 prices it: 142.25 − 7 + 40 = **175.25 h → −15.25 h of slack**. Taking P19's
+> stated ranges rather than its midpoint: low end (18 + 14 + 5 = 37 h) → 172.25 h, **−12.25**;
+> high end (22 + 18 + 8 = 48 h) → 183.25 h, **−23.25**. On no reading does it fit.
+>
+> **A and C are incompatible.** P13's 115 h of feature build exceeds the ~100 h of feature capacity
+> established in [`12-milestones.md`](12-milestones.md) (160 h − 60 h fixed report/poster/demo/
+> integration overhead) by 15 h *before* a single test is written, and its residual line budgets no
+> poster and no demo. P13's headline item is also F3 — the feature §2 of this same document scores
+> differentiation **0**, saturation **−3**, and places in **NOT IN SCOPE**.
+>
+> **Which governs: A.** P20 §5 is the only estimate in this file with a per-task decomposition, and
+> it is this document's own final ruling. P13's recommendation block is marked superseded at the
+> point of use; P17 §4's competing numbers are marked as first-pass guesses.
+>
+> **What is left open, deliberately.** Nothing in this correction decides *which* of P19's SR rules
+> ship. Plan A funds 7 h of safety work and P19 says 40 h is mandatory; that is a real, unfunded
+> ~33 h hole, not a rounding difference. **Open question for the team: which SR rules are in the
+> one-month scope and which are explicitly deferred with a stated reason?** What would settle it is
+> a single pass through SR-1..SR-10 and SR-EXP-1..5 marking each *shipping / deferred*, then
+> re-deriving the total below. Until that pass happens, **the 17.75 h slack advertised in the table
+> is slack against plan A only, and plan A does not carry P19's mandatory work.** Note also that
+> the delivery line below (58 h) is 2 h under the 60 h fixed overhead
+> [`12-milestones.md`](12-milestones.md) uses, so the two files do not net out identically either.
+>
+> Related open fork, **not** settled here: this section assumes the scorer is **Python**
+> ([`18-self-audit.md`](18-self-audit.md), *"Python or TypeScript"*), while
+> [`08`](08-three-futures.md)/[`13`](13-name-the-test.md)/[`14`](14-cut-list.md) put it in
+> **TypeScript** behind a 61 h Jest plan. The 10 h scorer line and the 20 h testing line below are
+> priced for the Python reading. If the team picks TypeScript, this table must be re-priced.
 
 **One user journey, end to end:** open recommendations → three dishes ranked by a Python integer → each card states *"Ranked #1: uses spinach (120 g, earliest known date 2026-09-16, 3 days) and yogurt (200 g, 5 days); 2 of 9 ingredients missing"* → tap any named item → correct quantity or date → ranking recomputes on screen, deterministically.
 
@@ -605,9 +873,9 @@ Stated in the only form that survives everything found today:
 | **Implementation subtotal** | **64.25** |
 | **Build + test subtotal** | **84.25** |
 | Report 20 · poster 8 · demo incl. rehearsal and offline fallback 10 · coordination/review/CI 20 | **58** |
-| **TOTAL** | **142.25 / 160 — 17.75 h slack** |
+| **TOTAL** — plan A only; see the correction box above. This total does **not** fund P19 §6's ~40 h safety set. | **142.25 / 160 — 17.75 h slack** |
 
-Implementation is **64.25 h**, well under the 110 h ceiling, and **75.75 h** remains for testing and delivery, above the 50 h floor. The two-feature scope is justified by that estimate. **Adding F3 would cost ~30 h** (6 subtraction + 10 preview/confirm + 6 unit-consolidation edge cases + 8 tests), taking the total to 172 h — over budget, and it is the feature with differentiation 0. Refused.
+Implementation is **64.25 h**, and **78 h** remains for testing and delivery. *Corrected 2026-09-13: this sentence previously read "well under the 110 h ceiling … and **75.75 h** remains … above the 50 h floor". The subtraction was wrong — 142.25 − 64.25 = **78**, not 75.75 (75.75 is 160 − 84.25, which has already spent the 20 h of testing the sentence claims is still to come). The "110 h ceiling" and "50 h floor" are removed rather than re-derived: neither is sourced anywhere in this file. The bound that is sourced is **~100 h of feature capacity** ([`12-milestones.md`](12-milestones.md): 160 h − 60 h fixed overhead), against which the 84.25 h build-and-test subtotal sits 15.75 h clear — and the comparable NOW plan in that file is 94.75 h, re-costed there to 100.75 h.* The two-feature scope is justified by that estimate. **Adding F3 would cost ~30 h** (6 subtraction + 10 preview/confirm + 6 unit-consolidation edge cases + 8 tests), taking the total to 172 h — over budget, and it is the feature with differentiation 0. Refused.
 
 Sequencing: **F5's share-route fix lands in week 1, before any F1 UI work.** The scorer lands week 2, grounding week 3, UI and safety week 4, with the demo cut on the Friday of week 3 so week 4's slack is real.
 
@@ -615,9 +883,11 @@ Sequencing: **F5's share-route fix lands in week 1, before any F1 UI work.** The
 
 ## 6. SUCCESS METRIC
 
-G2 is dead and measuring waste is out of budget — the closest published trial burned our entire month on 6 students and found nothing. So the metric is about the **artifact**, not the outcome, and it is chosen because the current system scores 0 on it:
+G2 is dead and measuring waste is out of budget — the closest published trial burned our entire month on 6 students and found nothing. So the metric is about the **artifact**, not the outcome, and it is chosen because the current system has **no mechanism** that could satisfy it. *(Corrected 2026-09-13: this read "because the current system scores 0 on it" — see the baseline correction under item 1. Having no validator is not the same as scoring zero, and the metric's value does not depend on the baseline being zero.)*
 
-1. **Groundedness (primary, hard gate): 100 % of rendered rationale claims resolve to a real `user_inventory` row belonging to the caller, with a date equal to that row's stored date.** Verified by an automated property test over ≥200 generated inventories. Baseline today: **0 % — no validation code exists** (`grep` returns nothing in a 245-line file).
+1. **Groundedness (primary, hard gate): 100 % of rendered rationale claims resolve to a real `user_inventory` row belonging to the caller, with a date equal to that row's stored date.** Verified by an automated property test over ≥200 generated inventories. Baseline today: **unmeasured — no validation code exists, so the current groundedness rate is unknown.** *Corrected 2026-09-13: this read "Baseline today: **0 % — no validation code exists** (`grep` returns nothing in a 245-line file)." That does not follow. Absence of validation code makes the rate **unverified**, not zero; Gemini may name real inventory rows most of the time, and nobody has looked. §3 (P19) §6 of this same file forbids exactly this move in the adjacent case — "Do not assume the figure; measure it" — so the primary metric's baseline was both a non-sequitur and a self-contradiction. The grep is also not proof of absence, for the reason given in §0.2.*
+   **First week-1 task, and it is cheap: measure it.** Run the current unconstrained path over a fixed set of inventories, hand-check every name and date in the rendered rationale against the rows that were sent in, and publish the rate. ~2 h buys a real number and a real before/after; the alternative is a headline improvement from an invented baseline, which is worth nothing on a poster. Until that run happens the honest claim is "the current build checks nothing, and how often it is nonetheless right is unknown."
+
 2. **Determinism: identical inventory + recipe set produces byte-identical ranking across 100 runs.** The current LLM path cannot pass this; the new one must.
 3. **Zero expired items reachable by the rationale path**, enforced in code and proven by test — replacing the prose guard at `:157`.
 4. **Executed, not grepped:** an unauthenticated POST to `/api/shopping-lists/share` carrying another user's list id returns 401, demonstrated by a running test.
@@ -637,12 +907,12 @@ G2 is dead and measuring waste is out of budget — the closest published trial 
 
 ## 8. EVIDENCE STILL MISSING (ranked by how much it would change the ruling)
 
-1. **Does Use It Up's "why this dish" card name an item and a date, or only WHOOP recovery?** This is the single decisive unknown and it is *cheap*: one person, one iPhone, 30 minutes. No `sellerUrl` exists in the iTunes payload, so no remote instrument can answer it. **Do this before the wedge goes in the report.**
+1. **Does Use It Up's "why this dish" card name an item and a date, or only WHOOP recovery?** This is the single decisive unknown and it is *cheap*: one person, one iPhone, 30 minutes. **Remote instruments are weak here, but they are not absent** — *corrected 2026-09-13: this item previously said "No `sellerUrl` exists in the iTunes payload, so no remote instrument can answer it", and routed the question straight to a physical device on that basis. That is false as a general claim. The lookup payload this run already fetched returns `screenshotUrls` and `ipadScreenshotUrls`, and App Store policy requires a privacy-policy URL — at least two cheap remote instruments existed and neither was tried before the question was declared remotely unanswerable.* **Try the screenshots first**: fetch `screenshotUrls` from `itunes.apple.com/lookup?id=6775112024` and read the recommendation card, **noting that screenshots are vendor-produced and may be mockups** — [`01-market-survey.md`](01-market-survey.md) caught exactly that on Cooklist, where the status bar read `Sketch` / `9:41 AM`. A screenshot can therefore *refute* the wedge (if a card names an item and a date, the claim is occupied whether or not the image is a capture) but cannot *confirm* it. **This run did not fetch them**, so the answer is still unknown. **Do the screenshot fetch and, if it is inconclusive, the install, before the wedge goes in the report.**
 2. **Does Use It Up's grocery list subtract pantry quantities?** v1.0.3 says "turn the whole plan into a ready-to-shop grocery list" and claims no subtraction. Same phone, same 30 minutes. Determines whether F3 is *also* occupied.
-3. **Samsung Food.** `support.samsungfood.com` and `samsungfood.com/food-plus/` have now returned HTTP 403 to three separate sessions. Finding #3 rests entirely on third parties and must be labelled as such in the report until a human opens a browser.
+3. **Samsung Food — ~~still missing~~ CLOSED; corrected 2026-09-13, this item is stale.** `support.samsungfood.com` and `samsungfood.com/food-plus/` did return HTTP 403 to three separate sessions, and this item originally concluded "Finding #3 rests entirely on third parties and must be labelled as such in the report until a human opens a browser." **That is no longer true and the instruction would waste the team's effort on a question already answered.** [`17-gap-closing.md`](17-gap-closing.md) retrieved the page through the Wayback Machine (`curl -sL "https://web.archive.org/web/2026/https://samsungfood.com/food-plus/"`): Food+ is **$6.99/month or $59.99/year** with a 7-day trial, and every Food+ feature that matters here — Food List search, automated pantry list, nutrition-goal tracking, AI recipe personalisation, tailored 7-day plans — is tagged first-party as **"Exclusively on mobile app"**, with *"You can only purchase a subscription on a mobile device."* Finding #3 is now first-party, not third-party. **Method note worth carrying forward:** `web.archive.org` was the instrument three sessions of 403s never tried, and the mobile-only result is materially useful rather than incidental — **Epicourier is a web app**, so Samsung Food's strongest pantry and planning features are not available on the surface we compete on. (Row 24 of §2's results table, "Samsung Food support centre — provenance risk unchanged", is superseded by the same capture.)
 4. **Whether users want the reason at all.** Apple's review RSS is dead; WebSearch died at query 1 for the third session running. The ATK precedent is editorial, not personalised. **This is the open risk and it is untested, not absent** — say exactly that.
 5. **The "Staples List" claim.** Re-source it or delete it. I confirmed today it is not on the cited page. What that page *does* say is better for us anyway, and should replace it.
-6. **P13's Tandoor and Mealie DIRECT verdicts.** The cited `en.json` 404'd for me on `develop`; Mealie's features page shows no on-hand text. Not reproduced here. Does not change the ruling — Grocy and Eat This Much saturate F3 on their own — but do not cite Tandoor's source lines in the report without re-resolving the path.
+6. **P13's Tandoor and Mealie verdicts** (re-tiered **DIRECT-boolean** on 2026-09-13; see §1 Verdicts)**.** The cited `en.json` 404'd for me on `develop`; Mealie's features page shows no on-hand text. Not reproduced here. Does not change the ruling — Grocy and Eat This Much saturate F3 on their own — but do not cite Tandoor's source lines in the report without re-resolving the path.
 7. **MyFitnessPal's negative-adjustment article bodies** (403 to two tools on two dates). Only matters if F4 is revived. It should not be.
 
 ---

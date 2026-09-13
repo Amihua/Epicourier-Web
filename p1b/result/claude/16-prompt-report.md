@@ -18,15 +18,19 @@ analyst" framing the assignment asks for quietly collapses. Running each prompt 
 the five market-survey angles cold *against each other*, is what makes the agreements between them
 worth anything.
 
-Three orchestrated runs, **35 agents, zero failures**:
+Five orchestrated runs, **42 agents, zero failures**:
 
 | Run | Prompts | Agents |
 |---|---|---:|
 | 1 — Market survey | P01 ×5 angles, **C1** ×6 fact-check groups, P02 ×2 sources, P07, P10 | 15 |
 | 2 — Independent prompts | P04 ×2 slices, **C2** ×2, P05, **C3**, **C4**, **C5** | 8 |
 | 3 — Decide and commit | P03, P06, P08, P09, P11, P12, **C6**, **C7**, and Codex's P13/P17/P19/P20 rerun | 12 |
+| 4 — Dropped-rival verification | **C1** again, on the three load-bearing rivals the cap had dropped | 3 |
+| 5 — Closing the limitations | Samsung via Wayback, Reddit via `.rss`, real-device evidence for Cooklist, and nine more rivals at source level | 4 |
 
-**Audit trail: 1,310 tool calls — 210 web searches and 521 pages fetched.** Every agent's prompt as
+**Audit trail: 1,629 tool calls — 220 web searches and 534 `WebFetch` retrievals.** Pages pulled
+with `curl` (the iTunes lookup API, GitHub API, Wayback, Reddit `.rss`) are additional and are not
+in that figure, so it understates retrieval rather than inflating it. Every agent's prompt as
 issued, the searches it actually ran, the pages it actually retrieved and its full response are in
 [`../../evidence/claude/runs/`](../../evidence/claude/runs/). Raw machine-readable transcripts are
 in [`../../evidence/claude/raw/`](../../evidence/claude/raw/).
@@ -46,10 +50,33 @@ ledger, including the thirteen entries the checker verified and found *correct*,
 | Feature fabricated outright | 2 | (Fridgely, above; Eatvora's "shop-the-gaps list", a name that appears nowhere.) |
 | Citation errors in law/standards | 2 | **FSIS** — the infant-formula safety exception was attributed to "Best if Used By"; the page assigns it to "Use-By". The quote contradicted its own source, and the URL resolved perfectly. |
 
+### The error that outranks all 129: one of our own citations
+
+Our G1 confirming evidence cited a Cooklist customer review dated 2023-07-09. A fourth-run
+fact-checker pulled **272 unique Cooklist reviews** from the iTunes review RSS, spanning
+2018-06-14 to 2026-08-05 and including **all 45 from calendar 2023**. The one review actually dated
+2023-07-09 is by `AngryNorsemen3`, titled "Best app for food management", and is about autofill
+miscategorising cream cheese jalapeño. The sentence we quoted returns **zero hits** across the
+whole corpus. **We withdrew the citation.**
+
+Every other error in this report is Claude misreading someone else's page. This one was a
+fabricated-looking citation inside our own deliverable, supporting our own central claim — which is
+precisely what a marker is entitled to spot-check.
+
 **The mechanism that caught them was not a second vendor's model.** It was a second *Claude* agent
 with no memory of the first, told to assume every claim was wrong until the page proved it right,
 and given no credit for agreeing (prompt **C1**). That is worth stating plainly because it is the
 cheapest thing in this report to reproduce and it caught more than the two-model rule did.
+
+### A later audit found 129 more, and they were all ours
+
+Everything above concerns errors about **the market**. A sixth run then audited the *reasoning* in
+the ten result files that had only ever been checked mechanically, and found **129 findings, 56
+HIGH, plus 23 cross-file contradictions** — including a charge against our own Project 1a that its
+own scope note refutes, a Codex self-contradiction we manufactured by truncating a quote at a
+comma, and a "9,232-file codebase" that was a Python virtualenv. See
+[`18-self-audit.md`](18-self-audit.md). The lesson is one sentence: *the facts checking out and the
+argument holding are not the same question.*
 
 ### The three errors that were ours, not the market's
 
@@ -65,7 +92,15 @@ The most valuable catches were self-inflicted:
    substitution comes with the culinary reasoning behind it", and takes correction in natural
    language. Four of the six things G1 claimed nobody ships, ship. G1 survives only in the narrow
    form: *explaining a recommendation against inventory state and a date.*
-3. **We weakened our own headline security finding** (C3). The cross-user IDOR we reported in
+3. **We endangered our surviving gap a second time, withdrew a citation doing it, and then caught
+   our own over-correction** (C1, fourth run). **Cooklist** — 11,297 iOS ratings — advertises
+   *"Your parsley is 7 days old and may expire soon. Tap to see recipes you can cook with it."*
+   Before writing that up we opened the image: its status bar reads `Sketch` at `9:41 AM`, so it is
+   a vendor mockup, not a device capture (a control screenshot in the same listing *is* genuine).
+   G1's narrow form is therefore **endangered, not settled**, the action item is to install the app,
+   and what we claim on the poster is the four-way conjunction — a conjunction gap, **not a moat**,
+   since Remy already holds every input and a chat surface to say it in.
+4. **We weakened our own headline security finding** (C3). The cross-user IDOR we reported in
    Project 1a is probably a false positive at system level — `shopping_list_items` has no
    `user_id` column and RLS enforces ownership through the parent list, so the fix its failing
    test demands would query a column that does not exist. We also confirmed that most of our
@@ -90,7 +125,7 @@ The most valuable catches were self-inflicted:
 |---|---|
 | **P08 — Mission statement** | Made **zero** tool calls. It is a writing prompt, and its output is a pure function of what you feed it; run before P07/P17/P20 it would have produced five fluent sentences about a gap that does not exist. Useful *last*, worthless *first* — which is a scheduling finding, not a criticism of the prompt. |
 | **P05 — Who else is in the room?** | Produced the best single table in the run — eighteen stakeholders, each with a testable design decision — on **zero** tool calls. That is exactly the problem: nothing in it can be checked, and one of its rows was invalidated within the hour by C3. High value, unverifiable, and we have flagged the affected rows in place rather than editing them away. |
-| **P12 — The pivot question** | Answered "stay the course", which is what the team would have done anyway. Cheap insurance against anchoring rather than a source of information. Its one real contribution was forcing us to name what we would lose. |
+| **P12 — The pivot question** | *Reassessed 2026-09-13.* An earlier draft of this row said P12 "answered stay the course". **It did not** — [`09-pivot.md`](09-pivot.md) returns **Pivot**, on the grounds that the chosen plan puts on its critical path the three things this team has zero commits behind: a production `.tsx` change, a Supabase migration, and an RLS policy. That is the most uncomfortable finding in the column and it is **unresolved**, so P12 moves out of "least useful" entirely. The row was wrong because the summary was written without reading the file — which is the same failure this report spends 10,000 words documenting. |
 | **P10 — Red team** *(still valuable, but not where expected)* | Its three named fronts were largely already covered by P07 and P17. Its genuine contribution was one sentence — *"fourteen products, several funded, several sitting on the pantry data required, independently chose not to ship a recommendation rationale. What do you know that they don't?"* |
 
 **The generalisation.** The prompts that earned their marks were the ones that could come back
@@ -104,7 +139,7 @@ checkable way, and those produced our most fluent and least defensible output.
 
 | | **Codex** (Sihao) | **Claude** (this column) |
 |---|---|---|
-| Rivals reported | 7, refused to pad to 10 | 14 confirmed live + 4 confirmed dead, from 54 deduplicated candidates |
+| Rivals reported | 7, refused to pad to 10 | 14 confirmed live + 4 confirmed dead, from 48 distinct candidates after name normalisation |
 | Method | One analyst, live-source rule | Five blind angles → adversarial fact-check of every claim |
 | Dead products found | 0 | **4** (Mealime, Kitche, Fridgely, CozZo) |
 | Verdict on the broad expiry gap | DEAD, on Samsung Food+ and Eat This Much **marketing pages** | DEAD, but for different reasons — one of Codex's two pillars does not hold |
@@ -141,9 +176,14 @@ The rule is *named by two of our LLMs, **or** one gives a live URL*. Applied hon
 | Mealime | ✓ | ✓ | **two models** — but Claude establishes it is **discontinued 2026-10-21** |
 | MyFitnessPal Premium+ | ✓ | — | live URL (Codex) |
 | Plan to Eat, AnyList, Prepear, NoWaste, KitchenPal, Eatvora, PantryWise, Xpiry, "OH, a potato!" | — | ✓ | live URL, each independently re-fetched by a second agent |
+| **Cooklist** | — | ✓ | live URL — **verified only in the fourth run, and it endangers our own gap**; 11,297 iOS ratings |
+| **Remy** | — | ✓ | live URL — verified from its shipped web bundle's i18n table, not its marketing copy |
+| **Grocy** | — | ✓ | live URL + GitHub API + the formula confirmed in `migrations/0249.sql` |
 | Kitche, Fridgely, CozZo | — | ✓ | **excluded from the rival set** — confirmed withdrawn; retained as prior art only |
 
-Six rivals clear the two-model bar outright. Ten more clear the live-URL bar. Three are struck.
+Six rivals clear the two-model bar outright. Thirteen more clear the live-URL bar. Three are struck.
+The three added last are the ones that mattered most, which is the argument for not capping
+verification by relevance ranking: **relevance ranking is a guess, and ours was wrong.**
 
 ### P10 — Red team
 
@@ -161,8 +201,8 @@ confirmation; the difference in sourcing is where the marks are.
 
 ## 5. Model assessment, one line each
 
-**Claude Opus 5 — strength.** Sustained, verifiable retrieval under an adversarial harness: 1,310
-tool calls across 35 independent agents, and — the part that matters — it reliably argued *against*
+**Claude Opus 5 — strength.** Sustained, verifiable retrieval under an adversarial harness: 1,629
+tool calls across 42 independent agents, and — the part that matters — it reliably argued *against*
 its own prior output when instructed to, overturning two of its own gaps, refuting its own
 surviving gap, and downgrading our own headline security finding.
 
@@ -192,16 +232,31 @@ asks for in exchange.
 
 ## 7. What this column cannot support
 
-- **No user interviews.** Every claim about what users want is inferred from written complaints by
-  people who chose to write them.
-- **Complaint evidence is a convenience sample**, not a frequency estimate. `reddit.com` and
-  `old.reddit.com` failed on every fetch attempt all session, so the forum voice is missing;
-  App Store review RSS and open-source issue trackers stood in.
-- **Verification was capped**, and the cap is recorded rather than hidden: 54 candidate products
-  were deduplicated from the five sweeps and 18 were carried into adversarial verification. The
-  other 36 are not part of the confirmed set.
-- **One rival's primary source was unreachable.** All Samsung Food+ claims here rest on the support
-  centre and third parties, never on the vendor's own feature page.
-- **Three prompts produced their answers with zero retrieval** (P05, P08, and the P09 milestone
-  classification). They are model priors, clearly labelled as such, and should be read as drafting
-  aids rather than as evidence.
+Three of the limitations first recorded here were later **closed**, and the account of how is in
+[`17-gap-closing.md`](17-gap-closing.md). Two of them turned out not to be properties of the
+sources at all, but of how we asked — a finding worth more than the evidence it recovered:
+
+- **Reddit was reachable all along.** `.rss` instead of `.json`, exponential backoff for the 429s,
+  and *short* keyword queries with `restrict_sr=1`. We got all three wrong and wrote down
+  "unreachable". 851 entries indexed on the retry.
+- **Samsung Food+ was reachable all along**, through the Wayback Machine. Price resolved, and every
+  Food+ feature confirmed first-party as *"Exclusively on mobile app"* — which matters, because our
+  product is a web app and the closest rival's strongest feature does not exist on our platform.
+- **The verification cap is closed for the relevant set**: 21 verified, then 9 more; 10 skipped as
+  irrelevant and named as skipped; ~7 never examined.
+
+What remains, honestly:
+
+- **Our gap has no demand-side evidence.** A regex sweep across 851 Reddit entries for eleven
+  explainability phrasings returned **zero hits** in any meal, pantry or recipe context. We can show
+  no product joins the four facts; we cannot show anyone wants them joined. This is a searched
+  negative and it is the most important limitation in the report.
+- **No user interviews**, and no rival installed by anyone on this team — the cheapest remaining
+  improvement to our evidence, and an hour's work.
+- **The paywall gap.** EverShelf's recipe engine is Premium and was not bought; Nosh AI is partly
+  Pro-gated; ChefGPT is behind a sign-in. For the three closed products with the most plausible
+  architecture we verified marketing surfaces, not running paid features.
+- **Complaint evidence is a convenience sample**, not a frequency estimate.
+- **Three prompts produced their answers with zero retrieval** (P05, P08, and the P09
+  classification). They are model priors, labelled as such, and should be read as drafting aids
+  rather than as evidence.

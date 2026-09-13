@@ -6,8 +6,48 @@ Three candidates, five sentences each. Banned words enforced: *leverage, empower
 
 > A five-user comprehension test was explicitly ruled out as the measurable claim. Nielsen's own guidance is that quantitative metrics need about twenty users, so n=5 cannot support a pass/fail threshold — this is the substance of disagreement **D7** with the Codex analyst.
 
----
+> ## ⚠ CORRECTION — read before using any of these
+>
+> These candidates were written **before** the fourth verification run. Their opening market
+> sentences are now **factually wrong** and must not be printed:
+>
+> - Candidate 1, sentence 1: *"All fourteen live products … none tells you why"* — **false.**
+>   **Cooklist** (11,297 iOS ratings) advertises exactly that: *"Your parsley is 7 days old and may
+>   expire soon. Tap to see recipes you can cook with it."* — on a vendor **mockup**, so it is a
+>   claim rather than proof, but it is far too close to print "none tells you why".
+> - Candidate 2, sentence 1: *"the decisive column … is 'unknown' or 'partial' for 14/14 confirmed
+>   rivals"* — true of the fourteen in that table, but the table was incomplete; Cooklist was in
+>   the dropped set. Cite it as *"the fourteen we had verified at that point"*, with the date, or
+>   not at all.
+>
+> **Replace the opening sentence with this, which is still true:**
+>
+> > No shipped consumer meal product joins all four facts in one auditable, correctable
+> > explanation — the named pantry item, its actual expiry date, the nutrient constraint, and the
+> > reason for the substitution. Cooklist shows what it swapped but never why; RecipeFix argues
+> > about the swap but holds no inventory or dates; Remy has the dates but states neither them nor
+> > a reason; Grocy has a published formula and shows the user an integer.
+>
+> - Candidates 1 and 3, measurable claim: *"a baseline of 0/500 recorded by the same harness
+>   against today's build"* — **not producible as written.**
+>   `InventoryRecommendRequest.num_recipes` is `Field(default=5, ge=1, le=10)`, so ten seeded
+>   pantries yield at most **100** recommendations from today's build, not 500. The 500 figure is
+>   valid only for the offline determinism corpus. Corrected in
+>   [`11b-mission-final.md`](11b-mission-final.md); see also [`12`](12-milestones.md) N4 and
+>   [`14`](14-cut-list.md) Cut 2.
+>
+> **The rest of Candidate 1 — the pick — is unaffected, and this is the important part.** Its
+> substance is a claim about *our own product*, not about the market: `match_score` at
+> `backend/api/inventory_recommender.py:51` is written by Gemini and recomputed by no line of our
+> code. That is still true, and the measurable claim (500/500 determinism and byte-identical
+> ordering across 20 shuffles, against a baseline measured by the same harness on today's build)
+> does not depend on the market census at all. Only the framing sentence fails.
+>
+> Our own C6 run reached the same conclusion independently and by a different route — it marked
+> this claim **UNTESTABLE as stated** and told us to downgrade it to a dated citation. See
+> [`13-name-the-test.md`](13-name-the-test.md), row **U3**.
 
+---
 CANDIDATE 1 — THE RECEIPT
 
 All fourteen live products our survey verified on 2026-09-13 tell you that a recipe matches and none tells you why; the strongest thing anyone ships is Samsung Food's "each recipe will show how well it matches", which is a number, not a reason. Ours is worse than theirs, because the percentage we print in 2xl bold at RecipeRecommendationModal.tsx:304 comes from RecommendedRecipe.match_score at backend/api/inventory_recommender.py:51 — a field Gemini writes and no line of our code recomputes from the dates we already hold. Epicourier will compute that score in a pure module over the fifty-recipe corpus in backend/dataset/recipes-supabase.csv, using a published integer table — Grocy's due score, cited in a code comment, with its "20 points per expired ingredient" term deliberately set to zero — and print the receipt beneath it: each pantry item, its expiry date, its points, the running total, every line correctable in one tap, with Gemini demoted from judge to the prose that describes a ranking it was handed. The measurable claim M0 will test offline: across 50 recipes × 10 seeded pantries = 500 recommendations, the displayed total equals the sum of the displayed line items in 500/500 cases and the ordering is byte-identical across 20 shuffles of inventory input order, against a baseline of 0/500 recorded by the same harness against today's build. A user who believes the recommendation is wrong can then point at the one line that is wrong and watch the ranking move, instead of arguing with a percentage nobody — including us — can reproduce.

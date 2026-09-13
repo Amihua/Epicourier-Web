@@ -29,6 +29,80 @@ citation audit is counted separately: **80 URLs re-fetched, 2 substantive citati
 The fact-checker was also required to record what it checked and found *correct*, which is why
 thirteen CLEAN entries appear below: the ledger cannot be padded by reporting only hits.
 
+## Caught *after* this ledger was first written — including one of our own citations
+
+The ledger below was written, and then a fourth verification run went back for three rivals the
+verification cap had dropped. It produced the two most serious errors in the whole report, and
+both were ours.
+
+### 1. We cited a customer review that does not exist at the date we gave · **CITATION WITHDRAWN**
+
+Our G1 confirming evidence was a Cooklist customer review dated **2023-07-09**, quoted as asking
+for *"an option to choose how closely your pantry meets the recipe requirements instead of random
+broad matches"*.
+
+**How it was caught.** The fact-checker did not take the citation on trust. It pulled **272 unique
+Cooklist reviews** from the iTunes review RSS feed
+(`itunes.apple.com/us/rss/customerreviews/id=1352600944`, both `mostrecent` and `mosthelpful`
+orderings, ten pages each, retried individually because the endpoint rate-limits), spanning
+2018-06-14 to 2026-08-05 and including **all 45 reviews from calendar 2023**.
+
+**What was true.** There is exactly one review dated 2023-07-09: four stars, author
+`AngryNorsemen3`, titled *"Best app for food management"*, complaining that autofill miscategorised
+cream cheese jalapeño. Searching the full corpus: `"how closely"` → 0 hits; `"meets the recipe"` →
+0; `"recipe requirements"` → 0; `"broad match"` → 0; `"random broad"` → 0.
+
+**What we did.** Withdrew the citation rather than re-dating it — 272 of 11,297 ratings is a
+sample and cannot prove the sentence exists nowhere, but the date we cited *is* covered and carries
+different text, so the citation is unsupportable as written. And the feature that quote asked for
+already ships: *"You can set the level of substitution that you prefer"* (Cooklist review,
+2024-09-08).
+
+**And it has no replacement.** We went looking for a real version of that citation across 851
+Reddit entries and found none — see [`17-gap-closing.md` §2a](17-gap-closing.md#2a-the-result-we-did-not-want-our-gap-has-no-demand-side-evidence).
+The honest outcome of withdrawing a bad citation was not a better citation; it was discovering that
+**our gap has no demand-side evidence at all.** That is the finding, and we report it.
+
+**Why this one matters more than the other 129.** Every error below was Claude misreading someone
+else's page. This one is a fabricated-looking citation inside **our own deliverable**, supporting
+**our own central claim** — exactly the thing a marker is entitled to spot-check, and exactly the
+thing that would have destroyed the report's credibility if they had found it first.
+
+### 2. We over-counted our own coverage gap
+
+The market-survey workflow reported "54 candidate products deduplicated, 18 verified". Its
+deduplication key was strict string matching, so five entries that were name-variants of
+already-verified products (`Xpiry: Food Expiry & AI Recipe`, `Samsung Food (Samsung Food+)`,
+`PantryWise`, `NoWaste`, `Kitche`) were counted as distinct unverified candidates. True figures:
+63 raw mentions → **48 distinct** → 21 verified → 26 unverified. The error was in the direction of
+making us look *less* thorough than we were, which is the safe direction, but it was still wrong
+and it is corrected in [`01-market-survey.md`](01-market-survey.md).
+
+**And the cap was not harmless.** Cooklist was sitting in the dropped set, and Cooklist puts G1 in
+serious danger — see below.
+
+### 3. We over-corrected, and caught that too
+
+The fourth-run fact-checker returned `KILLS_THE_NARROW_CLAIM` for Cooklist, citing the parsley
+notification from its App Store listing. Before writing that into the deliverable, we **opened the
+image**. Its status bar reads `Sketch` at `9:41 AM` — Apple's default mockup values — so the
+artifact is vendor marketing art, not a device capture. A control settles it: screenshot 9 in the
+*same* listing is a genuine capture, with a real status bar and a photographed receipt. Both images
+are retained at
+[`../../evidence/claude/screenshots/`](../../evidence/claude/screenshots/).
+
+So the verdict was downgraded from *kills* to *endangers, unverified*, and the action item is now
+concrete: **install Cooklist and screenshot the real behaviour.** Worth stating plainly, because it
+cuts both ways — the same discipline that found the refutation also stopped us from over-applying
+it, and an agent's confident verdict is itself a claim that needs checking.
+
+## A sixth run found 129 more, in our own prose
+
+The ledger below is about errors we made reading **other people's** pages. A later audit turned the
+same method on our own arguments and found **129 findings, 56 HIGH, 23 cross-file contradictions** —
+the worst of which were three cases of *us* misquoting a source, one of them our own Project 1a.
+[`18-self-audit.md`](18-self-audit.md).
+
 ## The ten that changed a conclusion
 
 | # | What Claude claimed | How it was caught | What was true |
@@ -50,6 +124,13 @@ The most valuable caught errors were not about rivals; they were about **us**.
 
 - **G2, "nothing measures whether the plan reduced waste", is DEAD.** Five shipping products do it (FridgeBuddy, SeePantry, Fango, Trepo, Eat This Much). And the measurement is out of budget anyway: the closest published trial ([JMIR PMC9482070](https://pmc.ncbi.nlm.nih.gov/articles/PMC9482070/)) ran six students for a month per app and found **no change in food waste**. Had we not run this check, a waste-reduction percentage would have gone on the poster, and it would have been indefensible.
 - **G4, "nothing connects a calorie target to this week's groceries", is DEAD.** Eat This Much ships the whole chain; Prospre ships per-training-day macro cycling; Cooklist ships missing-ingredients-only lists. This was one of the team's three candidate features.
+- **G1 was narrowed TWICE, by two different prompts, on the same day.** P17 found *RecipeFix*
+  ("No black-box AI. Every substitution comes with the culinary reasoning behind it"), which killed
+  the broad form. The fourth verification run then found **Cooklist** — *"Your parsley is 7 days
+  old and may expire soon. Tap to see recipes you can cook with it."* — which killed the narrow
+  form too — though on a vendor mockup, not a device capture, so it endangers rather than settles.
+  What survives is a four-way conjunction, and we say on the poster that it is a conjunction gap,
+  not a moat.
 - **G3 was NARROWED, not confirmed.** "Nobody treats the pantry as uncertain" is false — SeePantry, Fango and Samsung Food all do, in different ways. Only the *downstream* claim survived.
 
 ## Full ledger
