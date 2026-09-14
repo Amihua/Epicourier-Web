@@ -1,0 +1,166 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: report.aux
+The style file: ACM-Reference-Format.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: report.bib
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Warning--no key, author in samsungfood
+Warning--no author, editor, organization, or key in samsungfood
+Warning--to sort, need author or key in samsungfood
+Warning--no key, author in eatthismuch
+Warning--no author, editor, organization, or key in eatthismuch
+Warning--to sort, need author or key in eatthismuch
+Warning--no key, author in paprika
+Warning--no author, editor, organization, or key in paprika
+Warning--to sort, need author or key in paprika
+Warning--no key, author in cooklist
+Warning--no author, editor, organization, or key in cooklist
+Warning--to sort, need author or key in cooklist
+Warning--no key, author in grocy
+Warning--no author, editor, organization, or key in grocy
+Warning--to sort, need author or key in grocy
+Warning--no key, author in recipefix
+Warning--no author, editor, organization, or key in recipefix
+Warning--to sort, need author or key in recipefix
+Warning--no key, author, or editor in jmir2022
+Warning--no author, editor, organization, or key in jmir2022
+Warning--to sort, need author, editor, or key in jmir2022
+Warning--no key, author in sfshop
+Warning--no author, editor, organization, or key in sfshop
+Warning--to sort, need author or key in sfshop
+Warning--no key, author in mealimeshop
+Warning--no author, editor, organization, or key in mealimeshop
+Warning--to sort, need author or key in mealimeshop
+Warning--no key, author in mfpex
+Warning--no author, editor, organization, or key in mfpex
+Warning--to sort, need author or key in mfpex
+Warning--no key, author in cronotrain
+Warning--no author, editor, organization, or key in cronotrain
+Warning--to sort, need author or key in cronotrain
+Warning--no key, author in asvs
+Warning--no author, editor, organization, or key in asvs
+Warning--to sort, need author or key in asvs
+Warning--no key, author in supabaserls
+Warning--no author, editor, organization, or key in supabaserls
+Warning--to sort, need author or key in supabaserls
+Warning--no key, author in llm01
+Warning--no author, editor, organization, or key in llm01
+Warning--to sort, need author or key in llm01
+Warning--no key, author in fda
+Warning--no author, editor, organization, or key in fda
+Warning--to sort, need author or key in fda
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Warning--no key, author in asvs
+Warning--no key, author in asvs
+Warning--no key, author in cooklist
+Warning--no key, author in cooklist
+Warning--no key, author in cronotrain
+Warning--no key, author in cronotrain
+Warning--no key, author in eatthismuch
+Warning--no key, author in eatthismuch
+Warning--no key, author in fda
+Warning--no key, author in fda
+Warning--no key, author in grocy
+Warning--no key, author in grocy
+Warning--no key, author, or editor in jmir2022
+Warning--no key, author, or editor in jmir2022
+Warning--no key, author in llm01
+Warning--no key, author in llm01
+Warning--no key, author in mealimeshop
+Warning--no key, author in mealimeshop
+Warning--no key, author in mfpex
+Warning--no key, author in mfpex
+Warning--no key, author in paprika
+Warning--no key, author in paprika
+Warning--no key, author in recipefix
+Warning--no key, author in recipefix
+Warning--no key, author in samsungfood
+Warning--no key, author in samsungfood
+Warning--no key, author in sfshop
+Warning--no key, author in sfshop
+Warning--no key, author in supabaserls
+Warning--no key, author in supabaserls
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--no key, author, or editor in jmir2022
+Warning--neither author and editor supplied for jmir2022
+Warning--no number and no volume in jmir2022
+Warning--page numbers missing in both pages and numpages fields in jmir2022
+Warning--no key, author in asvs
+Warning--empty author in asvs
+Warning--no key, author in fda
+Warning--empty author in fda
+Warning--no key, author in llm01
+Warning--empty author in llm01
+Warning--no key, author in cooklist
+Warning--empty author in cooklist
+Warning--no key, author in cronotrain
+Warning--empty author in cronotrain
+Warning--no key, author in eatthismuch
+Warning--empty author in eatthismuch
+Warning--no key, author in grocy
+Warning--empty author in grocy
+Warning--no key, author in mealimeshop
+Warning--empty author in mealimeshop
+Warning--no key, author in mfpex
+Warning--empty author in mfpex
+Warning--no key, author in paprika
+Warning--empty author in paprika
+Warning--no key, author in recipefix
+Warning--empty author in recipefix
+Warning--no key, author in sfshop
+Warning--empty author in sfshop
+Warning--no key, author in samsungfood
+Warning--empty author in samsungfood
+Warning--no key, author in supabaserls
+Warning--empty author in supabaserls
+Warning--empty publisher in bansal2021
+Warning--empty address in bansal2021
+Warning--page numbers missing in both pages and numpages fields in bansal2021
+You've used 17 entries,
+            6335 wiz_defined-function locations,
+            1590 strings with 20605 characters,
+and the built_in function-call counts, 12299 in all, are:
+= -- 1307
+> -- 48
+< -- 0
++ -- 30
+- -- 21
+* -- 725
+:= -- 774
+add.period$ -- 79
+call.type$ -- 17
+change.case$ -- 70
+chr.to.int$ -- 17
+cite$ -- 187
+duplicate$ -- 1418
+empty$ -- 1052
+format.name$ -- 21
+if$ -- 3014
+int.to.chr$ -- 2
+int.to.str$ -- 1
+missing$ -- 9
+newline$ -- 198
+num.names$ -- 14
+pop$ -- 684
+preamble$ -- 1
+purify$ -- 206
+quote$ -- 0
+skip$ -- 483
+stack$ -- 0
+substring$ -- 880
+swap$ -- 69
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 496
+warning$ -- 110
+while$ -- 14
+width$ -- 0
+write$ -- 352
+(There were 110 warnings)

@@ -1,0 +1,218 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{17}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{} and \showURL{}.  The latter does
+%%% not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showURL}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showURL #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+\makeatletter
+\@ifundefined{NAT@parse@date}{}{\let\NAT@parse@date@orig\NAT@parse@date}
+\@ifundefined{NAT@parse@date}{}{\def\NAT@parse@date#1#2#3#4#5#6@@{\NAT@parse@date@orig#1#2#3#4#5#6@@\def\NAT@tempyear{0000}\def\NAT@tempexlab{{?}}\ifx\NAT@year\NAT@tempyear\ifx\NAT@exlab\NAT@tempexlab\def\NAT@date{[n.\,d.]}\else\edef\NAT@date{[n.\,d.]\NAT@exlab}\fi\fi}}
+\makeatother
+
+\bibitem[jmi(2022)]%
+        {jmir2022}
+ \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{Effect of a meal-planning intervention on food
+  waste (null result over one month)}.
+\newblock \bibinfo{journal}{\emph{JMIR}} (\bibinfo{year}{2022}).
+\newblock
+\newblock
+\shownote{PMC9482070, \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC9482070/}}.
+
+
+\bibitem[asv(2024)]%
+        {asvs}
+ \bibinfo{year}{2024}\natexlab{}.
+\newblock \bibinfo{title}{OWASP Application Security Verification Standard
+  5.0}.
+\newblock
+  \bibinfo{howpublished}{\url{https://owasp.org/www-project-application-security-verification-standard/}}.
+\newblock
+
+
+\bibitem[fda(2025)]%
+        {fda}
+ \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{title}{FDA Food Allergies guidance}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.fda.gov/food/food-labeling-nutrition/food-allergies}}.
+\newblock
+
+
+\bibitem[llm(2025)]%
+        {llm01}
+ \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{title}{OWASP LLM01: Prompt Injection}.
+\newblock
+  \bibinfo{howpublished}{\url{https://genai.owasp.org/llmrisk/llm01-prompt-injection/}}.
+\newblock
+
+
+\bibitem[coo(2026)]%
+        {cooklist}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Cooklist (11{,}297 iOS ratings; expiry-aware
+  suggestion mockup)}.
+\newblock \bibinfo{howpublished}{\url{https://cooklist.com}}.
+\newblock
+\newblock
+\shownote{checked 2026-09-13}.
+
+
+\bibitem[cro(2026)]%
+        {cronotrain}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Cronometer --- workout-day macro targets and
+  energy-expenditure boundaries}.
+\newblock
+  \bibinfo{howpublished}{\url{https://support.cronometer.com/hc/en-us/articles/33180044162836-Mobile-Targets}}.
+\newblock
+
+
+\bibitem[eat(2026)]%
+        {eatthismuch}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Eat This Much --- pantry-priority automatic
+  planning}.
+\newblock \bibinfo{howpublished}{\url{https://www.eatthismuch.com/pricing}}.
+\newblock
+\newblock
+\shownote{checked 2026-09-13}.
+
+
+\bibitem[gro(2026)]%
+        {grocy}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Grocy --- ERP beyond your fridge (integer ``due
+  score'')}.
+\newblock \bibinfo{howpublished}{\url{https://grocy.info}}.
+\newblock
+\newblock
+\shownote{due-score formula confirmed in migrations/0249.sql; checked
+  2026-09-13}.
+
+
+\bibitem[mea(2026)]%
+        {mealimeshop}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Mealime --- automatic grocery list from the weekly
+  plan}.
+\newblock \bibinfo{howpublished}{\url{https://www.mealime.com/}}.
+\newblock
+\newblock
+\shownote{checked 2026-09-13}.
+
+
+\bibitem[mfp(2026)]%
+        {mfpex}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{MyFitnessPal --- exercise adjusts daily calorie and
+  macro goals}.
+\newblock
+  \bibinfo{howpublished}{\url{https://support.myfitnesspal.com/hc/en-us/articles/360032623851}}.
+\newblock
+
+
+\bibitem[pap(2026)]%
+        {paprika}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Paprika Recipe Manager 3}.
+\newblock \bibinfo{howpublished}{\url{https://www.paprikaapp.com}}.
+\newblock
+\newblock
+\shownote{checked 2026-09-13}.
+
+
+\bibitem[rec(2026)]%
+        {recipefix}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{RecipeFix --- ``No black-box AI'': substitution
+  reasoning}.
+\newblock \bibinfo{howpublished}{\url{https://recipefix.com}}.
+\newblock
+\newblock
+\shownote{checked 2026-09-13}.
+
+
+\bibitem[sfs(2026)]%
+        {sfshop}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Samsung Food --- ``turn any recipe or meal plan into
+  a smart shopping list with one click''}.
+\newblock \bibinfo{howpublished}{\url{https://samsungfood.com/}}.
+\newblock
+\newblock
+\shownote{checked 2026-09-13}.
+
+
+\bibitem[sam(2026)]%
+        {samsungfood}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Samsung Food+ (Food List, near-use-by planning)}.
+\newblock \bibinfo{howpublished}{\url{https://samsungfood.com/food-plus/}}.
+\newblock
+\newblock
+\shownote{checked 2026-09-13}.
+
+
+\bibitem[sup(2026)]%
+        {supabaserls}
+ \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{Supabase Row Level Security}.
+\newblock
+  \bibinfo{howpublished}{\url{https://supabase.com/docs/guides/database/postgres/row-level-security}}.
+\newblock
+
+
+\bibitem[Bansal et~al\mbox{.}(2021)]%
+        {bansal2021}
+\bibfield{author}{\bibinfo{person}{Gagan Bansal} {et~al\mbox{.}}}
+  \bibinfo{year}{2021}\natexlab{}.
+\newblock \showarticletitle{Does the Whole Exceed its Parts? The Effect of AI
+  Explanations on Complementary Team Performance}. In
+  \bibinfo{booktitle}{\emph{CHI}}.
+\newblock
+\newblock
+\shownote{\url{https://idl.cs.washington.edu/files/2021-AIExplanationsTeamPerformance-CHI.pdf}}.
+
+
+\bibitem[{W3C}(2023)]%
+        {wcag22}
+\bibfield{author}{\bibinfo{person}{{W3C}}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{title}{Web Content Accessibility Guidelines (WCAG) 2.2}.
+\newblock \bibinfo{howpublished}{\url{https://www.w3.org/TR/WCAG22/}}.
+\newblock
+
+
+\end{thebibliography}

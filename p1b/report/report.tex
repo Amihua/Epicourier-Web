@@ -1,0 +1,376 @@
+\documentclass[sigconf,nonacm]{acmart}
+% ACM two-column format (required by the rubric). Compiles with Computer Modern
+% when Libertine/newtx are unavailable; the two-column ACM layout is unchanged.
+\settopmatter{printacmref=false}
+\setcopyright{none}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\pagestyle{plain}
+
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{balance}
+
+\begin{filecontents*}{report.bib}
+@misc{samsungfood, title={Samsung Food+ (Food List, near-use-by planning)}, howpublished={\url{https://samsungfood.com/food-plus/}}, note={checked 2026-09-13}, year={2026}}
+@misc{eatthismuch, title={Eat This Much --- pantry-priority automatic planning}, howpublished={\url{https://www.eatthismuch.com/pricing}}, note={checked 2026-09-13}, year={2026}}
+@misc{grocy, title={Grocy --- ERP beyond your fridge (integer ``due score'')}, howpublished={\url{https://grocy.info}}, note={due-score formula confirmed in migrations/0249.sql; checked 2026-09-13}, year={2026}}
+@misc{cooklist, title={Cooklist (11{,}297 iOS ratings; expiry-aware suggestion mockup)}, howpublished={\url{https://cooklist.com}}, note={checked 2026-09-13}, year={2026}}
+@misc{recipefix, title={RecipeFix --- ``No black-box AI'': substitution reasoning}, howpublished={\url{https://recipefix.com}}, note={checked 2026-09-13}, year={2026}}
+@misc{paprika, title={Paprika Recipe Manager 3}, howpublished={\url{https://www.paprikaapp.com}}, note={checked 2026-09-13}, year={2026}}
+@inproceedings{bansal2021, title={Does the Whole Exceed its Parts? The Effect of AI Explanations on Complementary Team Performance}, author={Bansal, Gagan and others}, booktitle={CHI}, year={2021}, note={\url{https://idl.cs.washington.edu/files/2021-AIExplanationsTeamPerformance-CHI.pdf}}}
+@article{jmir2022, title={Effect of a meal-planning intervention on food waste (null result over one month)}, journal={JMIR}, year={2022}, note={PMC9482070, \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC9482070/}}}
+@misc{wcag22, title={Web Content Accessibility Guidelines (WCAG) 2.2}, author={{W3C}}, howpublished={\url{https://www.w3.org/TR/WCAG22/}}, year={2023}}
+@misc{asvs, title={OWASP Application Security Verification Standard 5.0}, howpublished={\url{https://owasp.org/www-project-application-security-verification-standard/}}, year={2024}}
+@misc{llm01, title={OWASP LLM01: Prompt Injection}, howpublished={\url{https://genai.owasp.org/llmrisk/llm01-prompt-injection/}}, year={2025}}
+@misc{supabaserls, title={Supabase Row Level Security}, howpublished={\url{https://supabase.com/docs/guides/database/postgres/row-level-security}}, year={2026}}
+@misc{fda, title={FDA Food Allergies guidance}, howpublished={\url{https://www.fda.gov/food/food-labeling-nutrition/food-allergies}}, year={2025}}
+@misc{sfshop, title={Samsung Food --- ``turn any recipe or meal plan into a smart shopping list with one click''}, howpublished={\url{https://samsungfood.com/}}, note={checked 2026-09-13}, year={2026}}
+@misc{mealimeshop, title={Mealime --- automatic grocery list from the weekly plan}, howpublished={\url{https://www.mealime.com/}}, note={checked 2026-09-13}, year={2026}}
+@misc{mfpex, title={MyFitnessPal --- exercise adjusts daily calorie and macro goals}, howpublished={\url{https://support.myfitnesspal.com/hc/en-us/articles/360032623851}}, year={2026}}
+@misc{cronotrain, title={Cronometer --- workout-day macro targets and energy-expenditure boundaries}, howpublished={\url{https://support.cronometer.com/hc/en-us/articles/33180044162836-Mobile-Targets}}, year={2026}}
+\end{filecontents*}
+
+\begin{document}
+
+\title{The Receipt: An Auditable, Correctable Recommendation for Pantry-Aware Meal Planning}
+\subtitle{Project 1b --- Epicourier-Web \quad(\textbf{Group 12})}
+
+\author{Andy Yu}\affiliation{\institution{NC State University}\city{Raleigh}\country{USA}}\email{yyu55@ncsu.edu}
+\author{Sihao Liu}\affiliation{\institution{NC State University}\city{Raleigh}\country{USA}}\email{sliu78@ncsu.edu}
+\author{Jeffery Zheng}\affiliation{\institution{NC State University}\city{Raleigh}\country{USA}}\email{fzheng4@ncsu.edu}
+\author{Wenbo Li}\affiliation{\institution{NC State University}\city{Raleigh}\country{USA}}\email{wli56@ncsu.edu}
+
+\begin{abstract}
+Epicourier prints a recipe ``match percentage'' in bold that is authored by a
+language model (Google Gemini) and that \emph{no line of the codebase recomputes}
+from the expiry dates already in the pantry. We propose \textbf{the receipt}: move
+the ranking out of the model into a pure, published integer function and print,
+beneath the number, every pantry item, its date, the points it contributed, and
+the running total --- a receipt the user can correct and watch the order move. We
+surveyed the market with \textbf{four LLMs used as independent analysts} (Claude
+Opus~5 and DeepSeek~V4 with web retrieval; OpenAI Codex; and Qwen2.5:32B run
+locally without retrieval). Of four candidate gaps, \textbf{two are dead} and
+\textbf{two were narrowed by our own prompts}; the surviving gap is a four-way
+conjunction, not a moat. Our four-person team will ship this as three user-facing
+features --- cross-device parity, a pantry-aware link from recommendation to
+shopping list, and a training-day diet target --- unified by the receipt; the
+market places the first two as table stakes and only the audited combination as a
+differentiator. The proposal is testable offline with no human subjects.
+This report is written to be graded on caught errors: it records $129{+}$
+corrections, one withdrawn citation of our own, and the cross-model disagreements
+that produced them.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+Epicourier-Web is a full-stack meal planner (Next.js\,/\,TypeScript front end;
+FastAPI\,/\,Python back end; Supabase/PostgreSQL; Google Gemini~2.5 Flash for
+recommendation). Its twenty implemented use cases span recipe browsing with an
+``inventory match percentage,'' AI meal-plan recommendation, calendar scheduling
+and completion, a nutrient dashboard with goals and CSV export, gamified
+challenges, pantry inventory with expiry colour-coding, expiry-prioritised recipe
+suggestions, and a shopping-list-to-inventory transfer flow.
+
+The extension has a \emph{hard budget}: four graduate students, one month,
+$\approx$160 person-hours, to build \textbf{and test}. Everything below is scoped
+to that. The \textbf{challenge (why)}: the recommendation the product sells hardest
+is unaccountable. The \textbf{thing we build (what)}: a deterministic,
+user-correctable receipt behind every ranking. The \textbf{benefit (so what)}: the
+recommendation becomes inspectable rather than trusted on an ``AI'' label, and we
+can prove the arithmetic is right offline, exhaustively, in seconds.
+
+\section{D1 --- Market Survey}
+\subsection{The rivals}
+We verified \textbf{14 live rivals} and \textbf{4 confirmed-dead} products from 48
+distinct candidates (after name normalisation), each name carrying a live URL a
+second agent re-fetched. Table~\ref{tab:rivals} is the load-bearing subset.
+
+\begin{table*}[t]\footnotesize\centering
+\caption{Representative verified rivals (checked 2026-09-13). ``$-$'' = not established on the pages we read; not proof of absence.}
+\label{tab:rivals}
+\begin{tabular}{@{}p{2.5cm}p{3.3cm}p{4.7cm}p{4.7cm}@{}}
+\toprule
+\textbf{Product} & \textbf{Who uses it} & \textbf{Main strength} & \textbf{Main weakness / note} \\
+\midrule
+Samsung Food+ \cite{samsungfood} & All-in-one home cooks & Food List prioritises items nearing use-by & Food+ price unknown; a pillar Claude could not reach (HTTP 403), Codex could \\
+Eat This Much \cite{eatthismuch} & Dieters wanting auto plans & Nutrient targets + pantry priority + grocery list & Prioritises \emph{leftovers} by assumed consumption, not shelf life (disagreement D3) \\
+Paprika 3 \cite{paprika} & Recipe collectors & Import, meal calendar, pantry, lists & No verified outcome/ranking rationale \\
+SuperCook & Ingredient-first cooks & Discovery from current ingredients & No update since 2022-06-15 \\
+Cooklist \cite{cooklist} & Grocery-synced households & 11{,}297 iOS ratings; ``parsley is 7 days old'' suggestion & That screenshot is a \textbf{Sketch mockup}, not a device capture --- caught by opening the image \\
+Grocy \cite{grocy} (OSS) & Self-hosters & Publishes an \textbf{integer ``due score''} formula --- auditable ranking already ships & Self-host only; not consumer-friendly \\
+RecipeFix \cite{recipefix} & Substitution seekers & ``No black-box AI --- every substitution comes with the reasoning'' & Kills the \emph{broad} form of our gap \\
+Mealime & Busy households & Simple personalised plans & \textbf{Discontinued 2026-10-21} (named by both models; caught as stale in Codex's table) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Four gaps, interrogated to destruction}
+We pre-committed five confirming and five refuting items per gap and marked each
+\textsc{found}/\textsc{not-found} after looking. Two gaps died:
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{G2} ``nothing measures whether the plan reduced waste'' --- \textbf{dead}. Five shipping products claim it, \emph{and} the measurement is out of budget: the nearest published trial ran six students for a month and found no change \cite{jmir2022}.
+\item \textbf{G4} ``nothing connects a calorie target to this week's groceries'' --- \textbf{dead}. Eat This Much ships the whole chain; others ship per-training-day macros.
+\item \textbf{G3} ``nobody treats the pantry as uncertain'' --- \textbf{narrowed}. Three products do; what survives is that none propagates that uncertainty \emph{into the ranking}.
+\item \textbf{G1} ``nobody explains \emph{why} it recommended this'' --- \textbf{narrowed twice in one day}. RecipeFix ships substitution reasoning; Cooklist advertises expiry-aware prompts (on a mockup). What survives is a \textbf{four-way conjunction}: no product joins the \emph{named item}, its \emph{actual expiry date}, the \emph{nutrient constraint}, and the \emph{reason for a substitution} into one object a person can read and correct.
+\end{itemize}
+We state on the poster that this is a \emph{conjunction gap, not a moat}.
+
+\subsection{The two-model rule}
+A rival ``counts'' only if two of our LLMs name it, \emph{or} one supplies a live
+URL. Table~\ref{tab:survive} applies it honestly: six rivals clear the two-model
+bar outright, thirteen more clear the live-URL bar, and three are struck as
+withdrawn. The three products added last (Cooklist, Remy, Grocy) mattered most ---
+an argument against capping verification by relevance ranking, because our
+relevance ranking was wrong.
+
+\begin{table}[h]\footnotesize\centering
+\caption{Two-model-rule survival (excerpt). \checkmark${=}$named independently.}
+\label{tab:survive}
+\begin{tabular}{@{}p{2.9cm}cc p{2.4cm}@{}}
+\toprule
+\textbf{Rival} & \textbf{Cdx} & \textbf{Cld} & \textbf{Survives by} \\
+\midrule
+Samsung Food+ & \checkmark & \checkmark & two models + URL \\
+Eat This Much & \checkmark & \checkmark & two models + URL \\
+Paprika, SideChef, SuperCook & \checkmark & \checkmark & two models + URL \\
+Mealime & \checkmark & \checkmark & two models --- \emph{but discontinued} \\
+Cooklist, Grocy, Remy & $-$ & \checkmark & live URL (added last; highest value) \\
+Kitche, Fridgely, CozZo & $-$ & \checkmark & \textbf{struck} --- confirmed withdrawn \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The three features we will build, against the market}
+Our Project~2 plan is three user-facing features. The market decides how each is
+positioned (Table~\ref{tab:features}); our own P13--P20 market-support study places
+two of the three as \emph{table stakes} and only their audited combination as a
+differentiator.
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{Recommendation $\rightarrow$ shopping list.} When a recommended
+recipe is accepted, compute required quantities, subtract confirmed pantry stock,
+consolidate duplicates, and add \emph{only the missing delta} to the To-Buy list
+after a preview the user confirms. Samsung Food (``turn any recipe\ldots into a
+smart shopping list with one click'' \cite{sfshop}) and Mealime \cite{mealimeshop}
+already ship the broad workflow; our differentiator is the pantry-aware missing-item
+delta with provenance --- the same line items the receipt already computes.
+\item \textbf{Cross-device / platform adaptation.} The accepted meal and list are
+usable on desktop and narrow-mobile, state syncs across sessions, and any absent
+wearable/appliance capability degrades to manual input without dropping the plan.
+This is a \emph{quality requirement}, not the product gap: incumbents ship
+multi-platform continuity, so we claim it as parity. Native apps, offline conflict
+resolution and smart-appliance control are out of a one-month budget.
+\item \textbf{Diet $+$ gym target.} Epicourier accepts a \emph{user-confirmed}
+daily energy/macro target, labelled with its source and time, ranks recipes against
+the remaining target and pantry state, and explains the trade-off. It does
+\textbf{not} estimate workout burn and never states medical advice. The
+calorie-to-grocery chain is already shipped by MyFitnessPal and Cronometer
+\cite{mfpex,cronotrain} --- which is why gap~G4 is dead; the wedge is the
+\emph{auditable} training-day bridge to an explained, pantry-aware meal.
+\end{itemize}
+
+\begin{table}[h]\footnotesize\centering
+\caption{The team's three features, classified against the market (P13--P20).}
+\label{tab:features}
+\begin{tabular}{@{}p{2.3cm}p{1.3cm}p{1.4cm}p{2.2cm}@{}}
+\toprule
+\textbf{Feature} & \textbf{Demand} & \textbf{Satur.} & \textbf{Our honest claim} \\
+\midrule
+Recipe $\rightarrow$ To-Buy list & Strong & High & Table stakes; differ on missing-item delta \\
+Cross-device adaptation & Moderate & High & Parity / quality requirement \\
+Diet $+$ gym target & Strong & High (safety-sens.) & Wedge only as audited target$\rightarrow$meal$\rightarrow$list bridge \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{D2 --- Mission and Stakeholders}
+\subsection{Mission statement}
+\emph{Every meal planner we verified tells you \textbf{that} a recipe matches;
+none assembles the whole argument in one place.} Epicourier's own match percentage
+(\texttt{RecipeRecommendationModal.tsx:304}) is \texttt{match\_score}
+(\texttt{inventory\_recommender.py:51}), a number Gemini writes in prose that no
+code recomputes. We will move the ranking into a pure Python function scored by a
+\emph{published integer table} --- Grocy's due score \cite{grocy}, cited in a code
+comment, with its ``20 points per expired ingredient'' term \textbf{set to zero}
+because we will not rank food we have labelled expired into a meal --- and print
+the receipt beneath the number. Gemini keeps its job (describing a ranking it was
+handed) and loses its authority; the user can correct any line and watch the order
+move.
+
+\subsection{The measurable claim (M0), isolated}
+\begin{table}[h]\footnotesize\centering\caption{The one measurable claim: metric, threshold, baseline.}\label{tab:m0}
+\begin{tabular}{@{}p{1.9cm}p{5.6cm}@{}}
+\toprule
+Metric 1 & Displayed total $=$ sum of displayed line items \\
+Threshold & \textbf{500/500} recommendations (50 recipes $\times$ 10 seeded pantries) \\
+Metric 2 & Ranking order stable under permutation of inventory input \\
+Threshold & \textbf{Byte-identical across 20 shuffles} \\
+Baseline & Same harness on today's build. Today's API caps at 10 recs/pantry (\texttt{num\_recipes} \texttt{le=10}), so the honest baseline is \textbf{0 of 300} decomposable scores (30 live calls, 100 cells, 3 repeats), \emph{not} 0/500. \\
+Cost & Runs offline in seconds; no users, no network. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Stakeholders (excerpt)}
+Beyond customer/staff/admin, 18 stakeholders were named, each with a fear and a
+\emph{testable} design decision (Table~\ref{tab:stake}).
+
+\begin{table}[h]\footnotesize\centering\caption{Stakeholders (excerpt): each fear maps to a test.}\label{tab:stake}
+\begin{tabular}{@{}p{2.1cm}p{2.4cm}p{2.9cm}@{}}
+\toprule
+\textbf{Stakeholder} & \textbf{Fear} & \textbf{Winning decision} \\
+\midrule
+Household member with an allergy & An allergen is ranked in & Per-person constraints; no ``medically safe'' guarantee \\
+Accessibility user & Expiry shown by colour only & WCAG 2.2 AA: second non-colour channel \cite{wcag22} \\
+Security reviewer & Cross-user data access & Fix ownership checks first; RLS threat model \cite{asvs,supabaserls} \\
+Recipe author & Uncredited copying & Preserve source URL and attribution \\
+Course marker & Claims without runs & Versioned prompts, transcripts, caught-error log \\
+Next semester's team & Brittle handover & One-command env; claim-to-test register \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{D3 --- Milestones and Support Material}
+\subsection{Before / Now / Future}
+\textbf{BEFORE (P1a).} We authored and ran functional tests (Web 31/32, Backend
+18/18), an adversarial pass (69 cases), triaged 18 failures to 17 distinct
+defects, and \emph{corrected our own findings} --- downgrading our headline IDOR to
+a probable false positive and finding the real defect: the transfer route returns
+\texttt{success:true} without checking affected rows (silent data loss).
+
+\textbf{NOW (Project 2), the receipt.} Budget verdict first: the NOW plan totals
+\textbf{100.75\,h against 100\,h} of capacity (160\,h $-$ 60\,h report/poster/demo);
+dropping N5b (share-route hardening, 8.75\,h) restores an $\approx$8\,h margin ---
+an \emph{open team decision}, not a settled one.
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{N1} Claim freeze, one-command env, harness skeleton (12\,h).
+\item \textbf{N2} Deterministic scorer as a pure, property-tested module (24\,h) --- ports \texttt{inventory\_recommender.py:159-162} prose into arithmetic; corpus is exactly 50 recipes $\times$ 448 ingredients (enumerable).
+\item \textbf{N3} Receipt on screen + authenticated server-side ranking (22\,h).
+\item \textbf{N4} M0 harness, recorded baseline, correctability measure (24\,h).
+\item \textbf{N5} Security/data-integrity floor: quantity floor, restock-date merge, affected-rows check (N5a, 10\,h); share-route hardening (N5b, 8.75\,h, cut candidate).
+\end{itemize}
+
+\textbf{FUTURE (Project 3).} Move food safety from prose into an enforced filter;
+add per-purchase \emph{lots} (today's schema sums quantities under a UNIQUE
+constraint, so ``lot'' is not representable); uncertainty-aware ranking
+(\emph{hypothesis} --- 851 Reddit entries + $\approx$500 reviews returned zero
+demand-side hits); a full verification gate; and the powered user study the month
+cannot afford.
+
+\subsection{The chosen feature set as one vertical slice}
+The three features are not three projects; they are one workflow the receipt makes
+auditable: \emph{a user-confirmed training-day target $\rightarrow$ an explained
+recommended meal $\rightarrow$ a pantry-aware missing-item To-Buy list}, on desktop
+and mobile. It maps onto the milestones above: N2 computes the line items, N3
+renders the receipt and the one-tap ``add missing to list'' on the authenticated,
+responsive path, N4 tests the arithmetic and correctability, and N5 secures the
+list mutation (idempotent, no write before confirmation). \textbf{Primary
+one-month slice:} Feature~1 plus the narrow, user-confirmed Feature~3, with
+Feature~2 as an acceptance requirement (responsive + cross-session sync + WCAG
+status messages). \textbf{Deferred to Project~3:} native mobile apps,
+wearable/appliance integration, and any automatic workout-burn or
+weight-loss-rate estimation --- each a safety- or scope-driven cut, not an
+oversight. Acceptance signals are pre-committed: 100\% deterministic fixture
+agreement on pantry subtraction and target math; no list mutation before
+confirmation; exercise calories never double-counted; and $\geq$4/5 task-test users
+able to say what will be added and why.
+
+\subsection{Support material we must read (excerpt)}
+80 laws, standards, licences and domain sources were mapped to use cases. Must-reads:
+WCAG~2.2 for the colour-only expiry channel \cite{wcag22}; OWASP ASVS~5.0 for
+object-level authorisation \cite{asvs} and LLM01 for the unbounded free-text goal
+interpolated into the Gemini prompt \cite{llm01}; Supabase RLS \cite{supabaserls};
+FDA allergen guidance for recommendation wording \cite{fda}; and our own
+dependency licences (root \texttt{package.json}, \texttt{pyproject.toml}).
+
+\section{D5 --- Prompt Report}
+\subsection{Method}
+Every prompt went to a \textbf{fresh analyst with no memory} of any other, with an
+identical shared-evidence block pasted in, so agreements mean something. Four
+models were used: \textbf{Claude Opus~5} (42 web-grounded agents, 1{,}629 tool
+calls) and \textbf{OpenAI Codex} (conservative, single web-grounded run) did the
+primary survey; \textbf{DeepSeek~V4-pro} and \textbf{Qwen2.5:32B} (run locally on
+$2\times$RTX~A5000, \emph{no} web retrieval) reran the twelve starters as
+third and fourth independent analysts.
+
+\subsection{Most and least useful prompts}
+\textbf{Most useful:} \emph{C1 ``catch them out''} (129 genuine errors, 2 dead
+products, 1 fabricated feature --- highest value per token); \emph{P17
+disconfirmation} (the only prompt that made us lose, narrowing the central claim);
+\emph{P07 the gap with receipts} (killed two gaps via a pre-committed
+found/not-found list). \textbf{Least useful:} \emph{P08 mission} and \emph{P05
+stakeholders} --- fluent, zero tool calls, unfalsifiable. The generalisation:
+prompts that can come back \emph{against} us earned their marks; prompts that
+cannot be wrong in a checkable way produced our least defensible output.
+
+\subsection{P01 and P10 across models; the two-model rule}
+Table~\ref{tab:xmodel} contrasts the survey and red-team fronts. Six rivals clear
+the two-model bar (named by $\geq$2 LLMs); thirteen more clear the live-URL bar;
+three are struck as discontinued. Disagreement went both ways: Claude caught Codex
+carrying \emph{Mealime} as live and resting the expiry-gap kill on a misread Eat
+This Much page; Codex reached the Samsung source Claude could not (HTTP 403).
+
+\begin{table*}[t]\footnotesize\centering
+\caption{Cross-model comparison of the two rubric prompts.}
+\label{tab:xmodel}
+\begin{tabular}{@{}p{1.9cm}p{3.5cm}p{3.4cm}p{3.4cm}p{3.4cm}@{}}
+\toprule
+& \textbf{Claude Opus 5} (web) & \textbf{Codex} (web) & \textbf{DeepSeek V4} (no web) & \textbf{Qwen2.5:32B} (local, no web) \\
+\midrule
+\textbf{P01} survey & 14 live + 4 dead, adversarially fact-checked & 7, refused to pad to 10 & Terse; heavy internal reasoning, few names & 10 named \emph{with fabricated URLs and prices} \\
+Evidence discipline & Live URL per claim, re-fetched twice & Live URL; explicit ``unknown'' & Recalled priors; cannot satisfy live-URL rule & Violated ``quote-or-unknown'': invented \texttt{\$9.99/mo} cells, a dead product (Foodily), a non-product (``Fitbit Food'') \\
+\textbf{P10} red team & Grounded in Grocy's formula, a null result, an HCI paper \cite{bansal2021} & Grounded in vendor marketing & Plausible but source-free & Plausible but source-free \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Caught errors}
+Claude's unverified first pass was wrong \textbf{129 times} (fabricated a product,
+\emph{Fridgely}; quoted a marketing listicle as vendor feature text; carried two
+discontinued products as live). The catch that outranks them all was \emph{our
+own}: a G1 confirming citation to a Cooklist review dated 2023-07-09 returned zero
+hits across 272 pulled reviews --- \textbf{we withdrew it}. The offline models made
+the two-model rule earn its place: \textbf{Qwen2.5 fabricated URLs and prices
+wholesale}, exactly the failure the rule exists to filter, and \textbf{DeepSeek V4
+spent its entire token budget on hidden reasoning}, returning an empty answer on
+one prompt --- both are reportable properties, not usable evidence.
+
+\subsection{Model assessment, one line each}
+\textbf{Claude Opus 5 --- }strength: sustained adversarial retrieval and reliable
+argument \emph{against} its own priors; weakness: a confidently wrong first pass
+(129 errors). \textbf{Codex --- }strength: conservative sourcing, explicit
+unknowns, measurable kill signals; weakness: single-model, small complaint sample,
+one stale rival. \textbf{DeepSeek V4-pro --- }strength: strong structured reasoning
+when it finishes; weakness: no browsing via API, and its reasoning budget can
+starve the answer. \textbf{Qwen2.5:32B (local) --- }strength: fast, private, zero
+marginal cost; weakness: with no retrieval it invents URLs and prices, which is
+precisely why it belongs behind the two-model rule, not in front of it.
+
+\subsection{Local model}
+A local model \emph{was} run: Qwen2.5:32B via Ollama on the team's dual-A5000
+machine, all twelve starters, fresh context each. Its value was not its answers ---
+it fabricated market evidence --- but the demonstration that our team-level filter
+(two-model rule) catches an offline analyst that ignores the prompt-level evidence
+rules.
+
+\subsection{Disagreement as a deliverable, and the pivot}
+A dedicated prompt (C4) forced \textbf{twelve registered disagreements} between the
+Claude and Codex analysts, including one where Codex rejected git history as skill
+evidence and then used repository evidence to assert team capability three sections
+later. The most uncomfortable came from the pivot prompt (P12): given that the plan
+puts three things this team has \emph{zero commits} behind on its critical path ---
+a production \texttt{.tsx} change, a Supabase migration, and an RLS policy --- the
+model recommended \textbf{pivot}, not stay-the-course. We keep that finding visible
+and unresolved rather than editing it away; it is the honest counterweight to a
+survey we otherwise ``won.''
+
+\section{Threats to Validity}
+No user interviews and no rival installed by anyone on the team --- the cheapest
+remaining improvement. Our surviving gap has \emph{no demand-side evidence}.
+Verification reached 30 of 48 candidate products. Offline models cannot satisfy the
+live-URL rule and are reported as leads, not sources.
+
+\balance
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{report}
+\end{document}
