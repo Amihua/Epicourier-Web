@@ -14,11 +14,17 @@ import { describe, it, expect } from "@jest/globals";
 // Test Suite 1: Inventory Utility Functions
 describe("Inventory Utilities - Expiration Calculation", () => {
   it("should correctly calculate days until expiration", () => {
-    const tomorrow = new Date();
+    // Was flaky: `tomorrow` was read from one `new Date()` and `now` from a
+    // second one taken a moment later, so the gap was 24h minus however long the
+    // two calls were apart. Math.floor then gave 0 instead of 1 unless both
+    // landed in the same millisecond. It failed CI on 2026-10-11.
+    // Two fixed instants, same arithmetic, no clock.
+    const now = new Date("2026-10-10T12:00:00.000Z");
+    const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     const daysUntilExp = Math.floor(
-      (tomorrow.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      (tomorrow.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
     );
     expect(daysUntilExp).toBe(1);
   });

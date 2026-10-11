@@ -139,6 +139,11 @@ jobs:
         env:
           EPICOURIER_OFFLINE: "1"
           GEMINI_KEY: "offline-placeholder-not-a-real-key"
+          # api/index.py:20 also calls create_client(url, key) at module level,
+          # and supabase-py raises on an empty URL. Same reasoning: constructing
+          # the object is not connecting to anything.
+          NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "offline-placeholder-not-a-real-key"
         run: uv run pytest tests/p2 -q --junitxml=pytest-report.xml
 
       # Proves the above claim rather than asserting it. Collection of the full
