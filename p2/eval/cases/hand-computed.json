@@ -1,0 +1,145 @@
+{
+  "name": "hand-computed",
+  "description": "Expectations written by hand from p2/contracts/receipt-v1.md against the golden fixture. No value here was produced by the scorer.",
+  "as_of_date": "2026-10-10",
+  "must_pass": true,
+  "receipt": {
+    "rule_version": "receipt-v1",
+    "as_of_date": "2026-10-10",
+    "results": [
+      {
+        "recipe_id": 101,
+        "rank_score": 3.0,
+        "subtotals": {
+          "inventory": 2.0,
+          "expiry": 1.0,
+          "nutrition": 0.0
+        },
+        "items": [
+          {
+            "ingredient_id": 11,
+            "required_qty": 500,
+            "available_qty": 350,
+            "unit": "g",
+            "expiration_date": "2026-10-12",
+            "source": "inventory",
+            "points": 0.0,
+            "status": "missing"
+          },
+          {
+            "ingredient_id": 12,
+            "required_qty": 200,
+            "available_qty": 300,
+            "unit": "g",
+            "expiration_date": null,
+            "source": "inventory",
+            "points": 1.0,
+            "status": "ok"
+          },
+          {
+            "ingredient_id": 13,
+            "required_qty": 0,
+            "available_qty": 0,
+            "unit": "g",
+            "expiration_date": "2026-10-09",
+            "source": "inventory",
+            "points": 1.0,
+            "status": "expired"
+          },
+          {
+            "ingredient_id": 14,
+            "required_qty": null,
+            "available_qty": 0,
+            "unit": "g",
+            "expiration_date": null,
+            "source": "inventory",
+            "points": 0.0,
+            "status": "unknown_requirement"
+          },
+          {
+            "ingredient_id": 11,
+            "required_qty": null,
+            "available_qty": 350,
+            "unit": "g",
+            "expiration_date": "2026-10-12",
+            "source": "expiry",
+            "points": 1.0,
+            "status": "ok"
+          }
+        ],
+        "targets": null,
+        "warnings": [
+          {
+            "code": "unknown_requirement",
+            "message": "recipe 101 does not state a quantity for ingredient 14",
+            "ingredient_id": 14
+          },
+          {
+            "code": "expired_stock_excluded",
+            "message": "inventory row for ingredient 13 expired on 2026-10-09",
+            "ingredient_id": 13
+          }
+        ]
+      },
+      {
+        "recipe_id": 102,
+        "rank_score": 1.0,
+        "subtotals": {
+          "inventory": 1.0,
+          "expiry": 0.0,
+          "nutrition": 0.0
+        },
+        "items": [
+          {
+            "ingredient_id": 11,
+            "required_qty": 200,
+            "available_qty": 350,
+            "unit": "g",
+            "expiration_date": "2026-10-12",
+            "source": "inventory",
+            "points": 1.0,
+            "status": "ok"
+          },
+          {
+            "ingredient_id": 15,
+            "required_qty": 2,
+            "available_qty": 0,
+            "unit": null,
+            "expiration_date": "2026-10-20",
+            "source": "inventory",
+            "points": 0.0,
+            "status": "unresolved_unit"
+          }
+        ],
+        "targets": null,
+        "warnings": [
+          {
+            "code": "unresolved_unit",
+            "message": "inventory row for ingredient 15 stores no unit",
+            "ingredient_id": 15
+          }
+        ]
+      },
+      {
+        "recipe_id": 103,
+        "rank_score": 0.0,
+        "subtotals": {
+          "inventory": 0.0,
+          "expiry": 0.0,
+          "nutrition": 0.0
+        },
+        "items": [],
+        "targets": null,
+        "warnings": []
+      }
+    ]
+  },
+  "hand_notes": [
+    "Recipe 101, ingredient 11: usable is 200 g (fridge, expires 2026-10-12) + 150 g (freezer, expires exactly on as_of_date, therefore still usable) = 350 g against 500 g required. Short, so status is missing.",
+    "Recipe 101, ingredient 13: the only row expired on 2026-10-09, one day before as_of_date, so available_qty is 0 and status is expired. The requirement is 0, so nothing is missing either \u2014 status describes the inventory row, not whether the requirement was met. This line was first written as ok and the harness rejected it; the contract was clarified rather than the harness loosened. A scorer reading (relative_unit_100 || 100) would require 100 g here and report missing.",
+    "Recipe 101, ingredient 14: quantity is null, so unknown_requirement rather than a default or a zero.",
+    "Recipe 102 asks 2 servings, so 100 g becomes 200 g and 1 L becomes 2 L. 350 g usable covers 200 g. Ingredient 15 stores no unit, so under decision D2 it is unresolved rather than compared.",
+    "Recipe 103 requires nothing: a defined zero score and an empty item list, not a crash or a null.",
+    "Ordering: 3.0 > 1.0 > 0.0, so 101, 102, 103. No tie in this case; the tie rule is exercised by the shuffle check."
+  ]
+}

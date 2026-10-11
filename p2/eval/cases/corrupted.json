@@ -1,0 +1,45 @@
+{
+  "name": "corrupted",
+  "description": "A receipt with four planted defects. The harness MUST reject it. If this case ever passes, the harness is not checking anything and every green run above it is meaningless.",
+  "as_of_date": "2026-10-10",
+  "must_pass": false,
+  "expected_failures": [
+    "points_sum_mismatch",
+    "expired_counted_as_available",
+    "zero_requirement_defaulted",
+    "ordering_violation"
+  ],
+  "receipt": {
+    "rule_version": "receipt-v1",
+    "as_of_date": "2026-10-10",
+    "results": [
+      {
+        "recipe_id": 102,
+        "rank_score": 1.0,
+        "subtotals": { "inventory": 1.0, "expiry": 0.0, "nutrition": 0.0 },
+        "items": [
+          { "ingredient_id": 11, "required_qty": 200, "available_qty": 350, "unit": "g", "expiration_date": "2026-10-12", "source": "inventory", "points": 1.0, "status": "ok" }
+        ],
+        "targets": null,
+        "warnings": []
+      },
+      {
+        "recipe_id": 101,
+        "rank_score": 9.0,
+        "subtotals": { "inventory": 2.0, "expiry": 1.0, "nutrition": 0.0 },
+        "items": [
+          { "ingredient_id": 12, "required_qty": 200, "available_qty": 300, "unit": "g", "expiration_date": null, "source": "inventory", "points": 1.0, "status": "ok" },
+          { "ingredient_id": 13, "required_qty": 100, "available_qty": 50, "unit": "g", "expiration_date": "2026-10-09", "source": "inventory", "points": 1.0, "status": "ok" }
+        ],
+        "targets": null,
+        "warnings": []
+      }
+    ]
+  },
+  "planted": {
+    "points_sum_mismatch": "Recipe 101 claims rank_score 9.0 while its items sum to 2.0. Contract §5 requires sum(items[].points) == rank_score exactly.",
+    "expired_counted_as_available": "The row for ingredient 13 expired on 2026-10-09, before as_of_date 2026-10-10, yet it reports available_qty 50 and status ok. Contract §5 requires available_qty 0 and status expired.",
+    "zero_requirement_defaulted": "Recipe 101 requires 0 g of ingredient 13 in the golden fixture; this receipt says 100. That is exactly what (relative_unit_100 || 100) produces, which is the live defect at web/src/app/api/nutrients/daily/route.ts:171.",
+    "ordering_violation": "Results are ordered 102 (1.0) before 101 (9.0). Contract §4 requires rank_score descending."
+  }
+}

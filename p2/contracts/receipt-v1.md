@@ -163,6 +163,11 @@ Rules that are frozen, because they are where a scorer quietly goes wrong:
   `as_of_date` contributes `available_qty: 0` and `status: "expired"`. It may not be counted toward
   coverage. Expiry *urgency* may add points through a `source: "expiry"` line; already-expired stock
   may not.
+- **`status` describes the inventory row, not whether the requirement was met.** These come apart,
+  and the M0 harness caught the author of this document getting it wrong: a row that is expired while
+  the recipe requires `0` of that ingredient is `"expired"`, even though nothing is missing. Read
+  satisfaction from `required_qty` against `available_qty`; read usability from `status`. An expired
+  row is `"expired"` whatever the requirement happens to be.
 - **Missing nutrient data is not zero.** An ingredient with `null` nutrients produces
   `status: "unknown_requirement"` on the nutrition line, and the nutrition subtotal states that it is
   incomplete. It is never silently treated as 0 g of protein.
