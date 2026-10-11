@@ -42,6 +42,13 @@ jobs:
       # npm ci fails on this lock file under npm 11+: the committed lock is
       # missing the @swc/core platform binaries. Recorded in P1a evidence; until
       # the lock is regenerated, install is the only option that works.
+      # next-env.d.ts is gitignored by Next's own convention, so CI does not have
+      # the ambient declarations for image imports that a local checkout picks up
+      # after the first dev or build run. Without this, tsc fails on CI while
+      # passing locally — a false green. typegen needs no Supabase credentials.
+      - name: Generate Next type declarations
+        run: cd web && npx next typegen
+
       - name: Type-check
         run: cd web && npx tsc --noEmit
 
