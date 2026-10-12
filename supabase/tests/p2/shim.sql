@@ -9,6 +9,13 @@
 CREATE ROLE anon NOLOGIN;
 CREATE ROLE authenticated NOLOGIN;
 
+-- As on Supabase: everything created in public is fully granted to both API roles,
+-- and RLS plus each migration's own REVOKEs decide what they can really do.
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO anon, authenticated;
+
 CREATE SCHEMA auth;
 CREATE TABLE auth.users (id UUID PRIMARY KEY);
 
