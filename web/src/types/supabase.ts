@@ -209,6 +209,7 @@ export type Database = {
         Row: {
           calories_kcal: number | null;
           carbs_g: number | null;
+          confirmed_at: string | null;
           created_at: string | null;
           fats_g: number | null;
           fiber_g: number | null;
@@ -220,6 +221,7 @@ export type Database = {
         Insert: {
           calories_kcal?: number | null;
           carbs_g?: number | null;
+          confirmed_at?: string | null;
           created_at?: string | null;
           fats_g?: number | null;
           fiber_g?: number | null;
@@ -231,6 +233,7 @@ export type Database = {
         Update: {
           calories_kcal?: number | null;
           carbs_g?: number | null;
+          confirmed_at?: string | null;
           created_at?: string | null;
           fats_g?: number | null;
           fiber_g?: number | null;
@@ -459,6 +462,191 @@ export type Database = {
         };
         Relationships: [];
       };
+      shopping_delta_confirmations: {
+        Row: {
+          created_at: string;
+          preview_id: string;
+          request_id: string;
+          skipped: Json;
+          status: string;
+          user_id: string;
+          written: Json;
+        };
+        Insert: {
+          created_at?: string;
+          preview_id: string;
+          request_id: string;
+          skipped?: Json;
+          status: string;
+          user_id: string;
+          written?: Json;
+        };
+        Update: {
+          created_at?: string;
+          preview_id?: string;
+          request_id?: string;
+          skipped?: Json;
+          status?: string;
+          user_id?: string;
+          written?: Json;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "shopping_delta_confirmations_preview_id_fkey";
+            columns: ["preview_id"];
+            isOneToOne: true;
+            referencedRelation: "shopping_delta_previews";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      shopping_delta_previews: {
+        Row: {
+          applied_at: string | null;
+          as_of_date: string;
+          created_at: string;
+          deltas: Json;
+          id: string;
+          recipe_id: number;
+          rule_version: string;
+          servings: number;
+          shopping_list_id: string;
+          snapshot_id: string;
+          unresolved: Json;
+          user_id: string;
+        };
+        Insert: {
+          applied_at?: string | null;
+          as_of_date: string;
+          created_at?: string;
+          deltas?: Json;
+          id?: string;
+          recipe_id: number;
+          rule_version?: string;
+          servings?: number;
+          shopping_list_id: string;
+          snapshot_id: string;
+          unresolved?: Json;
+          user_id: string;
+        };
+        Update: {
+          applied_at?: string | null;
+          as_of_date?: string;
+          created_at?: string;
+          deltas?: Json;
+          id?: string;
+          recipe_id?: number;
+          rule_version?: string;
+          servings?: number;
+          shopping_list_id?: string;
+          snapshot_id?: string;
+          unresolved?: Json;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "shopping_delta_previews_recipe_id_fkey";
+            columns: ["recipe_id"];
+            isOneToOne: false;
+            referencedRelation: "Recipe";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "shopping_delta_previews_shopping_list_id_fkey";
+            columns: ["shopping_list_id"];
+            isOneToOne: false;
+            referencedRelation: "shopping_lists";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      shopping_list_items: {
+        Row: {
+          category: string | null;
+          created_at: string;
+          id: string;
+          ingredient_id: number | null;
+          is_checked: boolean;
+          item_name: string;
+          notes: string | null;
+          position: number;
+          quantity: number | null;
+          shopping_list_id: string;
+          unit: string | null;
+        };
+        Insert: {
+          category?: string | null;
+          created_at?: string;
+          id?: string;
+          ingredient_id?: number | null;
+          is_checked?: boolean;
+          item_name: string;
+          notes?: string | null;
+          position?: number;
+          quantity?: number | null;
+          shopping_list_id: string;
+          unit?: string | null;
+        };
+        Update: {
+          category?: string | null;
+          created_at?: string;
+          id?: string;
+          ingredient_id?: number | null;
+          is_checked?: boolean;
+          item_name?: string;
+          notes?: string | null;
+          position?: number;
+          quantity?: number | null;
+          shopping_list_id?: string;
+          unit?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "shopping_list_items_ingredient_id_fkey";
+            columns: ["ingredient_id"];
+            isOneToOne: false;
+            referencedRelation: "Ingredient";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "shopping_list_items_shopping_list_id_fkey";
+            columns: ["shopping_list_id"];
+            isOneToOne: false;
+            referencedRelation: "shopping_lists";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      shopping_lists: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          is_archived: boolean;
+          name: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          is_archived?: boolean;
+          name: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          is_archived?: boolean;
+          name?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       streak_history: {
         Row: {
           created_at: string;
@@ -592,11 +780,65 @@ export type Database = {
           },
         ];
       };
+      user_inventory: {
+        Row: {
+          created_at: string;
+          expiration_date: string | null;
+          id: string;
+          ingredient_id: number;
+          location: string;
+          min_quantity: number | null;
+          notes: string | null;
+          quantity: number;
+          unit: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          expiration_date?: string | null;
+          id?: string;
+          ingredient_id: number;
+          location?: string;
+          min_quantity?: number | null;
+          notes?: string | null;
+          quantity?: number;
+          unit?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          expiration_date?: string | null;
+          id?: string;
+          ingredient_id?: number;
+          location?: string;
+          min_quantity?: number | null;
+          notes?: string | null;
+          quantity?: number;
+          unit?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_inventory_ingredient_id_fkey";
+            columns: ["ingredient_id"];
+            isOneToOne: false;
+            referencedRelation: "Ingredient";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      apply_receipt_shopping_delta: {
+        Args: { p_preview_id: string; p_request_id: string };
+        Returns: Json;
+      };
       immutable_month_start: { Args: { d: string }; Returns: string };
       update_streak: {
         Args: {
