@@ -226,6 +226,10 @@ describe("computePantryDelta — unresolved lines", () => {
     expect(result.unresolved).toEqual([{ ingredient_id: 1, reason: "missing_unit" }]);
   });
 
+  it("treats a zero requirement with no unit as zero, not as unresolved", () => {
+    expect(delta({ requirements: [req(1, 0, "")] })).toEqual({ deltas: [], unresolved: [] });
+  });
+
   it("reports missing_unit for a requirement whose unit is empty", () => {
     const result = delta({ requirements: [req(1, 100, "")] });
     expect(result.unresolved).toEqual([{ ingredient_id: 1, reason: "missing_unit" }]);
