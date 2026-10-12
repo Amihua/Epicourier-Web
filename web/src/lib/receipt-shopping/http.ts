@@ -11,11 +11,19 @@ import { DataAccessError, NotFoundError } from "./data";
 
 export type Parsed<T> = { ok: true; value: T } | { ok: false; response: NextResponse };
 
-/** Reads a JSON body and validates it; any failure becomes a 400 that says why. */
-export async function parseBody<T>(req: Request, schema: ZodType<T>): Promise<Parsed<T>> {
+/**
+ * Reads a JSON body and validates it; any failure becomes a 400 that says why.
+ * With `allowEmpty`, a missing body is read as `{}`.
+ */
+export async function parseBody<T>(
+  req: Request,
+  schema: ZodType<T>,
+  options: { allowEmpty?: boolean } = {}
+): Promise<Parsed<T>> {
   let raw: unknown;
   try {
-    raw = await req.json();
+    const text = await req.text();
+    raw = text.trim() === "" && options.allowEmpty ? {} : JSON.parse(text);
   } catch {
     return {
       ok: false,
