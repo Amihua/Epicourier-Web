@@ -87,6 +87,19 @@ CREATE POLICY "Users can create own delta confirmations"
     WITH CHECK (auth.uid() = user_id);
 
 -- ============================================================================
+-- PRIVILEGES
+-- ============================================================================
+-- Supabase grants ALL on new tables to anon and authenticated by default. Narrow it:
+-- a client may create a preview but never rewrite what it says — only the apply
+-- function's applied_at stamp is updatable — and a confirmation, once written, is final.
+
+REVOKE ALL ON public.shopping_delta_previews FROM anon;
+REVOKE ALL ON public.shopping_delta_confirmations FROM anon;
+REVOKE UPDATE, DELETE, TRUNCATE ON public.shopping_delta_previews FROM authenticated;
+GRANT UPDATE (applied_at) ON public.shopping_delta_previews TO authenticated;
+REVOKE UPDATE, DELETE, TRUNCATE ON public.shopping_delta_confirmations FROM authenticated;
+
+-- ============================================================================
 -- FUNCTION: apply_receipt_shopping_delta
 -- ============================================================================
 -- SECURITY INVOKER: every statement runs under the caller's RLS policies, so the
