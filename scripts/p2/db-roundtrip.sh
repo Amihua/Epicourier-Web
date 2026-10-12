@@ -49,11 +49,13 @@ PSQL=("$BIN/psql" -h "$WORK" -p "$PORT" -U postgres -d postgres -X -q -v ON_ERRO
 echo "== applying stand-in and migrations"
 "${PSQL[@]}" -f "$TESTS/shim.sql"
 for migration in \
+  20251125000000_add_nutrient_goals_table.sql \
   20251129010000_shopping_lists.sql \
   20251129020000_shopping_list_items.sql \
   20251129030000_user_inventory.sql \
   20251130100000_fix_shopping_list_items_ingredient_type.sql \
-  20261012000000_receipt_shopping_delta.sql; do
+  20261012000000_receipt_shopping_delta.sql \
+  20261012000100_nutrient_goals_confirmed_at.sql; do
   echo "   $migration"
   "${PSQL[@]}" -f "$MIGRATIONS/$migration"
 done
