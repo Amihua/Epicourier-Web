@@ -168,6 +168,7 @@ to the gateway, replace the browser call to `${BACKEND_URL}/inventory-recommend`
 | Cancel writes nothing | `ReceiptShoppingPreview.test.tsx` "cancel calls onCancel and never confirms"; preview route test "writes nothing" |
 | A repeated confirm takes effect once | DB round trip checks 4, 5 and both concurrency races; UI "sends one confirm for a double click", "retries … with the same request id" |
 | A list the user has no access to cannot be written | DB round trip checks 2, 6 and 11; preview route 404 test |
+| The client cannot rewrite a preview's lines or a confirmation, even by calling Supabase directly | DB round trip checks 12 and 13 (column-level grants: only `applied_at` is updatable) |
 | A failure never returns a false success | DB round trip check 8 (half-way failure rolls back); confirm route "returns failed, never success"; UI "does not trust a 200 whose body is not 'applied'" |
 | Real database round trip | `scripts/p2/db-roundtrip.sh` (below) |
 
@@ -175,7 +176,7 @@ to the gateway, replace the browser call to `${BACKEND_URL}/inventory-recommend`
 
 ```bash
 cd web
-npx jest -c jest.node.config.ts __tests__/node/p2/shopping     # 197 tests: units, delta, snapshot, routes, gateway
+npx jest -c jest.node.config.ts __tests__/node/p2/shopping     # 198 tests: units, delta, snapshot, routes, gateway
 npx jest -c jest.jsdom.config.ts __tests__/jsdom/p2/shopping   # 26 tests: the preview component
 cd ..
 scripts/p2/db-roundtrip.sh                                     # real Postgres, needs initdb/pg_ctl/psql
@@ -184,7 +185,7 @@ scripts/p2/db-roundtrip.sh                                     # real Postgres, 
 The round trip needs Postgres server binaries. They are found on `PATH`, in `PG_BIN`, or in the
 usual Debian and Homebrew locations. Without Docker, `pip install pgserver` ships them. The
 round trip applies a small Supabase stand-in (`supabase/tests/p2/shim.sql`), then the real
-shopping, inventory and goals migrations and both M3 migrations verbatim. Then it runs 11
+shopping, inventory and goals migrations and both M3 migrations verbatim. Then it runs 13
 sequential checks and 2 concurrency races. If the row lock is removed from the function, the
 first race fails, so the check is not vacuous.
 
