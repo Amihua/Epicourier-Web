@@ -117,6 +117,9 @@ type Need =
 /** Sums one ingredient's requirements into a single quantity in a display unit. */
 function totalNeed(reqs: Requirement[], servings: number): Need {
   if (reqs.some((r) => r.quantity === null)) return { kind: "unknown" };
+  // Zero is zero whatever the unit says, so a unitless zero is not an unresolved line.
+  if (reqs.every((r) => r.quantity === 0))
+    return { kind: "known", quantity: 0, unit: reqs[0].unit };
   const first = toDisplayQuantity(0, reqs[0].unit);
   if (first === null) return { kind: "missing_unit" };
   let total = 0;
