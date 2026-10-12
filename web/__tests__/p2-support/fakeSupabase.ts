@@ -12,7 +12,8 @@ type Result = { data: unknown; error: { message: string } | null };
 
 export interface FakeOptions {
   user?: { id: string } | null;
-  tables?: Record<string, Row[]>;
+  /** Initial rows per table. `object` so interface-typed fixtures are accepted. */
+  tables?: Record<string, object[]>;
   /** Make every query on these tables fail with the given message. */
   failTables?: Record<string, string>;
   rpc?: (name: string, args: Record<string, unknown>) => Result | Promise<Result>;
@@ -132,7 +133,7 @@ export function makeFakeSupabase(options: FakeOptions = {}): FakeSupabase {
     rpc: jest.fn(async (name: string, args: Record<string, unknown>) =>
       options.rpc ? options.rpc(name, args) : { data: null, error: { message: "no rpc" } }
     ),
-    tables: structuredClone(options.tables ?? {}),
+    tables: structuredClone(options.tables ?? {}) as Record<string, Row[]>,
     log: [],
   };
   return fake;
