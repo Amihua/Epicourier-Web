@@ -8,9 +8,8 @@
 
 \set ON_ERROR_STOP on
 
--- Supabase grants table access to `authenticated` by default; RLS does the rest.
-GRANT USAGE ON SCHEMA public TO anon, authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
+-- Table privileges come from shim.sql's Supabase-style default grants, narrowed by
+-- the migration itself; nothing is granted here, so the checks see the real policy.
 
 INSERT INTO auth.users (id) VALUES
     ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'),
@@ -257,6 +256,43 @@ BEGIN
        OR (SELECT count(*) FROM public.shopping_delta_confirmations) <> 0 THEN
         RAISE EXCEPTION 'FAIL: B can see A''s rows';
     END IF;
+END $$;
+COMMIT;
+
+-- ---------------------------------------------------------------------------
+\echo '12. a user cannot rewrite what their own preview says'
+BEGIN;
+SET LOCAL request.jwt.claim.sub = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+SET LOCAL ROLE authenticated;
+DO $$
+BEGIN
+    UPDATE public.shopping_delta_previews
+       SET deltas = '[{"ingredient_id": 11, "missing_qty": 9999, "unit": "g"}]'
+     WHERE id = 'a1000000-0000-4000-8000-000000000002';
+    RAISE EXCEPTION 'FAIL: deltas of a preview were rewritten by the client';
+EXCEPTION WHEN insufficient_privilege THEN
+    NULL;
+END $$;
+COMMIT;
+
+-- ---------------------------------------------------------------------------
+\echo '13. a confirmation, once written, cannot be edited or deleted by the client'
+BEGIN;
+SET LOCAL request.jwt.claim.sub = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+SET LOCAL ROLE authenticated;
+DO $$
+BEGIN
+    UPDATE public.shopping_delta_confirmations SET written = '[]'::jsonb;
+    RAISE EXCEPTION 'FAIL: a confirmation was edited';
+EXCEPTION WHEN insufficient_privilege THEN
+    NULL;
+END $$;
+DO $$
+BEGIN
+    DELETE FROM public.shopping_delta_confirmations;
+    RAISE EXCEPTION 'FAIL: a confirmation was deleted';
+EXCEPTION WHEN insufficient_privilege THEN
+    NULL;
 END $$;
 COMMIT;
 
