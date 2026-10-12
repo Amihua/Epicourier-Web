@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Package, Lightbulb, Loader2, Plus, X, CheckSquare, Square, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useReceiptRanking } from "@/hooks/useReceiptRanking";
 import {
   LocationTabs,
   InventorySearchBar,
@@ -12,26 +13,19 @@ import {
   EditInventoryModal,
   DeleteInventoryDialog,
   BatchDeleteDialog,
-  RecipeRecommendationModal,
 } from "@/components/inventory";
-import type {
-  InventoryLocation,
-  InventoryItemWithDetails,
-  InventorySummary,
-  InventoryRecommendResponse,
-  InventoryItemForRecommendation,
-} from "@/types/data";
+import ReceiptRecommendationsDialog from "@/components/receipt/ReceiptRecommendationsDialog";
+import { ingredientNamesOf, toInventorySnapshots } from "@/lib/receipt/view";
+import type { InventoryLocation, InventoryItemWithDetails, InventorySummary } from "@/types/data";
 
 // View mode type for clear state management
 type ViewMode = "all" | "expiring";
-
-// Python backend URL
-const BACKEND_URL = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "http://localhost:8000";
 
 export default function InventoryPage() {
   const [items, setItems] = useState<InventoryItemWithDetails[]>([]);
   const [summary, setSummary] = useState<InventorySummary | null>(null);
   const [globalSummary, setGlobalSummary] = useState<InventorySummary | null>(null); // Always stores unfiltered counts
+  const [allItems, setAllItems] = useState<InventoryItemWithDetails[]>([]); // Unfiltered rows, for receipt corrections
   const [loading, setLoading] = useState(true);
   const [activeLocation, setActiveLocation] = useState<InventoryLocation | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,11 +33,9 @@ export default function InventoryPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItemWithDetails | null>(null);
   const [deletingItem, setDeletingItem] = useState<InventoryItemWithDetails | null>(null);
-  const [suggesting, setSuggesting] = useState(false);
 
-  // Recipe recommendation state
+  // Recipe ranking state (P2): the server ranks against the full inventory
   const [isRecommendModalOpen, setIsRecommendModalOpen] = useState(false);
-  const [recommendations, setRecommendations] = useState<InventoryRecommendResponse | null>(null);
 
   // Batch selection state
   const [isSelectMode, setIsSelectMode] = useState(false);
@@ -52,13 +44,14 @@ export default function InventoryPage() {
 
   const { toast } = useToast();
 
-  // Fetch global summary (unfiltered) for location counts
+  // Fetch global summary (unfiltered) for location counts, and the full row list
   const fetchGlobalSummary = useCallback(async () => {
     try {
       const response = await fetch("/api/inventory");
       if (response.ok) {
         const data = await response.json();
         setGlobalSummary(data.summary || null);
+        setAllItems(data.items || []);
       }
     } catch (error) {
       console.error("Error fetching global summary:", error);
@@ -114,7 +107,15 @@ export default function InventoryPage() {
     fetchInventory();
   }, [fetchInventory]);
 
-  const handleSuggestRecipes = async () => {
+  // After a receipt correction is written, refresh both views before the re-rank.
+  const refreshAfterCorrection = useCallback(async () => {
+    await Promise.all([fetchInventory(), fetchGlobalSummary()]);
+  }, [fetchInventory, fetchGlobalSummary]);
+
+  const ranking = useReceiptRanking({ onInventoryChanged: refreshAfterCorrection });
+  const suggesting = ranking.phase.kind === "loading";
+
+  const handleSuggestRecipes = () => {
     if (items.length === 0) {
       toast({
         title: "Empty Inventory",
@@ -123,58 +124,19 @@ export default function InventoryPage() {
       });
       return;
     }
-
-    setSuggesting(true);
+    // Ids only: the server reads the full inventory itself (receipt-v1 §3).
     setIsRecommendModalOpen(true);
-    setRecommendations(null);
-
-    try {
-      // Convert inventory items to API format
-      const inventoryPayload: InventoryItemForRecommendation[] = items.map((item) => ({
-        ingredient_id: item.ingredient_id || 0,
-        name: item.ingredient?.name || "Unknown",
-        quantity: item.quantity,
-        unit: item.unit,
-        expiration_date: item.expiration_date,
-      }));
-
-      const response = await fetch(`${BACKEND_URL}/inventory-recommend`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inventory: inventoryPayload,
-          num_recipes: 5,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      const data: InventoryRecommendResponse = await response.json();
-      setRecommendations(data);
-    } catch (error) {
-      console.error("Error suggesting recipes:", error);
-      toast({
-        title: "Error",
-        description: "Failed to generate recipe suggestions. Make sure the backend is running.",
-        variant: "destructive",
-      });
-      setIsRecommendModalOpen(false);
-    } finally {
-      setSuggesting(false);
-    }
+    void ranking.rank({ limit: 5 });
   };
 
-  const handleAddMissingToShoppingList = (missingIngredients: string[]) => {
-    // TODO: Implement adding missing ingredients to shopping list
-    toast({
-      title: "Coming Soon",
-      description: `Will add ${missingIngredients.length} items to your shopping list`,
-    });
+  const handleCloseRecommendations = () => {
+    setIsRecommendModalOpen(false);
+    ranking.reset();
   };
+
+  // The receipt panel corrects rows across every location, not only the filtered view.
+  const inventorySnapshots = useMemo(() => toInventorySnapshots(allItems), [allItems]);
+  const ingredientNames = useMemo(() => ingredientNamesOf(allItems), [allItems]);
 
   const handleViewExpiring = () => {
     // Switch to expiring view mode
@@ -509,12 +471,21 @@ export default function InventoryPage() {
         onSuccess={handleBatchDeleteSuccess}
       />
 
-      <RecipeRecommendationModal
+      <ReceiptRecommendationsDialog
         isOpen={isRecommendModalOpen}
-        onClose={() => setIsRecommendModalOpen(false)}
-        recommendations={recommendations}
-        isLoading={suggesting}
-        onAddToShoppingList={handleAddMissingToShoppingList}
+        onClose={handleCloseRecommendations}
+        phase={ranking.phase}
+        ranking={ranking.ranking}
+        inventory={inventorySnapshots}
+        names={ingredientNames}
+        onCorrect={ranking.correct}
+        onRetry={() => void ranking.rank({ limit: 5 })}
+        onShoppingComplete={(_recipeId, result) =>
+          toast({
+            title: "Added to your shopping list",
+            description: `${result.written.length} item${result.written.length === 1 ? "" : "s"} added`,
+          })
+        }
       />
     </div>
   );
