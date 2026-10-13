@@ -1,0 +1,36 @@
+{
+  "rule_version": "receipt-v1",
+  "as_of_date": "2026-10-10",
+  "candidates": [
+    {
+      "recipe_id": 101,
+      "servings": 1,
+      "requirements": [
+        { "ingredient_id": 11, "quantity": 500, "unit": "g" },
+        { "ingredient_id": 12, "quantity": 200, "unit": "g" },
+        { "ingredient_id": 13, "quantity": 0, "unit": "g" },
+        { "ingredient_id": 14, "quantity": null, "unit": "g" }
+      ]
+    },
+    {
+      "recipe_id": 102,
+      "servings": 2,
+      "requirements": [
+        { "ingredient_id": 11, "quantity": 100, "unit": "g" },
+        { "ingredient_id": 15, "quantity": 1, "unit": "L" }
+      ]
+    },
+    {
+      "recipe_id": 103,
+      "requirements": []
+    }
+  ],
+  "inventory": [
+    { "inventory_id": "a0000000-0000-4000-8000-000000000001", "ingredient_id": 11, "quantity": 200, "unit": "g", "location": "fridge", "expiration_date": "2026-10-12" },
+    { "inventory_id": "a0000000-0000-4000-8000-000000000002", "ingredient_id": 12, "quantity": 300, "unit": "g", "location": "pantry", "expiration_date": null },
+    { "inventory_id": "a0000000-0000-4000-8000-000000000003", "ingredient_id": 13, "quantity": 50, "unit": "g", "location": "pantry", "expiration_date": "2026-10-09" },
+    { "inventory_id": "a0000000-0000-4000-8000-000000000004", "ingredient_id": 15, "quantity": 2, "unit": null, "location": "fridge", "expiration_date": "2026-10-20" },
+    { "inventory_id": "a0000000-0000-4000-8000-000000000005", "ingredient_id": 11, "quantity": 150, "unit": "g", "location": "freezer", "expiration_date": "2026-10-10" }
+  ],
+  "targets": null
+}

@@ -1,0 +1,73 @@
+name: 🧾 M0 Receipt Evaluation
+
+# Runs on the integration branch and on PRs targeting it. The path filters cover
+# p2/contracts and p2/eval, which the team plan warns are the easy ones to miss.
+on:
+  pull_request:
+    branches: [main, se26f-p2]
+    paths:
+      - "p2/contracts/**"
+      - "p2/eval/**"
+      - "backend/api/**"
+      - ".github/workflows/ci-m0-eval.yml"
+  push:
+    branches: [se26f-p2]
+    paths:
+      - "p2/contracts/**"
+      - "p2/eval/**"
+      - "backend/api/**"
+      - ".github/workflows/ci-m0-eval.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  m0:
+    name: M0 offline evaluation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # No install step on purpose: the harness is dependency-free so that it
+      # still runs when uv sync or npm install cannot.
+
+      - name: Validate the contract schema is well-formed JSON
+        run: |
+          python3 -c "import json,sys; json.load(open('p2/contracts/receipt-v1.schema.json')); print('schema ok')"
+          python3 -c "import json,sys; json.load(open('p2/contracts/fixtures/ranking-request.golden.json')); print('fixture ok')"
+
+      # No continue-on-error. A failing evaluation fails the run.
+      - name: Run M0
+        run: python3 p2/eval/run_eval.py | tee p2-m0-results.txt
+
+      # The harness is on trial too. The corrupted case must be rejected; if the
+      # harness ever accepts it, every green run above it is meaningless, so this
+      # step asserts the negative case explicitly rather than trusting the summary.
+      - name: Prove the harness can still fail
+        run: |
+          set +e
+          python3 p2/eval/run_eval.py --case corrupted > corrupted.txt 2>&1
+          grep -q "rejected as required" corrupted.txt
+          if [ $? -ne 0 ]; then
+            echo "The corrupted case was not rejected. The harness is not checking anything."
+            cat corrupted.txt
+            exit 1
+          fi
+          echo "Harness rejected the corrupted case, as required."
+
+      - name: Upload M0 results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m0-results
+          path: |
+            p2-m0-results.txt
+            corrupted.txt
+          if-no-files-found: warn
