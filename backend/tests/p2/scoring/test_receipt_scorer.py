@@ -106,6 +106,13 @@ def test_confirmed_targets_report_missing_recipe_nutrition() -> None:
         any(warning.code == "missing_nutrient_data" for warning in recipe.warnings)
         for recipe in response.results
     )
+    assert all(
+        next(
+            item for item in recipe.items if item.source == "nutrition"
+        ).ingredient_name
+        == "Confirmed nutrient targets"
+        for recipe in response.results
+    )
 
 
 def _without_optional_display_fields(items: list[dict]) -> list[dict]:

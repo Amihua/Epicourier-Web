@@ -107,6 +107,7 @@ def score_candidate(
             items.append(
                 ReceiptItem(
                     ingredient_id=-1,
+                    ingredient_name="Confirmed nutrient targets",
                     required_qty=None,
                     available_qty=0,
                     unit=None,
