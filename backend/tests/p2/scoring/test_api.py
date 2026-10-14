@@ -32,6 +32,17 @@ def test_receipt_rank_runs_without_external_credentials(monkeypatch) -> None:
     ]
 
 
+def test_receipt_api_returns_ranking_points_not_legacy_percentage(monkeypatch) -> None:
+    monkeypatch.delenv("RECEIPT_INTERNAL_TOKEN", raising=False)
+
+    response = TestClient(app).post("/receipt/rank", json=payload())
+    first = response.json()["results"][0]
+
+    assert response.status_code == 200
+    assert first["rank_score"] == 3.0
+    assert "match_score" not in first
+
+
 def test_receipt_rank_rejects_invalid_input_with_details(monkeypatch) -> None:
     monkeypatch.delenv("RECEIPT_INTERNAL_TOKEN", raising=False)
     invalid = payload()
