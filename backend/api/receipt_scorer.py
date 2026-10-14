@@ -123,7 +123,6 @@ def score_candidate(
                         f"recipe {candidate.recipe_id} has no nutrient totals for "
                         f"confirmed targets: {keys}"
                     ),
-                    ingredient_id=-1,
                 )
             )
 

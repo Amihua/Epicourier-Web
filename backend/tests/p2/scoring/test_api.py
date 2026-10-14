@@ -62,3 +62,23 @@ def test_receipt_rank_requires_configured_internal_token(monkeypatch) -> None:
     assert missing.status_code == 401
     assert wrong.status_code == 401
     assert accepted.status_code == 200
+
+
+def test_global_nutrition_warning_has_no_fake_ingredient_id(monkeypatch) -> None:
+    monkeypatch.delenv("RECEIPT_INTERNAL_TOKEN", raising=False)
+    request = payload()
+    request["targets"] = {
+        "confirmed_at": "2026-10-10T08:00:00Z",
+        "daily": {"protein_g": 100},
+        "consumed_today": {"protein_g": 80},
+    }
+
+    response = TestClient(app).post("/receipt/rank", json=request)
+    warning = next(
+        item
+        for item in response.json()["results"][0]["warnings"]
+        if item["code"] == "missing_nutrient_data"
+    )
+
+    assert response.status_code == 200
+    assert "ingredient_id" not in warning

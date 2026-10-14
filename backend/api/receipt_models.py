@@ -159,7 +159,9 @@ class Warning(ContractModel):
         "expired_stock_excluded",
     ]
     message: str
-    ingredient_id: Optional[int] = None
+    ingredient_id: Optional[int] = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
 
 
 class RankedRecipe(ContractModel):
