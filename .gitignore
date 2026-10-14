@@ -109,6 +109,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# ========================================
+# Local Project Notes
+# ========================================
+/requirement.md
+
 
 .agent
 AGENTS.md
