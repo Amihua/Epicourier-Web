@@ -1,23 +1,22 @@
 import os
+import secrets
+from functools import lru_cache
+from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from supabase import Client, create_client
 
-from api.recommender import create_meal_plan
 from api.inventory_recommender import (
     InventoryRecommendRequest,
     recommend_from_inventory,
 )
+from api.receipt_models import RankingRequest, RankingResponse
+from api.receipt_scorer import score_rankings
 
 load_dotenv()
-
-url: str = os.getenv("NEXT_PUBLIC_SUPABASE_URL") or ""
-key: str = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY") or ""
-
-supabase: Client = create_client(url, key)
 
 app = FastAPI()
 
@@ -33,8 +32,28 @@ app.add_middleware(
 
 @app.get("/test")
 def test_endpoint():
+    supabase = load_supabase_client()
     data = supabase.table("Recipe").select("*").limit(5).execute()
     return {"message": data.data}
+
+
+@lru_cache()
+def load_supabase_client() -> Client:
+    """Build the legacy Supabase client only for endpoints that need it."""
+
+    url = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
+    key = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+    if not url or not key:
+        raise HTTPException(status_code=503, detail="Supabase is not configured")
+    return create_client(url, key)
+
+
+def create_meal_plan(goal: str, n_meals: int):
+    """Lazy adapter for the legacy Gemini recommender."""
+
+    from api.recommender import create_meal_plan as create_legacy_meal_plan
+
+    return create_legacy_meal_plan(goal, n_meals=n_meals)
 
 
 class RecommendRequest(BaseModel):
@@ -92,3 +111,26 @@ def inventory_recommend(req: InventoryRecommendRequest):
         raise HTTPException(
             status_code=500, detail=f"Failed to generate recommendations: {str(e)}"
         )
+
+
+def require_internal_token(
+    provided: Optional[str] = Header(default=None, alias="X-Internal-Token"),
+) -> None:
+    """Require the gateway's shared secret when the service configures one."""
+
+    expected = os.getenv("RECEIPT_INTERNAL_TOKEN")
+    if expected and (
+        provided is None or not secrets.compare_digest(provided, expected)
+    ):
+        raise HTTPException(status_code=401, detail="Invalid internal token")
+
+
+@app.post(
+    "/receipt/rank",
+    response_model=RankingResponse,
+    dependencies=[Depends(require_internal_token)],
+)
+def receipt_rank(request: RankingRequest) -> RankingResponse:
+    """Rank receipt-v1 candidates without network, database or Gemini calls."""
+
+    return score_rankings(request)

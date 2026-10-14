@@ -8,15 +8,11 @@ Uses Gemini 2.5 Flash to intelligently recommend recipes based on:
 """
 
 import json
-import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Optional
 
 from dotenv import load_dotenv
-from google import genai
 from pydantic import BaseModel, Field
-
-from api.recommender import load_gemini_client, load_recipe_data
 
 load_dotenv()
 
@@ -88,7 +84,7 @@ def format_inventory_with_expiration(inventory: List[InventoryItem]) -> str:
                 if days_until < 0:
                     line += f" (EXPIRED {abs(days_until)} days ago) ❌"
                 elif days_until == 0:
-                    line += f" (expires TODAY) ⚠️ EXPIRING NOW"
+                    line += " (expires TODAY) ⚠️ EXPIRING NOW"
                 elif days_until <= 3:
                     line += f" (expires in {days_until} days) ⚠️ EXPIRING SOON"
                 elif days_until <= 7:
@@ -200,6 +196,11 @@ def recommend_from_inventory(
     Returns:
         InventoryRecommendResponse with recommendations
     """
+    # The legacy Gemini stack is intentionally imported only when this legacy
+    # endpoint is called. The deterministic receipt ranker must be importable
+    # and runnable without a Gemini key.
+    from api.recommender import load_gemini_client, load_recipe_data
+
     # Load data
     recipe_data = load_recipe_data()
     client = load_gemini_client()
@@ -232,7 +233,8 @@ def recommend_from_inventory(
     except json.JSONDecodeError as e:
         # Fallback: try to extract JSON from response
         raise ValueError(
-            f"Failed to parse Gemini response as JSON: {e}\nResponse: {response.text[:500]}"
+            f"Failed to parse Gemini response as JSON: {e}\n"
+            f"Response: {response.text[:500]}"
         )
 
     # Validate and return
