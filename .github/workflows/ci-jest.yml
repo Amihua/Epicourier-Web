@@ -55,6 +55,26 @@ jobs:
       - name: Run Jest tests
         run: cd web && npm test
 
+      # `next build` is the gate the plan asks for and it was missing. It needs six
+      # variables, because several route modules construct clients or validate keys
+      # at import time and page-data collection executes them:
+      #   supabaseServer.ts:6         SUPABASE_SERVICE_ROLE_KEY
+      #   notifications/vapid-key     the same, via supabaseServer
+      #   achievements/check          web-push validates the VAPID public key is
+      #                               65 bytes decoded, so a dummy string fails
+      # All six are placeholders here. The VAPID pair is a freshly generated
+      # keypair that is bound to no service; nothing in a build reaches the
+      # network, and giving CI real credentials to compile a page would be worse.
+      - name: Build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder-anon-key"
+          SUPABASE_SERVICE_ROLE_KEY: "placeholder-service-role-key"
+          NEXT_PUBLIC_VAPID_PUBLIC_KEY: "BDXB2UbEvMFCx1P8O2CaK7pRgeNuL5QBa6rqlAYESC448Ly6E9GW_GQA_FeS4pmKQcD7Ufb-cVYbIDWwgBP7TBs"
+          VAPID_PRIVATE_KEY: "1Dh1tdAu9teQc3GPXmA_FfHKlZpdw3AtEOwxxCWingI"
+          VAPID_SUBJECT: "mailto:ci@example.com"
+        run: cd web && npx next build --no-lint
+
       - name: Run tests
         run: cd web && npx jest --coverage
 
