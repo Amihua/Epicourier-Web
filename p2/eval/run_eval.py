@@ -29,6 +29,14 @@ RULE_VERSION = "receipt-v1"
 VALID_STATUS = {"ok", "missing", "expired", "unresolved_unit", "unknown_requirement"}
 VALID_SOURCE = {"inventory", "expiry", "nutrition", "global"}
 
+# Measurements for the hypotheses in HYPOTHESIS.md, filled in as checks run.
+METRICS: dict[str, tuple[int, int]] = {}
+THRESHOLDS = {
+    "H1": ("every displayed total is the sum of its displayed parts", 1.0, "0/300 (old path cannot decompose at all)"),
+    "H2": ("identical input produces identical output", 1.0, "X — NOT COLLECTED"),
+    "H3": ("a correction moves the score the way the rules say", 1.0, "n/a — no correction loop in the old path"),
+}
+
 
 def round_points(value: float) -> float:
     """Contract §5: rounded once, at the end, to 2 dp."""
@@ -387,6 +395,10 @@ def check_corpus(shuffles: int = 20, seed: int = 20261010) -> list[str]:
                 problems.append(f"corpus_order_dependence: cell {cell['cell_id']} changed under a shuffle")
                 break
 
+    sums_ok = len(cells) - len({p.split("cell ")[1].split()[0] for p in problems if p.startswith("corpus_points_sum")})
+    METRICS["H1"] = (sums_ok, len(cells))
+    order_ok = len(sample) - len({p.split("cell ")[1].split()[0] for p in problems if p.startswith("corpus_order_dependence")})
+    METRICS["H2"] = (order_ok, len(sample))
     if not problems:
         print(
             f"ok    corpus: {len(cells)} cells scored, {lines} receipt lines, "
@@ -485,6 +497,8 @@ def check_corrections(fixture: dict) -> list[str]:
             f"from {base[101]['rank_score']} to {moved[101]['rank_score']}"
         )
 
+    cases = 4
+    METRICS["H3"] = (cases - len({p.split(":")[0] for p in problems if p.startswith("correction_")}), cases)
     if not problems:
         print("ok    corrections: top-up, expiry, unit and relocation edits all move the score as the rules say")
     return problems
@@ -539,6 +553,26 @@ def main() -> int:
         ok = False
     else:
         print("\nok    shuffle-invariance: 20 inventory orderings produced identical usable quantities")
+
+    print("\n" + "-" * 72)
+    print("M0 hypotheses (see p2/eval/HYPOTHESIS.md)\n")
+    missed = False
+    for key, (claim, threshold, baseline) in THRESHOLDS.items():
+        if key not in METRICS:
+            print(f"  {key}  NOT MEASURED  {claim}")
+            missed = True
+            continue
+        got, total = METRICS[key]
+        ratio = got / total if total else 0.0
+        verdict = "MET" if ratio >= threshold else "MISSED"
+        if verdict == "MISSED":
+            missed = True
+        print(f"  {key}  {verdict:<6} {got}/{total} = {ratio:.1%}  (threshold {threshold:.0%})  {claim}")
+        print(f"      baseline: {baseline}")
+    if missed:
+        ok = False
+        print("\n  A missed threshold triggers a spiral review, not a threshold adjustment:")
+        print("  report the number, hold the review, record the decision in an issue.")
 
     print("\nPASS" if ok else "\nFAILED")
     return 0 if ok else 1
