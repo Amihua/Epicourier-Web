@@ -7,7 +7,7 @@ Five rows are spot-checked at the demo, and a self-score that does not hold up c
 honest low one. So every score below is the score the evidence supports, and where the evidence is
 thin the row says 0 or 1 and says why. **Rows scored 0 are not oversights; they are work not done.**
 
-Running total: **54 / 96**, up from 46 earlier today after the badge, Ruff and CONTRIBUTING work below. The three weakest blocks are documentation (1/18), issues (1/15) and the two videos, and none of the three can be raised by editing this file.
+Running total: **63 / 96**, up from 46 earlier today: badges, Ruff and CONTRIBUTING took it to 54, and the documentation work took it to 64. The weakest block is now issues (1/15), which is structurally blocked, and the two video rows, which need credentials.
 
 ---
 
@@ -65,14 +65,14 @@ action: enabling Issues. Several already-written findings would become issues im
 | Q3 | Tests run automatically on every commit via CI | **3** | [Actions](https://github.com/Amihua/Epicourier-Web/actions) | Four jobs on every push to `se26f-p2` and every PR to it: M0, Pytest, Ruff, and the web job (typegen → type-check → Jest → build → coverage). |
 | Q4 | Coverage measured and shown on a badge | **2** | `README.md` | Coverage is measured and the badge now points at `Amihua/Epicourier-Web`; it was pointing at the upstream repository and reporting another project's number. Not a 3 until Codecov is configured for this repository and the badge shows a real percentage rather than "unknown". |
 
-## Docs — 1 / 18
+## Docs — 10 / 18
 
 | # | Row | Score | Evidence | Why this score |
 |---|---|:-:|---|---|
-| D1 | Generated docs, not ugly | **0** | — | No documentation site is generated. |
-| D2 | WHAT: per-class and per-function descriptions | **1** | `backend/api/receipt_scorer.py`, `p2/eval/run_eval.py`, `web/src/types/receipt.ts` | New P2 modules carry real docstrings that explain why a rule exists, not just what the function takes. Inherited code is largely undocumented, and nothing is published. |
-| D3 | HOW: mini-tutorials with worked examples | **0** | — | `p2/eval/README.md` and `p2/baseline/README.md` come closest, but they are runbooks for two scripts, not tutorials for the system. |
-| D4 | WHY: docs that motivate the project | **0** | — | The P1b report tells that story; nothing in the repository documentation does. |
+| D1 | Generated docs, not ugly | **2** | [`docs/api/backend/`](../../docs/api/backend) · [`docs/api/web/`](../../docs/api/web) | Two generators, both runnable from a clean checkout, wired into a CI job that fails when the output is stale. Not a 3: it is a folder of pages in the repository, not a published site — GitHub Pages needs an admin to enable. |
+| D2 | WHAT: per-class and per-function descriptions | **2** | [`docs/api/backend/`](../../docs/api/backend) | The generator marks undocumented public symbols as such, and the four P2 modules have none. Not a 3: the inherited code is still largely undocumented, and the generated reference covers the P2 modules rather than the whole codebase. |
+| D3 | HOW: mini-tutorials with worked examples | **3** | [`docs/guides/`](../../docs/guides) | Four guides, each built on a command the reader runs: the evaluation in a minute with nothing installed; adding a scoring rule by writing the expectation first and watching it fail; changing the contract, worked through the real case where the schema was looser than the model; and local setup ordered by how little you need. |
+| D4 | WHY: docs that motivate the project | **3** | [`docs/WHY.md`](../../docs/WHY.md) | Opens on the schema that makes the current score undecomposable, names the cost — not that users cannot see an explanation, but that the team cannot tell whether a change improved the ranking or moved it — and states what the project does not claim, including the baseline that is not collected. |
 | D5 | Teaser video, 12–30 s, top of the README | **0** | — | Not made. Blocked on running the application. |
 | D6 | Feature walkthrough video, 2–5 min, linked from README | **0** | — | Not made. The README links the **upstream team's** demo video, which is not ours and must not be presented as ours. |
 
@@ -106,8 +106,8 @@ What is left, and who it needs:
 1. **Enable Issues and file the findings already written** — up to 12 points in a block scoring 1.
    Needs an admin; `has_issues` is false. The failing cases are documented already, they are just
    not issues.
-2. **Generate a documentation site** — the docs block scores 1 of 18, the largest single hole, and
-   it is the one nobody is blocked on.
+2. **Publish the generated reference as a site** — D1 2→3. The pages exist; GitHub Pages needs an
+   admin to enable, the same person who can enable Issues.
 3. **Record the two videos** — 6 points, blocked on Supabase credentials.
 4. **Configure Codecov for this repository** — Q4 2→3; the badge points here now but has no data.
 5. **Mint a Zenodo DOI for a release of this repository** — S8 2→3; the present DOI is the upstream
