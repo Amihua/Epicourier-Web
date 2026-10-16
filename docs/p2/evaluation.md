@@ -124,11 +124,25 @@ than by loosening the check.
 Worth keeping for D5: the evaluation caught the human. That is the entire argument for not generating
 expected values from the code under test.
 
+## How the Ruff state was measured without installing anything
+
+`uv` is not installed on the maintainer's machine, which is why this was open for
+several days. It did not need to be: the `lint` job already runs Ruff on every push, and
+`continue-on-error` suppresses the *result*, not the *output*. Reading the job log gives
+the real answer, including the exact reformatting diff per file:
+
+```
+gh run view <run-id> --log | grep -E 'ruff|would be reformatted'
+```
+
+Worth remembering generally — a suppressed check still reports, and the log is the
+measurement.
+
 ## Known gaps, stated rather than left to be discovered
 
 | Gap | Why it is still open |
 |---|---|
-| The `lint` job in `ci-pytest.yml` keeps **three `continue-on-error` flags** | Removing them blind would red-light every PR if the tree has Ruff violations, and `uv` is not installed locally to measure first. Needs one measured run, not a guess. |
+| The `lint` job in `ci-pytest.yml` keeps **three `continue-on-error` flags** | **Measured, 2026-10-16.** The flags are not hypothetical cover: `ruff check` is clean, but `ruff format --check` reports *"4 files would be reformatted, 24 files already formatted"*, and `continue-on-error` is what turns that into a green job. The four are `api/enhanced_recommender.py`, `tests/sihao/p1a/test_adversarial_inputs.py`, `tests/sihao/p1a/test_recommender_behavior.py` and `tests/p2/test_contract_fixtures.py`. The last one was mine and is now formatted; the other three belong to other owners, and the plan says formatting touches only your own changed files. Removing the flag is a one-line change that becomes safe the moment those three are formatted — it is blocked on their owners, not on a measurement. |
 | `npm ci` cannot install this lock file | Recorded in P1a evidence: the committed lock is missing the `@swc/core` platform binaries under npm 11+. CI uses `npm install`. Regenerating the lock is this role's file and is not done yet. |
 | `user_inventory` is missing from the generated `web/src/types/supabase.ts` | The generated types are stale. Inventory types in the contract are hand-written from the migration until Andy regenerates. |
 | M0 validates supplied receipts, not a scorer | `backend/api/receipt_scorer.py` is M1 and does not exist yet. The harness is written against the contract so it is ready the day it lands. |
