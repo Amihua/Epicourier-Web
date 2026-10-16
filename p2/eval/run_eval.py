@@ -395,6 +395,101 @@ def check_corpus(shuffles: int = 20, seed: int = 20261010) -> list[str]:
     return problems
 
 
+def check_corrections(fixture: dict) -> list[str]:
+    """A correction must change the score in the direction the rules say.
+
+    M2 is the user editing a quantity or a date and watching the ranking move.
+    The panel itself is covered by the web suite; this covers the rule underneath
+    it, because a panel that faithfully re-renders a number the scorer never
+    changed passes a UI test and is still wrong.
+
+    Each case's expected direction is decided from the contract, not from a first
+    run of the scorer.
+    """
+    loaded = load_scorer()
+    if loaded is None:
+        return []
+    score_rankings, RankingRequest = loaded
+    as_of = fixture["as_of_date"]
+
+    def score(inventory: list[dict]) -> dict:
+        request = dict(fixture, inventory=inventory)
+        results = score_rankings(RankingRequest.model_validate(request)).model_dump(mode="json")["results"]
+        return {r["recipe_id"]: r for r in results}
+
+    def edit(inventory: list[dict], inventory_id: str, **patch) -> list[dict]:
+        out = []
+        for row in inventory:
+            row = dict(row)
+            if row["inventory_id"] == inventory_id:
+                row.update(patch)
+            out.append(row)
+        return out
+
+    def line(result: dict, ingredient_id: int) -> dict:
+        return next(
+            i for i in result["items"]
+            if i["ingredient_id"] == ingredient_id and i["source"] == "inventory"
+        )
+
+    base = score(fixture["inventory"])
+    problems: list[str] = []
+
+    # Recipe 101 needs 500 g of ingredient 11 and has 350 usable, so it starts short.
+    # Topping the fridge row up past the requirement must satisfy it.
+    if line(base[101], 11)["status"] != "missing":
+        problems.append(
+            f"correction_precondition: ingredient 11 should start missing, "
+            f"got {line(base[101], 11)['status']!r}"
+        )
+    topped = score(edit(fixture["inventory"], "a0000000-0000-4000-8000-000000000001", quantity=400))
+    if line(topped[101], 11)["status"] != "ok":
+        problems.append(
+            f"correction_topup: raising ingredient 11 to 400+150 g should satisfy a 500 g "
+            f"requirement, status is {line(topped[101], 11)['status']!r}"
+        )
+    if topped[101]["rank_score"] < base[101]["rank_score"]:
+        problems.append(
+            f"correction_topup_score: covering a missing ingredient lowered rank_score from "
+            f"{base[101]['rank_score']} to {topped[101]['rank_score']}"
+        )
+
+    # Correcting an expiry date backwards past as_of_date — the edit a user makes
+    # after reading the real date off the packet — must remove the usable quantity.
+    expired = score(edit(fixture["inventory"], "a0000000-0000-4000-8000-000000000002", expiration_date="2026-10-01"))
+    got = line(expired[101], 12)
+    if got["available_qty"] != 0 or got["status"] != "expired":
+        problems.append(
+            f"correction_expire: dating ingredient 12 before {as_of} should give available_qty 0 "
+            f"and status expired, got {got['available_qty']} / {got['status']!r}"
+        )
+    if expired[101]["rank_score"] > base[101]["rank_score"]:
+        problems.append(
+            f"correction_expire_score: expiring a covered ingredient raised rank_score from "
+            f"{base[101]['rank_score']} to {expired[101]['rank_score']}"
+        )
+
+    # Under decision D2 a null-unit row is unusable until the user says what the
+    # quantity is in. Supplying the unit must resolve it.
+    resolved = score(edit(fixture["inventory"], "a0000000-0000-4000-8000-000000000004", unit="L"))
+    if line(resolved[102], 15)["status"] == "unresolved_unit":
+        problems.append("correction_unit: supplying the missing unit left the line unresolved")
+
+    # Moving stock between locations changes no usable quantity, so it may not move
+    # the score. The unique constraint is per location, which makes this the edit
+    # most likely to disturb a scorer that groups by row instead of by ingredient.
+    moved = score(edit(fixture["inventory"], "a0000000-0000-4000-8000-000000000002", location="freezer"))
+    if moved[101]["rank_score"] != base[101]["rank_score"]:
+        problems.append(
+            f"correction_relocation: moving ingredient 12 from pantry to freezer changed rank_score "
+            f"from {base[101]['rank_score']} to {moved[101]['rank_score']}"
+        )
+
+    if not problems:
+        print("ok    corrections: top-up, expiry, unit and relocation edits all move the score as the rules say")
+    return problems
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="M0 offline receipt evaluation")
     parser.add_argument("--case", help="run a single case by name")
@@ -419,6 +514,13 @@ def main() -> int:
         ok = False
     elif load_scorer() is not None:
         print("\nok    scorer-vs-hand-computed: the real scorer matches every hand-written value")
+
+    correction_problems = check_corrections(fixture)
+    if correction_problems:
+        print("\nFAIL  corrections:")
+        for p in correction_problems:
+            print(f"        {p}")
+        ok = False
 
     corpus_problems = check_corpus()
     if corpus_problems:
