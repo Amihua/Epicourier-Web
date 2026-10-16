@@ -1,13 +1,13 @@
 # Project 2 — rubric self-assessment
 
-**Maintained by:** Wenbo Li · **Assessed:** 2026-10-16 · **Branch:** `se26f-p2`
+**Maintained by:** Wenbo Li · **Assessed:** 2026-10-16 (revised the same day after the badge, Ruff and CONTRIBUTING work) · **Branch:** `se26f-p2`
 **Scale:** 0 = none · 1 = a little · 2 = somewhat · 3 = a lot
 
 Five rows are spot-checked at the demo, and a self-score that does not hold up costs more than an
 honest low one. So every score below is the score the evidence supports, and where the evidence is
 thin the row says 0 or 1 and says why. **Rows scored 0 are not oversights; they are work not done.**
 
-Running total: **46 / 96**. The three weakest blocks are documentation, issues, and the two videos.
+Running total: **54 / 96**, up from 46 earlier today after the badge, Ruff and CONTRIBUTING work below. The three weakest blocks are documentation (1/18), issues (1/15) and the two videos, and none of the three can be raised by editing this file.
 
 ---
 
@@ -56,14 +56,14 @@ total would be the single easiest thing for a marker to catch.
 **This block is the cheapest four marks available to the team**, and it is blocked on one admin
 action: enabling Issues. Several already-written findings would become issues immediately.
 
-## Tests — 9 / 12
+## Tests — 11 / 12
 
 | # | Row | Score | Evidence | Why this score |
 |---|---|:-:|---|---|
 | Q1 | Tests exist, expected and failure cases, 50 good / 100 better | **3** | `web/__tests__`, `web/tests`, `backend/tests` | **1510 cases** — 1412 Jest, 98 pytest — well past "100 is better". Failure cases are a deliberate category: `p2/eval/cases/corrupted.json` must fail, and the P1a adversarial suite exists to expose gaps. |
 | Q2 | Tests are a serious share of the codebase, ~30% common | **3** | measured 2026-10-16 | **50.1%** — 30,217 lines of test against 30,108 of product code. |
 | Q3 | Tests run automatically on every commit via CI | **3** | [Actions](https://github.com/Amihua/Epicourier-Web/actions) | Four jobs on every push to `se26f-p2` and every PR to it: M0, Pytest, Ruff, and the web job (typegen → type-check → Jest → build → coverage). |
-| Q4 | Coverage measured and shown on a badge | **0** | `README.md` | Coverage *is* measured — the web job uploads to Codecov — but **the README badge points at `sdxshuai/Epicourier-Web`, the upstream repository, not ours.** It renders, so it looks fine and reports someone else's number. Scored 0 deliberately. |
+| Q4 | Coverage measured and shown on a badge | **2** | `README.md` | Coverage is measured and the badge now points at `Amihua/Epicourier-Web`; it was pointing at the upstream repository and reporting another project's number. Not a 3 until Codecov is configured for this repository and the badge shows a real percentage rather than "unknown". |
 
 ## Docs — 1 / 18
 
@@ -76,17 +76,17 @@ action: enabling Issues. Several already-written findings would become issues im
 | D5 | Teaser video, 12–30 s, top of the README | **0** | — | Not made. Blocked on running the application. |
 | D6 | Feature walkthrough video, 2–5 min, linked from README | **0** | — | Not made. The README links the **upstream team's** demo video, which is not ours and must not be presented as ours. |
 
-## Standard files and bling — 21 / 30
+## Standard files and bling — 27 / 30
 
 | # | Row | Score | Evidence | Why this score |
 |---|---|:-:|---|---|
-| S1 | README with all badges, each working when clicked | **1** | `README.md` | Badges exist, but the CI and Codecov badges point at `sdxshuai/Epicourier-Web`. They load, which is worse than being broken: they display a different repository's status. Build, style, format and syntax badges are absent. |
+| S1 | README with all badges, each working when clicked | **3** | `README.md` | Twelve badges, all pointing at this repository: web CI, backend CI, M0 evaluation, coverage, test count, test share, ESLint, Prettier, Ruff, tsc, DOI, status. Every URL was fetched and returns 200 before being committed, and the three stale relative links found while checking were fixed. |
 | S2 | `.gitignore` keeps out what must not be committed | **3** | `.gitignore`, `web/.gitignore` | Covers env files, build output, node_modules; `web/.env.local` is confirmed ignored. No secret is tracked. |
-| S3 | `INSTALL.md` | **2** | `INSTALL.md` | Present and usable, and `web/.env.example` was corrected this sprint to declare `SUPABASE_SERVICE_ROLE_KEY` and the VAPID pair, both of which a build needs and neither of which was listed. Not a 3: it still says `npm ci`-era setup and does not mention that the backend cannot start without a model key. |
+| S3 | `INSTALL.md` | **2** | `INSTALL.md` | Present and usable, and `web/.env.example` now declares `SUPABASE_SERVICE_ROLE_KEY` and the VAPID pair, both of which a build needs and neither of which was listed. Still a 2: it does not yet say that the backend cannot start without a model key, which is the first thing a new contributor hits. |
 | S4 | `LICENSE.md` | **3** | `LICENSE.md` | Present. |
 | S5 | `CODE-OF-CONDUCT.md` | **3** | `CODE_OF_CONDUCT.md` | Present. |
-| S6 | `CONTRIBUTING.md`, with standards and how to extend safely | **1** | `CONTRIBUTE.md` | The file is named `CONTRIBUTE.md`, not the name the rubric asks for, and it covers workflow rather than coding standards or how to extend the system safely. |
-| S7 | Style checker, formatter, syntax checker — config in repo and badge in README | **1** | `web/eslint.config.mjs`, `web/.prettierrc`, `backend/pyproject.toml` (Ruff), `web/tsconfig.json` | All four configs exist and three run in CI. **No badge for any of them**, and the Ruff format check is still wrapped in `continue-on-error`, so it reports failure as success — measured: 4 files would be reformatted. |
+| S6 | `CONTRIBUTING.md`, with standards and how to extend safely | **3** | [`CONTRIBUTING.md`](../../CONTRIBUTING.md) | Renamed to the name the rubric asks for, and extended with both halves it asks for: coding standards with the config that enforces each and the command to run it, and how to extend safely — contract first, the six scoring rules that look like details, and how to write a test that can fail. |
+| S7 | Style checker, formatter, syntax checker — config in repo and badge in README | **3** | `web/eslint.config.mjs`, `web/.prettierrc`, `backend/pyproject.toml`, `web/tsconfig.json` | Four configs, all in CI, all with a badge. The `continue-on-error` flags that made the Ruff format check report failure as success are gone, and the four files it was failing on are formatted, so the green is now worth something. |
 | S8 | Zenodo DOI badge | **2** | `README.md` | A DOI badge is present and resolves. It belongs to the upstream record rather than to a release of this repository, so it needs re-minting before it evidences our work. |
 | S9 | `THIRD_PARTY_LIBRARIES.md` listing dependencies and licences | **2** | `THIRD_PARTY_LIBRARIES.md` | Present and real. Predates P2, so the dependencies added since are not in it. |
 | S10 | Visible, disclosed AI use, including evidence a human checked the output | **3** | [`p1a/`](../../p1a), [`p1b/`](../../p1b), [`AGENT-PLAN/`](../../AGENT-PLAN) | **The strongest row in this assessment.** Four models are evidenced with preserved transcripts, not claims. Every run has a derivation record naming what the model got wrong and how it was caught — five corrected claims in the Gemini column alone, each with the source line that disproved it. One record documents a verification that was itself wrong and marks it so. `p1b/prompts/step8-prompt-model-table.md` carries the prompt × model comparison with disagreements and what settled each. |
@@ -97,11 +97,28 @@ action: enabling Issues. Several already-written findings would become issues im
 
 Ranked by marks per hour, all of it independent of anyone else except the first:
 
-1. **Enable Issues and file the findings already written** — up to 12 points in a block currently scoring 1. The failing cases are documented; they just are not issues.
-2. **Repoint the CI and Codecov badges at `Amihua/Epicourier-Web`, and add build / lint / format / type badges** — turns Q4 from 0 and S1 from 1 into defensible scores, and removes the risk of presenting another repository's status as ours.
-3. **Rename `CONTRIBUTE.md` to `CONTRIBUTING.md` and add coding standards** — S6 from 1.
-4. **Generate a documentation site** — the docs block scores 1 of 18 and is the largest single hole.
-5. **Record the two videos** — 6 points, blocked on credentials.
+Done since the first pass, worth 8 points: badges repointed and completed (S1 1→3, Q4 0→2), Ruff
+enforced for real with its four files formatted (S7 1→3), and CONTRIBUTING renamed and extended
+(S6 1→3).
+
+What is left, and who it needs:
+
+1. **Enable Issues and file the findings already written** — up to 12 points in a block scoring 1.
+   Needs an admin; `has_issues` is false. The failing cases are documented already, they are just
+   not issues.
+2. **Generate a documentation site** — the docs block scores 1 of 18, the largest single hole, and
+   it is the one nobody is blocked on.
+3. **Record the two videos** — 6 points, blocked on Supabase credentials.
+4. **Configure Codecov for this repository** — Q4 2→3; the badge points here now but has no data.
+5. **Mint a Zenodo DOI for a release of this repository** — S8 2→3; the present DOI is the upstream
+   record's.
+
+### Rows that cannot honestly reach 3
+
+Stated so nobody spends time trying. T3 is 35 / 16 / 12 / 7 commits — a real spread with a 5× gap,
+and inflating it is checkable in one click. T4 is deliberately siloed this sprint because the plan
+assigns one owner per file. T7 stays at 1 until the maintainer of this file can run the application,
+which needs credentials. I1–I4 are structurally 0 while Issues are disabled.
 
 ## Rows a spot-check would most likely pick, and what to open
 
