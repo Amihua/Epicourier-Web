@@ -13,7 +13,7 @@ git clone https://github.com/epicourier-team/Epicourier-Web.git
 If you plan to contribute, please **fork the repository first**,
 then add your fork as the `origin` remote.
 
-For more details, see **[CONTRIBUTE.md](./CONTRIBUTE.md)**.
+For more details, see **[CONTRIBUTING.md](./CONTRIBUTING.md)**.
 
 ---
 

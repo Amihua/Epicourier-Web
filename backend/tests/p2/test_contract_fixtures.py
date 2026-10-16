@@ -94,9 +94,7 @@ def test_receipt_item_status_and_source_enums_are_closed(schema: dict) -> None:
 def test_zero_requirement_is_representable_and_present(golden: dict) -> None:
     """A requirement of 0 must survive the contract, because `|| 100` turns it into 100."""
     quantities = [
-        req["quantity"]
-        for cand in golden["candidates"]
-        for req in cand["requirements"]
+        req["quantity"] for cand in golden["candidates"] for req in cand["requirements"]
     ]
     assert 0 in quantities, "the golden fixture must carry a zero requirement"
     assert None in quantities, "the golden fixture must carry an unknown requirement"
@@ -106,7 +104,9 @@ def test_fixture_carries_the_expiry_boundary_row(golden: dict) -> None:
     """A row expiring exactly on as_of_date is still usable; a scorer using <= fails only here."""
     dates = [row["expiration_date"] for row in golden["inventory"]]
     assert AS_OF_DATE in dates, "no row expires exactly on as_of_date"
-    assert any(d is not None and d < AS_OF_DATE for d in dates), "no already-expired row"
+    assert any(d is not None and d < AS_OF_DATE for d in dates), (
+        "no already-expired row"
+    )
     assert None in dates, "no row without an expiry date"
 
 
