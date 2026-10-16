@@ -211,6 +211,96 @@ def run_case(path: Path, fixture: dict) -> bool:
     return True
 
 
+def load_scorer():
+    """Return `score_rankings` if the real scorer can be imported offline, else None.
+
+    It was not importable when this harness was written: everything in backend/api
+    reached api/recommender.py:121, which builds a Gemini client at module level.
+    api/receipt_scorer.py depends only on api/receipt_models and api/target_math,
+    so it loads with no key. If that ever regresses, this returns None and the
+    scorer check is reported as skipped rather than silently passing.
+    """
+    backend = Path(__file__).resolve().parents[2] / "backend"
+    if str(backend) not in sys.path:
+        sys.path.insert(0, str(backend))
+    try:
+        from api.receipt_models import RankingRequest  # noqa: PLC0415
+        from api.receipt_scorer import score_rankings  # noqa: PLC0415
+    except Exception as exc:  # pragma: no cover - environment dependent
+        print(f"skip  scorer: not importable offline ({type(exc).__name__}: {exc})")
+        return None
+    return score_rankings, RankingRequest
+
+
+def check_scorer_against_hand_values(fixture: dict) -> list[str]:
+    """Compare the real scorer's receipt with the hand-written expectations.
+
+    This is the check the whole harness exists for. The expectations in
+    cases/hand-computed.json were written from the contract before any scorer
+    existed, so agreement here is two independent derivations matching, not a
+    function being compared with itself.
+    """
+    loaded = load_scorer()
+    if loaded is None:
+        return []
+    score_rankings, RankingRequest = loaded
+
+    hand = json.loads((CASES_DIR / "hand-computed.json").read_text())["receipt"]
+    actual = score_rankings(RankingRequest.model_validate(fixture)).model_dump(mode="json")
+
+    problems = check_receipt(actual, fixture)
+    problems = [f"scorer_output: {p}" for p in problems]
+
+    if len(hand["results"]) != len(actual["results"]):
+        problems.append(
+            f"scorer_result_count: hand-computed has {len(hand['results'])} receipts, "
+            f"scorer returned {len(actual['results'])}"
+        )
+        return problems
+
+    def line_key(item: dict) -> tuple:
+        return (item["ingredient_id"], item["source"])
+
+    for expected, got in zip(hand["results"], actual["results"]):
+        rid = expected["recipe_id"]
+        if got["recipe_id"] != rid:
+            problems.append(f"scorer_order: expected recipe {rid} here, got {got['recipe_id']}")
+            continue
+        if round_points(got["rank_score"]) != round_points(expected["rank_score"]):
+            problems.append(
+                f"scorer_rank_score: recipe {rid} hand-computed {expected['rank_score']}, "
+                f"scorer {got['rank_score']}"
+            )
+        for field, want in expected["subtotals"].items():
+            if round_points(got["subtotals"][field]) != round_points(want):
+                problems.append(
+                    f"scorer_subtotal: recipe {rid} {field} hand-computed {want}, "
+                    f"scorer {got['subtotals'][field]}"
+                )
+
+        want_lines = {line_key(i): i for i in expected["items"]}
+        got_lines = {line_key(i): i for i in got["items"]}
+        if set(want_lines) != set(got_lines):
+            problems.append(
+                f"scorer_lines: recipe {rid} hand-computed {sorted(want_lines)}, "
+                f"scorer {sorted(got_lines)}"
+            )
+            continue
+        for key in sorted(want_lines):
+            for field in ("required_qty", "available_qty", "status", "points"):
+                a, b = want_lines[key][field], got_lines[key][field]
+                if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+                    same = round_points(a) == round_points(b)
+                else:
+                    same = a == b
+                if not same:
+                    problems.append(
+                        f"scorer_line: recipe {rid} ingredient {key[0]} ({key[1]}) "
+                        f".{field} hand-computed {a!r}, scorer {b!r}"
+                    )
+    return problems
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="M0 offline receipt evaluation")
     parser.add_argument("--case", help="run a single case by name")
@@ -226,6 +316,15 @@ def main() -> int:
 
     print(f"M0 · rule_version={RULE_VERSION} · as_of_date={fixture['as_of_date']} · {len(paths)} case(s)\n")
     ok = all([run_case(p, fixture) for p in paths])
+
+    scorer_problems = check_scorer_against_hand_values(fixture)
+    if scorer_problems:
+        print("\nFAIL  scorer-vs-hand-computed:")
+        for p in scorer_problems:
+            print(f"        {p}")
+        ok = False
+    elif load_scorer() is not None:
+        print("\nok    scorer-vs-hand-computed: the real scorer matches every hand-written value")
 
     shuffle_problems = check_shuffle_invariance(fixture)
     if shuffle_problems:
