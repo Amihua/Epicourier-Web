@@ -9,151 +9,324 @@
       "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
       "description": "Calendar date. Never derived from a machine's local clock."
     },
-    "ruleVersion": { "const": "receipt-v1" },
-    "location": { "enum": ["pantry", "fridge", "freezer", "other"] },
+    "ruleVersion": {
+      "const": "receipt-v1"
+    },
+    "location": {
+      "enum": [
+        "pantry",
+        "fridge",
+        "freezer",
+        "other"
+      ]
+    },
     "nutrientMap": {
       "type": "object",
-      "additionalProperties": { "type": "number" },
-      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" }
+      "additionalProperties": {
+        "type": "number"
+      },
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*$"
+      }
     },
-
     "Requirement": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["ingredient_id", "quantity", "unit"],
+      "required": [
+        "ingredient_id",
+        "quantity",
+        "unit"
+      ],
       "properties": {
-        "ingredient_id": { "type": "integer" },
-        "quantity": {
-          "type": ["number", "null"],
-          "description": "Required amount in `unit`. null means the recipe does not state it; 0 means zero and is never rewritten to a default."
+        "ingredient_id": {
+          "type": "integer"
         },
-        "unit": { "type": "string", "minLength": 1 }
+        "quantity": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Required amount in `unit`. null means the recipe does not state it; 0 means zero and is never rewritten to a default. Negative is invalid: the scorer's model enforces >= 0, and this bound was added so the contract is not looser than the implementation.",
+          "minimum": 0
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
-
     "RecipeCandidate": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["recipe_id", "requirements"],
+      "required": [
+        "recipe_id",
+        "requirements"
+      ],
       "properties": {
-        "recipe_id": { "type": "integer" },
+        "recipe_id": {
+          "type": "integer"
+        },
         "servings": {
           "type": "integer",
           "minimum": 1,
           "default": 1,
           "description": "Open decision D1. Caller-supplied multiplier; scales requirements only, never nutrient targets."
         },
-        "requirements": { "type": "array", "items": { "$ref": "#/$defs/Requirement" } }
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Requirement"
+          }
+        }
       }
     },
-
     "InventorySnapshot": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["inventory_id", "ingredient_id", "quantity", "unit", "expiration_date"],
+      "required": [
+        "inventory_id",
+        "ingredient_id",
+        "quantity",
+        "unit",
+        "expiration_date"
+      ],
       "properties": {
-        "inventory_id": { "type": "string", "minLength": 1 },
-        "ingredient_id": { "type": "integer" },
-        "quantity": { "type": "number" },
+        "inventory_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ingredient_id": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "number",
+          "minimum": 0
+        },
         "unit": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Open decision D2. user_inventory.unit is nullable; null must not be silently read as Ingredient.unit."
         },
-        "location": { "$ref": "#/$defs/location" },
-        "expiration_date": { "oneOf": [{ "$ref": "#/$defs/date" }, { "type": "null" }] }
+        "location": {
+          "$ref": "#/$defs/location"
+        },
+        "expiration_date": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
       }
     },
-
     "NutrientTargets": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["confirmed_at", "daily", "consumed_today"],
+      "required": [
+        "confirmed_at",
+        "daily",
+        "consumed_today"
+      ],
       "properties": {
         "confirmed_at": {
           "type": "string",
           "description": "Targets are usable only when confirmed. Unconfirmed targets are ignored and reported in warnings."
         },
-        "daily": { "$ref": "#/$defs/nutrientMap" },
-        "consumed_today": { "$ref": "#/$defs/nutrientMap" }
+        "daily": {
+          "$ref": "#/$defs/nutrientMap"
+        },
+        "consumed_today": {
+          "$ref": "#/$defs/nutrientMap"
+        }
       }
     },
-
     "RankingRequest": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["rule_version", "as_of_date", "candidates", "inventory", "targets"],
+      "required": [
+        "rule_version",
+        "as_of_date",
+        "candidates",
+        "inventory",
+        "targets"
+      ],
       "properties": {
-        "rule_version": { "$ref": "#/$defs/ruleVersion" },
-        "as_of_date": { "$ref": "#/$defs/date" },
-        "candidates": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/RecipeCandidate" } },
+        "rule_version": {
+          "$ref": "#/$defs/ruleVersion"
+        },
+        "as_of_date": {
+          "$ref": "#/$defs/date"
+        },
+        "candidates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/RecipeCandidate"
+          }
+        },
         "inventory": {
           "type": "array",
-          "items": { "$ref": "#/$defs/InventorySnapshot" },
+          "items": {
+            "$ref": "#/$defs/InventorySnapshot"
+          },
           "description": "The user's full authorised inventory, not the subset a page is filtering."
         },
-        "targets": { "oneOf": [{ "$ref": "#/$defs/NutrientTargets" }, { "type": "null" }] }
+        "targets": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/NutrientTargets"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
       }
     },
-
     "ReceiptItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["ingredient_id", "required_qty", "available_qty", "unit", "expiration_date", "source", "points", "status"],
+      "required": [
+        "ingredient_id",
+        "required_qty",
+        "available_qty",
+        "unit",
+        "expiration_date",
+        "source",
+        "points",
+        "status"
+      ],
       "properties": {
-        "ingredient_id": { "type": "integer" },
+        "ingredient_id": {
+          "type": "integer"
+        },
         "ingredient_name": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Display only. Matching on a name is prohibited; Ingredient.name is nullable."
         },
-        "required_qty": { "type": ["number", "null"] },
+        "required_qty": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
         "available_qty": {
           "type": "number",
           "minimum": 0,
           "description": "Usable quantity. A row expiring strictly before as_of_date contributes 0."
         },
-        "unit": { "type": ["string", "null"] },
-        "expiration_date": { "oneOf": [{ "$ref": "#/$defs/date" }, { "type": "null" }] },
-        "source": { "enum": ["inventory", "expiry", "nutrition", "global"] },
-        "points": { "type": "number", "description": "Signed. Sums to rank_score exactly after documented rounding." },
-        "status": { "enum": ["ok", "missing", "expired", "unresolved_unit", "unknown_requirement"] }
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "expiration_date": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "enum": [
+            "inventory",
+            "expiry",
+            "nutrition",
+            "global"
+          ]
+        },
+        "points": {
+          "type": "number",
+          "description": "Signed. Sums to rank_score exactly after documented rounding."
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "missing",
+            "expired",
+            "unresolved_unit",
+            "unknown_requirement"
+          ]
+        }
       }
     },
-
     "TargetOutcome": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["remaining", "over", "incomplete"],
+      "required": [
+        "remaining",
+        "over",
+        "incomplete"
+      ],
       "properties": {
-        "remaining": { "$ref": "#/$defs/nutrientMap" },
+        "remaining": {
+          "$ref": "#/$defs/nutrientMap"
+        },
         "over": {
           "$ref": "#/$defs/nutrientMap",
           "description": "Amount past the target. Clamping the remainder to zero without reporting the overage is prohibited."
         },
         "incomplete": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Nutrient keys whose source data is missing. Missing data is never treated as zero."
         }
       }
     },
-
     "Warning": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["code", "message"],
+      "required": [
+        "code",
+        "message"
+      ],
       "properties": {
-        "code": { "enum": ["targets_unconfirmed", "missing_nutrient_data", "unresolved_unit", "unknown_requirement", "expired_stock_excluded"] },
-        "message": { "type": "string" },
-        "ingredient_id": { "type": "integer" }
+        "code": {
+          "enum": [
+            "targets_unconfirmed",
+            "missing_nutrient_data",
+            "unresolved_unit",
+            "unknown_requirement",
+            "expired_stock_excluded"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "ingredient_id": {
+          "type": "integer"
+        }
       }
     },
-
     "RankedRecipe": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["recipe_id", "rank_score", "subtotals", "items", "targets", "warnings"],
+      "required": [
+        "recipe_id",
+        "rank_score",
+        "subtotals",
+        "items",
+        "targets",
+        "warnings"
+      ],
       "properties": {
-        "recipe_id": { "type": "integer" },
+        "recipe_id": {
+          "type": "integer"
+        },
         "rank_score": {
           "type": "number",
           "description": "Ranking points, not a percentage. May not be rendered in the existing match_score percentage slot."
@@ -161,62 +334,133 @@
         "subtotals": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["inventory", "expiry", "nutrition"],
+          "required": [
+            "inventory",
+            "expiry",
+            "nutrition"
+          ],
           "properties": {
-            "inventory": { "type": "number" },
-            "expiry": { "type": "number" },
-            "nutrition": { "type": "number" }
+            "inventory": {
+              "type": "number"
+            },
+            "expiry": {
+              "type": "number"
+            },
+            "nutrition": {
+              "type": "number"
+            }
           }
         },
-        "items": { "type": "array", "items": { "$ref": "#/$defs/ReceiptItem" } },
-        "targets": { "oneOf": [{ "$ref": "#/$defs/TargetOutcome" }, { "type": "null" }] },
-        "warnings": { "type": "array", "items": { "$ref": "#/$defs/Warning" } }
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReceiptItem"
+          }
+        },
+        "targets": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/TargetOutcome"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Warning"
+          }
+        }
       }
     },
-
     "RankingResponse": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["rule_version", "as_of_date", "results"],
+      "required": [
+        "rule_version",
+        "as_of_date",
+        "results"
+      ],
       "properties": {
-        "rule_version": { "$ref": "#/$defs/ruleVersion" },
-        "as_of_date": { "$ref": "#/$defs/date" },
+        "rule_version": {
+          "$ref": "#/$defs/ruleVersion"
+        },
+        "as_of_date": {
+          "$ref": "#/$defs/date"
+        },
         "results": {
           "type": "array",
-          "items": { "$ref": "#/$defs/RankedRecipe" },
+          "items": {
+            "$ref": "#/$defs/RankedRecipe"
+          },
           "description": "Ordered by rank_score descending, then recipe_id ascending. Perturbing the inventory array order must not change this."
         }
       }
     },
-
     "PreviewRequest": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["recipe_id", "list_id"],
+      "required": [
+        "recipe_id",
+        "list_id"
+      ],
       "properties": {
-        "recipe_id": { "type": "integer" },
-        "servings": { "type": "integer", "minimum": 1, "default": 1 },
-        "list_id": { "type": "string", "minLength": 1 }
+        "recipe_id": {
+          "type": "integer"
+        },
+        "servings": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "list_id": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
-
     "PreviewResponse": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["preview_id", "snapshot_id", "deltas", "unresolved"],
+      "required": [
+        "preview_id",
+        "snapshot_id",
+        "deltas",
+        "unresolved"
+      ],
       "properties": {
-        "preview_id": { "type": "string", "minLength": 1 },
-        "snapshot_id": { "type": "string", "minLength": 1 },
+        "preview_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "snapshot_id": {
+          "type": "string",
+          "minLength": 1
+        },
         "deltas": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["ingredient_id", "missing_qty", "unit"],
+            "required": [
+              "ingredient_id",
+              "missing_qty",
+              "unit"
+            ],
             "properties": {
-              "ingredient_id": { "type": "integer" },
-              "missing_qty": { "type": "number", "exclusiveMinimum": 0 },
-              "unit": { "type": "string", "minLength": 1 }
+              "ingredient_id": {
+                "type": "integer"
+              },
+              "missing_qty": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "unit": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           },
           "description": "missing = max(required - available_usable, 0), where available_usable excludes expired rows."
@@ -226,47 +470,95 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["ingredient_id", "reason"],
+            "required": [
+              "ingredient_id",
+              "reason"
+            ],
             "properties": {
-              "ingredient_id": { "type": "integer" },
-              "reason": { "enum": ["missing_unit", "incompatible_unit", "unknown_requirement"] }
+              "ingredient_id": {
+                "type": "integer"
+              },
+              "reason": {
+                "enum": [
+                  "missing_unit",
+                  "incompatible_unit",
+                  "unknown_requirement"
+                ]
+              }
             }
           }
         }
       }
     },
-
     "ConfirmRequest": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["preview_id", "request_id"],
+      "required": [
+        "preview_id",
+        "request_id"
+      ],
       "properties": {
-        "preview_id": { "type": "string", "minLength": 1 },
-        "request_id": { "type": "string", "minLength": 1, "description": "Idempotency key, enforced in the database rather than in memory." }
+        "preview_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Idempotency key, enforced in the database rather than in memory."
+        }
       }
     },
-
     "ConfirmResponse": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "written", "skipped"],
+      "required": [
+        "status",
+        "written",
+        "skipped"
+      ],
       "properties": {
         "status": {
-          "enum": ["applied", "stale", "failed"],
+          "enum": [
+            "applied",
+            "stale",
+            "failed"
+          ],
           "description": "stale means inventory changed since the preview: nothing is written. A partial write reports failed, never applied."
         },
-        "written": { "type": "array", "items": { "type": "object" } },
-        "skipped": { "type": "array", "items": { "type": "object" } }
+        "written": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "skipped": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
       }
     }
   },
-
   "oneOf": [
-    { "$ref": "#/$defs/RankingRequest" },
-    { "$ref": "#/$defs/RankingResponse" },
-    { "$ref": "#/$defs/PreviewRequest" },
-    { "$ref": "#/$defs/PreviewResponse" },
-    { "$ref": "#/$defs/ConfirmRequest" },
-    { "$ref": "#/$defs/ConfirmResponse" }
+    {
+      "$ref": "#/$defs/RankingRequest"
+    },
+    {
+      "$ref": "#/$defs/RankingResponse"
+    },
+    {
+      "$ref": "#/$defs/PreviewRequest"
+    },
+    {
+      "$ref": "#/$defs/PreviewResponse"
+    },
+    {
+      "$ref": "#/$defs/ConfirmRequest"
+    },
+    {
+      "$ref": "#/$defs/ConfirmResponse"
+    }
   ]
 }

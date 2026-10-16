@@ -301,6 +301,100 @@ def check_scorer_against_hand_values(fixture: dict) -> list[str]:
     return problems
 
 
+CORPUS = Path(__file__).parent / "corpus" / "determinism-500.json"
+
+
+def check_corpus(shuffles: int = 20, seed: int = 20261010) -> list[str]:
+    """Score the 500-cell corpus and require every receipt to add up and be order-blind.
+
+    The golden fixture pins the cases a reader can check by hand; this pins the
+    same properties across the whole dataset, where a rule that happens to hold
+    for three recipes can fail for fifty. Built from backend/dataset/*.csv by
+    build_corpus.py, so the ingredient ids, units and quantities are the real ones.
+    """
+    if not CORPUS.is_file():
+        print(f"skip  corpus: {CORPUS.name} not built — run p2/eval/build_corpus.py")
+        return []
+    loaded = load_scorer()
+    if loaded is None:
+        return []
+    score_rankings, RankingRequest = loaded
+
+    doc = json.loads(CORPUS.read_text())
+    rng = random.Random(seed)
+    problems: list[str] = []
+    cells = doc["cells"]
+    lines = 0
+
+    def score(cell: dict, inventory: list[dict]) -> dict:
+        request = {
+            "rule_version": doc["rule_version"],
+            "as_of_date": doc["as_of_date"],
+            "candidates": [
+                {
+                    "recipe_id": cell["recipe_id"],
+                    "servings": 1,
+                    "requirements": cell["requirements"],
+                }
+            ],
+            "inventory": inventory,
+            "targets": None,
+        }
+        return score_rankings(RankingRequest.model_validate(request)).model_dump(mode="json")["results"][0]
+
+    for cell in cells:
+        try:
+            result = score(cell, cell["inventory"])
+        except Exception as exc:
+            problems.append(f"corpus_error: cell {cell['cell_id']} raised {type(exc).__name__}: {exc}")
+            continue
+        lines += len(result["items"])
+
+        total = round_points(sum(i["points"] for i in result["items"]))
+        if total != round_points(result["rank_score"]):
+            problems.append(
+                f"corpus_points_sum: cell {cell['cell_id']} items sum to {total}, "
+                f"rank_score is {result['rank_score']}"
+            )
+
+        as_of = doc["as_of_date"]
+        for item in result["items"]:
+            exp = item.get("expiration_date")
+            if exp is not None and exp < as_of and item["available_qty"] != 0:
+                problems.append(
+                    f"corpus_expired_available: cell {cell['cell_id']} ingredient "
+                    f"{item['ingredient_id']} expired {exp} with available_qty {item['available_qty']}"
+                )
+            if item["available_qty"] < 0:
+                problems.append(
+                    f"corpus_negative_available: cell {cell['cell_id']} ingredient {item['ingredient_id']}"
+                )
+
+    # Order blindness, on a sample rather than all 500 x 20, which would be 10,000
+    # scorings for a property that is uniform across the corpus by construction.
+    sample = rng.sample(cells, min(25, len(cells)))
+    for cell in sample:
+        if not cell["inventory"]:
+            continue
+        baseline = score(cell, cell["inventory"])
+        want = (baseline["rank_score"], sorted((i["ingredient_id"], i["source"], i["points"]) for i in baseline["items"]))
+        for _ in range(shuffles):
+            shuffled = list(cell["inventory"])
+            rng.shuffle(shuffled)
+            got = score(cell, shuffled)
+            have = (got["rank_score"], sorted((i["ingredient_id"], i["source"], i["points"]) for i in got["items"]))
+            if have != want:
+                problems.append(f"corpus_order_dependence: cell {cell['cell_id']} changed under a shuffle")
+                break
+
+    if not problems:
+        print(
+            f"ok    corpus: {len(cells)} cells scored, {lines} receipt lines, "
+            f"every receipt adds up; {len(sample)} cells x {shuffles} shuffles order-blind"
+        )
+    return problems
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="M0 offline receipt evaluation")
     parser.add_argument("--case", help="run a single case by name")
@@ -325,6 +419,15 @@ def main() -> int:
         ok = False
     elif load_scorer() is not None:
         print("\nok    scorer-vs-hand-computed: the real scorer matches every hand-written value")
+
+    corpus_problems = check_corpus()
+    if corpus_problems:
+        print("\nFAIL  corpus:")
+        for p in corpus_problems[:12]:
+            print(f"        {p}")
+        if len(corpus_problems) > 12:
+            print(f"        ... and {len(corpus_problems) - 12} more")
+        ok = False
 
     shuffle_problems = check_shuffle_invariance(fixture)
     if shuffle_problems:
