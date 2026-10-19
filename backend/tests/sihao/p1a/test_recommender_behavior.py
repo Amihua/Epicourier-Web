@@ -15,7 +15,6 @@ from api.inventory_recommender import (
     format_inventory_with_expiration,
 )
 
-
 client = TestClient(app)
 
 
