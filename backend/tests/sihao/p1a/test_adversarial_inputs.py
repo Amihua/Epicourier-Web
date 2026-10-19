@@ -1,8 +1,12 @@
-from pydantic import ValidationError
 import pytest
+from pydantic import ValidationError
 
 from api.index import RecommendRequest
-from api.inventory_recommender import InventoryItem, InventoryRecommendRequest, build_recommendation_prompt
+from api.inventory_recommender import (
+    InventoryItem,
+    InventoryRecommendRequest,
+    build_recommendation_prompt,
+)
 
 
 def test_attack_rejects_meal_goal_larger_than_4096_characters():

@@ -22,8 +22,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from api.index import app
 from api.inventory_recommender import (
     InventoryItem,
-    format_inventory_with_expiration,
     build_recommendation_prompt,
+    format_inventory_with_expiration,
 )
 
 client = TestClient(app)

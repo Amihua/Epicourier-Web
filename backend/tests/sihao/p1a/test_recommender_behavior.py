@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
+import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
-import pytest
 
 from api.index import app
 from api.inventory_recommender import (
@@ -39,7 +39,9 @@ def test_rejects_unsupported_meal_counts(meal_count: int):
 
 
 def test_rejects_empty_inventory_recommendation_request():
-    response = client.post("/inventory-recommend", json={"inventory": [], "num_recipes": 3})
+    response = client.post(
+        "/inventory-recommend", json={"inventory": [], "num_recipes": 3}
+    )
     assert response.status_code == 400
     assert response.json()["detail"] == "Inventory cannot be empty"
 

@@ -1,13 +1,13 @@
 # Project 2 — rubric self-assessment
 
-**Maintained by:** Wenbo Li · **Assessed:** 2026-10-16 (revised the same day after the badge, Ruff and CONTRIBUTING work) · **Branch:** `se26f-p2`
+**Maintained by:** Wenbo Li · **Assessed:** 2026-10-16 · **Revised:** 2026-10-19 · **Branch:** `se26f-p2`
 **Scale:** 0 = none · 1 = a little · 2 = somewhat · 3 = a lot
 
 Five rows are spot-checked at the demo, and a self-score that does not hold up costs more than an
 honest low one. So every score below is the score the evidence supports, and where the evidence is
 thin the row says 0 or 1 and says why. **Rows scored 0 are not oversights; they are work not done.**
 
-Running total: **63 / 96**, up from 46 earlier today: badges, Ruff and CONTRIBUTING took it to 54, and the documentation work took it to 64. The weakest block is now issues (1/15), which is structurally blocked, and the two video rows, which need credentials.
+Running total: **62 / 96**. It reached 63 on 2026-10-16; S7 was corrected down by one on 2026-10-19 after the lint gate turned out not to be enforcing anything. The correction is the point — a self-score that survives its own re-check is worth more than the extra mark. The weakest block is now issues (1/15), which is structurally blocked, and the two video rows, which need credentials.
 
 ---
 
@@ -86,7 +86,7 @@ action: enabling Issues. Several already-written findings would become issues im
 | S4 | `LICENSE.md` | **3** | `LICENSE.md` | Present. |
 | S5 | `CODE-OF-CONDUCT.md` | **3** | `CODE_OF_CONDUCT.md` | Present. |
 | S6 | `CONTRIBUTING.md`, with standards and how to extend safely | **3** | [`CONTRIBUTING.md`](../../CONTRIBUTING.md) | Renamed to the name the rubric asks for, and extended with both halves it asks for: coding standards with the config that enforces each and the command to run it, and how to extend safely — contract first, the six scoring rules that look like details, and how to write a test that can fail. |
-| S7 | Style checker, formatter, syntax checker — config in repo and badge in README | **3** | `web/eslint.config.mjs`, `web/.prettierrc`, `backend/pyproject.toml`, `web/tsconfig.json` | Four configs, all in CI, all with a badge. The `continue-on-error` flags that made the Ruff format check report failure as success are gone, and the four files it was failing on are formatted, so the green is now worth something. |
+| S7 | Style checker, formatter, syntax checker — config in repo and badge in README | **2** | `web/eslint.config.mjs`, `web/.prettierrc`, `backend/pyproject.toml`, `web/tsconfig.json` | Four configs, all in CI, all with a badge. **Scored 3 on 2026-10-16 and corrected to 2 on 2026-10-19.** Removing `continue-on-error` was not enough: the lint step still reported success while Ruff printed "Found 14 errors", so the gate looked enforced and was not. The step now exits on Ruff's own code and the 14 errors are fixed, but this row stays at 2 until a CI run has actually gone red for a lint failure and back to green — a gate nobody has seen fail is a gate nobody has tested. |
 | S8 | Zenodo DOI badge | **2** | `README.md` | A DOI badge is present and resolves. It belongs to the upstream record rather than to a release of this repository, so it needs re-minting before it evidences our work. |
 | S9 | `THIRD_PARTY_LIBRARIES.md` listing dependencies and licences | **2** | `THIRD_PARTY_LIBRARIES.md` | Present and real. Predates P2, so the dependencies added since are not in it. |
 | S10 | Visible, disclosed AI use, including evidence a human checked the output | **3** | [`p1a/`](../../p1a), [`p1b/`](../../p1b), [`AGENT-PLAN/`](../../AGENT-PLAN) | **The strongest row in this assessment.** Four models are evidenced with preserved transcripts, not claims. Every run has a derivation record naming what the model got wrong and how it was caught — five corrected claims in the Gemini column alone, each with the source line that disproved it. One record documents a verification that was itself wrong and marks it so. `p1b/prompts/step8-prompt-model-table.md` carries the prompt × model comparison with disagreements and what settled each. |
