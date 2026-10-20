@@ -1,7 +1,15 @@
 # Epicourier-Web 🍽️
 
-[![CI/CD Pipeline](https://github.com/sdxshuai/Epicourier-Web/actions/workflows/ci-jest.yml/badge.svg)](https://github.com/sdxshuai/Epicourier-Web/actions/workflows/ci-jest.yml)
-[![codecov](https://codecov.io/github/sdxshuai/Epicourier-Web/graph/badge.svg?token=TTLT1APZ44)](https://codecov.io/github/sdxshuai/Epicourier-Web)
+[![Web CI](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-jest.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-jest.yml)
+[![Backend CI](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-pytest.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-pytest.yml)
+[![M0 Evaluation](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-m0-eval.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-m0-eval.yml)
+[![codecov](https://codecov.io/github/Amihua/Epicourier-Web/graph/badge.svg)](https://codecov.io/github/Amihua/Epicourier-Web)
+[![Tests](https://img.shields.io/badge/tests-1510%20passing-brightgreen)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-jest.yml)
+[![Test share](https://img.shields.io/badge/test%20code-50.1%25%20of%20repo-brightgreen)](#testing)
+[![ESLint](https://img.shields.io/badge/style-ESLint-4B32C3?logo=eslint&logoColor=white)](web/eslint.config.mjs)
+[![Prettier](https://img.shields.io/badge/format-Prettier-F7B93E?logo=prettier&logoColor=black)](web/.prettierrc)
+[![Ruff](https://img.shields.io/badge/python-Ruff-D7FF64?logo=ruff&logoColor=black)](backend/pyproject.toml)
+[![TypeScript](https://img.shields.io/badge/types-tsc%20strict-3178C6?logo=typescript&logoColor=white)](web/tsconfig.json)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17537732.svg)](https://doi.org/10.5281/zenodo.17537732)
 [![Project Status: Active](https://img.shields.io/badge/status-active-brightgreen.svg)](#)
 
@@ -60,7 +68,7 @@ _Reduce waste, save money._
 Ready to cook? Follow these guides to set up your environment.
 
 - **📥 Installation**: Step-by-step setup guide. 👉 [INSTALL.md](INSTALL.md)
-- **🤝 Contribution**: Join the team! 👉 [CONTRIBUTE.md](CONTRIBUTE.md)
+- **🤝 Contribution**: Join the team! 👉 [CONTRIBUTING.md](CONTRIBUTING.md)
 - **🤖 Agent Guide**: For AI agents working on this repo. 👉 [AGENT-PLAN/00-QUICK-START.md](AGENT-PLAN/00-QUICK-START.md)
 
 ---
@@ -102,7 +110,7 @@ Serves model inference, powered by FastAPI.
 
 Code coverage is automatically tracked via **Codecov**:
 
-[![codecov](https://codecov.io/github/sdxshuai/Epicourier-Web/graph/badge.svg?token=TTLT1APZ44)](https://codecov.io/github/sdxshuai/Epicourier-Web)
+[![codecov](https://codecov.io/github/Amihua/Epicourier-Web/graph/badge.svg)](https://codecov.io/github/Amihua/Epicourier-Web)
 
 ---
 
@@ -124,7 +132,7 @@ If you use this repository or dataset in your work, please cite it as:
 
 ## 📎 License
 
-This project is released under the [MIT License](LICENSE).
+This project is released under the [MIT License](LICENSE.md).
 
 ---
 

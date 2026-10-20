@@ -10,10 +10,11 @@ Extends the existing recommender to consider:
 5. Budget optimization
 """
 
-from typing import List, Dict, Optional
-from datetime import datetime, timedelta
-import numpy as np
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Dict, List, Optional
+
+import numpy as np
 
 
 @dataclass
@@ -126,8 +127,7 @@ class EnhancedRecommender:
             estimated_cost = sum(
                 item.purchase_price * (item.quantity / 100)  # Estimate per portion
                 for item in inventory
-                if item.ingredient_id in recipe_ingredients
-                and item.purchase_price
+                if item.ingredient_id in recipe_ingredients and item.purchase_price
             )
 
             # Combined scoring: 60% urgency + 30% coverage + 10% popularity
@@ -161,8 +161,12 @@ class EnhancedRecommender:
         recommendations = []
         for item in scored_recipes[:num_recipes]:
             recipe = item["recipe"]
-            reasoning = f"Uses {len(item['expiring_ingredients'])} ingredients expiring soon. "
-            reasoning += f"Match: {item['coverage']*100:.0f}% of recipe ingredients available."
+            reasoning = (
+                f"Uses {len(item['expiring_ingredients'])} ingredients expiring soon. "
+            )
+            reasoning += (
+                f"Match: {item['coverage'] * 100:.0f}% of recipe ingredients available."
+            )
 
             rec = EnhancedRecommendation(
                 recipe_id=recipe.get("id"),

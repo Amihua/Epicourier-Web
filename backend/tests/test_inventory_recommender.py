@@ -11,7 +11,7 @@ Tests cover:
 import os
 import sys
 from datetime import datetime, timedelta
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -22,8 +22,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from api.index import app
 from api.inventory_recommender import (
     InventoryItem,
-    format_inventory_with_expiration,
     build_recommendation_prompt,
+    format_inventory_with_expiration,
 )
 
 client = TestClient(app)

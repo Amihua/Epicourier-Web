@@ -21,6 +21,10 @@ permissions:
   pull-requests: write
 
 jobs:
+  # The three continue-on-error flags that used to be here are gone. They were not
+  # hypothetical cover: `ruff format --check` genuinely failed — "4 files would be
+  # reformatted" — and the flag reported that as success. All four are formatted
+  # now, so the check can be trusted to mean what it says.
   lint:
     runs-on: ubuntu-latest
     defaults:
@@ -44,7 +48,6 @@ jobs:
 
       - name: Lint with Ruff
         id: ruff-lint
-        continue-on-error: true
         run: |
           set +e
           OUTPUT=$(uv run ruff check . --output-format=full 2>&1)
@@ -57,8 +60,14 @@ jobs:
               echo "EOF"
             } >> $GITHUB_OUTPUT
           fi
-          # Also run with github format for annotations
+          # Annotations for the PR diff.
           uv run ruff check --output-format=github .
+
+          # Fail the step on the captured exit code. Removing continue-on-error
+          # was not enough: the step still reported success while ruff printed
+          # "Found 14 errors", so the gate looked enforced and was not. Be
+          # explicit rather than relying on the last command's status.
+          exit $EXIT_CODE
 
       - name: Comment Ruff lint errors
         if: failure() || steps.ruff-lint.outputs.ruff_lint
@@ -72,7 +81,6 @@ jobs:
 
       - name: Check formatting with Ruff
         id: ruff-format
-        continue-on-error: true
         run: |
           set +e
           if ! uv run ruff format --check . > /dev/null 2>&1; then

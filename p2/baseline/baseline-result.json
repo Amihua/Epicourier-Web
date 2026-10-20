@@ -1,0 +1,27 @@
+{
+  "measured_at": "2026-10-16T20:23:42+00:00",
+  "commit": "unknown",
+  "decomposability": {
+    "response_fields": [
+      "recipe_id",
+      "recipe_name",
+      "match_score",
+      "ingredients_available",
+      "ingredients_missing",
+      "expiring_ingredients_used",
+      "reason"
+    ],
+    "fields_that_could_carry_a_decomposition": [],
+    "decomposable_scores": 0,
+    "denominator": {
+      "calls": 30,
+      "cells": 100,
+      "returned_objects_max": 300
+    },
+    "basis": "definitional: no field in the response model can hold a per-ingredient contribution"
+  },
+  "variance": {
+    "status": "skipped",
+    "reason": "--check-schema-only"
+  }
+}

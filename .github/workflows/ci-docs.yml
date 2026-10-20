@@ -1,0 +1,75 @@
+name: 📚 Docs
+
+on:
+  pull_request:
+    branches: [main, se26f-p2]
+    paths:
+      - "backend/api/**"
+      - "web/src/types/**"
+      - "docs/**"
+      - ".github/workflows/ci-docs.yml"
+  push:
+    branches: [se26f-p2]
+    paths:
+      - "backend/api/**"
+      - "web/src/types/**"
+      - "docs/**"
+      - ".github/workflows/ci-docs.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    name: Documentation is current
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # No continue-on-error. Stale documentation fails the run, which is the
+      # only thing that keeps generated docs from rotting into fiction.
+      - name: Backend reference is current
+        run: python3 docs/generate_backend_api.py --check
+
+      # Scoped to the documentation this project maintains: the repository root,
+      # docs/ excluding the inherited user guides, and p2/. A repo-wide gate would
+      # be red from the first run — the inherited AGENT-PLAN pages link into an
+      # empty wiki submodule and the old user guides reference pages that were
+      # never written. Those are real, and they are not this gate's job to hold
+      # hostage. Widen the scope when they are fixed.
+      - name: Every relative link in the maintained docs resolves
+        run: |
+          python3 - <<'PY'
+          import re, pathlib, sys
+
+          def in_scope(f: pathlib.Path) -> bool:
+              if any(p in f.parts for p in ("node_modules", ".next")):
+                  return False
+              if f.parent == pathlib.Path("."):
+                  return True
+              if f.parts[0] == "p2":
+                  return True
+              return f.parts[0] == "docs" and "user-guides" not in f.parts and "api" not in f.parts
+
+          bad = []
+          for f in pathlib.Path(".").glob("**/*.md"):
+              if not in_scope(f):
+                  continue
+              for m in re.finditer(r'\[([^\]]+)\]\((?!https?://|#|mailto:|git\+)([^)]+)\)', f.read_text(errors="ignore")):
+                  target = m.group(2).split("#")[0]
+                  if target and not (f.parent / target).resolve().exists():
+                      bad.append(f"{f}: [{m.group(1)}] -> {m.group(2)}")
+          if bad:
+              print("dead links:")
+              for b in bad:
+                  print(" ", b)
+              sys.exit(1)
+          print("all relative links in the maintained docs resolve")
+          PY

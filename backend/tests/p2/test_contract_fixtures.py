@@ -92,26 +92,36 @@ def test_receipt_item_status_and_source_enums_are_closed(schema: dict) -> None:
 
 
 def test_zero_requirement_is_representable_and_present(golden: dict) -> None:
-    """A requirement of 0 must survive the contract, because `|| 100` turns it into 100."""
+    """A requirement of 0 must survive the contract.
+
+    `(value || 100)` turns it into 100, which is the live defect this guards.
+    """
     quantities = [
-        req["quantity"]
-        for cand in golden["candidates"]
-        for req in cand["requirements"]
+        req["quantity"] for cand in golden["candidates"] for req in cand["requirements"]
     ]
     assert 0 in quantities, "the golden fixture must carry a zero requirement"
     assert None in quantities, "the golden fixture must carry an unknown requirement"
 
 
 def test_fixture_carries_the_expiry_boundary_row(golden: dict) -> None:
-    """A row expiring exactly on as_of_date is still usable; a scorer using <= fails only here."""
+    """A row expiring exactly on as_of_date is still usable.
+
+    A scorer using <= instead of < fails here and nowhere else.
+    """
     dates = [row["expiration_date"] for row in golden["inventory"]]
     assert AS_OF_DATE in dates, "no row expires exactly on as_of_date"
-    assert any(d is not None and d < AS_OF_DATE for d in dates), "no already-expired row"
+    assert any(d is not None and d < AS_OF_DATE for d in dates), (
+        "no already-expired row"
+    )
     assert None in dates, "no row without an expiry date"
 
 
 def test_fixture_has_one_ingredient_in_two_locations(golden: dict) -> None:
-    """The unique constraint is per (user, ingredient, location), so usable quantity sums."""
+    """One ingredient may appear in several locations.
+
+    The unique constraint is per (user, ingredient, location), so usable
+    quantity is the sum across rows rather than the first match.
+    """
     seen: dict[int, int] = {}
     for row in golden["inventory"]:
         seen[row["ingredient_id"]] = seen.get(row["ingredient_id"], 0) + 1
@@ -119,5 +129,9 @@ def test_fixture_has_one_ingredient_in_two_locations(golden: dict) -> None:
 
 
 def test_fixture_has_a_null_unit_row(golden: dict) -> None:
-    """user_inventory.unit is nullable; decision D2 says that is unresolved, not a fallback."""
+    """user_inventory.unit is nullable.
+
+    Decision D2 says a null unit is unresolved, never a fallback to
+    Ingredient.unit.
+    """
     assert any(row["unit"] is None for row in golden["inventory"])

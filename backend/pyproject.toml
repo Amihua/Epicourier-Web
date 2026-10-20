@@ -36,6 +36,18 @@ ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 "*.ipynb" = ["E501", "E402"]
+# These tests must extend sys.path before importing from `api`, so their imports
+# cannot all sit at the top of the file. The alternative is installing the backend
+# as a package, which is a larger change than this exemption is worth.
+"tests/test_recommender.py" = ["E402"]
+"tests/test_inventory_recommender.py" = ["E402"]
+"tests/conftest.py" = ["E402"]
+
+[tool.ruff.lint.isort]
+# `api` is this project's own package. Without saying so, Ruff classifies it as a
+# third-party dependency and asks for it to be merged alphabetically into the
+# pytest/fastapi block, which is not how any of these files are written.
+known-first-party = ["api"]
 
 [tool.ruff.format]
 quote-style = "double"

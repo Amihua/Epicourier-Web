@@ -33,6 +33,8 @@ export interface Requirement {
    * `null` means the recipe does not state it and the line is unresolved.
    * `0` means zero and is never rewritten to a default — see the
    * `relative_unit_100` note in the contract.
+   * Must be `>= 0`. The Python model rejects negatives, and the JSON schema was
+   * tightened to match after the corpus check surfaced the difference.
    */
   quantity: number | null;
   /** From `Ingredient.unit`, which is NOT NULL in the schema. */

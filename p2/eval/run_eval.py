@@ -29,6 +29,14 @@ RULE_VERSION = "receipt-v1"
 VALID_STATUS = {"ok", "missing", "expired", "unresolved_unit", "unknown_requirement"}
 VALID_SOURCE = {"inventory", "expiry", "nutrition", "global"}
 
+# Measurements for the hypotheses in HYPOTHESIS.md, filled in as checks run.
+METRICS: dict[str, tuple[int, int]] = {}
+THRESHOLDS = {
+    "H1": ("every displayed total is the sum of its displayed parts", 1.0, "0/300 (old path cannot decompose at all)"),
+    "H2": ("identical input produces identical output", 1.0, "X — NOT COLLECTED"),
+    "H3": ("a correction moves the score the way the rules say", 1.0, "n/a — no correction loop in the old path"),
+}
+
 
 def round_points(value: float) -> float:
     """Contract §5: rounded once, at the end, to 2 dp."""
@@ -211,6 +219,291 @@ def run_case(path: Path, fixture: dict) -> bool:
     return True
 
 
+def load_scorer():
+    """Return `score_rankings` if the real scorer can be imported offline, else None.
+
+    It was not importable when this harness was written: everything in backend/api
+    reached api/recommender.py:121, which builds a Gemini client at module level.
+    api/receipt_scorer.py depends only on api/receipt_models and api/target_math,
+    so it loads with no key. If that ever regresses, this returns None and the
+    scorer check is reported as skipped rather than silently passing.
+    """
+    backend = Path(__file__).resolve().parents[2] / "backend"
+    if str(backend) not in sys.path:
+        sys.path.insert(0, str(backend))
+    try:
+        from api.receipt_models import RankingRequest  # noqa: PLC0415
+        from api.receipt_scorer import score_rankings  # noqa: PLC0415
+    except Exception as exc:  # pragma: no cover - environment dependent
+        print(f"skip  scorer: not importable offline ({type(exc).__name__}: {exc})")
+        return None
+    return score_rankings, RankingRequest
+
+
+def check_scorer_against_hand_values(fixture: dict) -> list[str]:
+    """Compare the real scorer's receipt with the hand-written expectations.
+
+    This is the check the whole harness exists for. The expectations in
+    cases/hand-computed.json were written from the contract before any scorer
+    existed, so agreement here is two independent derivations matching, not a
+    function being compared with itself.
+    """
+    loaded = load_scorer()
+    if loaded is None:
+        return []
+    score_rankings, RankingRequest = loaded
+
+    hand = json.loads((CASES_DIR / "hand-computed.json").read_text())["receipt"]
+    actual = score_rankings(RankingRequest.model_validate(fixture)).model_dump(mode="json")
+
+    problems = check_receipt(actual, fixture)
+    problems = [f"scorer_output: {p}" for p in problems]
+
+    if len(hand["results"]) != len(actual["results"]):
+        problems.append(
+            f"scorer_result_count: hand-computed has {len(hand['results'])} receipts, "
+            f"scorer returned {len(actual['results'])}"
+        )
+        return problems
+
+    def line_key(item: dict) -> tuple:
+        return (item["ingredient_id"], item["source"])
+
+    for expected, got in zip(hand["results"], actual["results"]):
+        rid = expected["recipe_id"]
+        if got["recipe_id"] != rid:
+            problems.append(f"scorer_order: expected recipe {rid} here, got {got['recipe_id']}")
+            continue
+        if round_points(got["rank_score"]) != round_points(expected["rank_score"]):
+            problems.append(
+                f"scorer_rank_score: recipe {rid} hand-computed {expected['rank_score']}, "
+                f"scorer {got['rank_score']}"
+            )
+        for field, want in expected["subtotals"].items():
+            if round_points(got["subtotals"][field]) != round_points(want):
+                problems.append(
+                    f"scorer_subtotal: recipe {rid} {field} hand-computed {want}, "
+                    f"scorer {got['subtotals'][field]}"
+                )
+
+        want_lines = {line_key(i): i for i in expected["items"]}
+        got_lines = {line_key(i): i for i in got["items"]}
+        if set(want_lines) != set(got_lines):
+            problems.append(
+                f"scorer_lines: recipe {rid} hand-computed {sorted(want_lines)}, "
+                f"scorer {sorted(got_lines)}"
+            )
+            continue
+        for key in sorted(want_lines):
+            for field in ("required_qty", "available_qty", "status", "points"):
+                a, b = want_lines[key][field], got_lines[key][field]
+                if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+                    same = round_points(a) == round_points(b)
+                else:
+                    same = a == b
+                if not same:
+                    problems.append(
+                        f"scorer_line: recipe {rid} ingredient {key[0]} ({key[1]}) "
+                        f".{field} hand-computed {a!r}, scorer {b!r}"
+                    )
+    return problems
+
+
+CORPUS = Path(__file__).parent / "corpus" / "determinism-500.json"
+
+
+def check_corpus(shuffles: int = 20, seed: int = 20261010) -> list[str]:
+    """Score the 500-cell corpus and require every receipt to add up and be order-blind.
+
+    The golden fixture pins the cases a reader can check by hand; this pins the
+    same properties across the whole dataset, where a rule that happens to hold
+    for three recipes can fail for fifty. Built from backend/dataset/*.csv by
+    build_corpus.py, so the ingredient ids, units and quantities are the real ones.
+    """
+    if not CORPUS.is_file():
+        print(f"skip  corpus: {CORPUS.name} not built — run p2/eval/build_corpus.py")
+        return []
+    loaded = load_scorer()
+    if loaded is None:
+        return []
+    score_rankings, RankingRequest = loaded
+
+    doc = json.loads(CORPUS.read_text())
+    rng = random.Random(seed)
+    problems: list[str] = []
+    cells = doc["cells"]
+    lines = 0
+
+    def score(cell: dict, inventory: list[dict]) -> dict:
+        request = {
+            "rule_version": doc["rule_version"],
+            "as_of_date": doc["as_of_date"],
+            "candidates": [
+                {
+                    "recipe_id": cell["recipe_id"],
+                    "servings": 1,
+                    "requirements": cell["requirements"],
+                }
+            ],
+            "inventory": inventory,
+            "targets": None,
+        }
+        return score_rankings(RankingRequest.model_validate(request)).model_dump(mode="json")["results"][0]
+
+    for cell in cells:
+        try:
+            result = score(cell, cell["inventory"])
+        except Exception as exc:
+            problems.append(f"corpus_error: cell {cell['cell_id']} raised {type(exc).__name__}: {exc}")
+            continue
+        lines += len(result["items"])
+
+        total = round_points(sum(i["points"] for i in result["items"]))
+        if total != round_points(result["rank_score"]):
+            problems.append(
+                f"corpus_points_sum: cell {cell['cell_id']} items sum to {total}, "
+                f"rank_score is {result['rank_score']}"
+            )
+
+        as_of = doc["as_of_date"]
+        for item in result["items"]:
+            exp = item.get("expiration_date")
+            if exp is not None and exp < as_of and item["available_qty"] != 0:
+                problems.append(
+                    f"corpus_expired_available: cell {cell['cell_id']} ingredient "
+                    f"{item['ingredient_id']} expired {exp} with available_qty {item['available_qty']}"
+                )
+            if item["available_qty"] < 0:
+                problems.append(
+                    f"corpus_negative_available: cell {cell['cell_id']} ingredient {item['ingredient_id']}"
+                )
+
+    # Order blindness, on a sample rather than all 500 x 20, which would be 10,000
+    # scorings for a property that is uniform across the corpus by construction.
+    sample = rng.sample(cells, min(25, len(cells)))
+    for cell in sample:
+        if not cell["inventory"]:
+            continue
+        baseline = score(cell, cell["inventory"])
+        want = (baseline["rank_score"], sorted((i["ingredient_id"], i["source"], i["points"]) for i in baseline["items"]))
+        for _ in range(shuffles):
+            shuffled = list(cell["inventory"])
+            rng.shuffle(shuffled)
+            got = score(cell, shuffled)
+            have = (got["rank_score"], sorted((i["ingredient_id"], i["source"], i["points"]) for i in got["items"]))
+            if have != want:
+                problems.append(f"corpus_order_dependence: cell {cell['cell_id']} changed under a shuffle")
+                break
+
+    sums_ok = len(cells) - len({p.split("cell ")[1].split()[0] for p in problems if p.startswith("corpus_points_sum")})
+    METRICS["H1"] = (sums_ok, len(cells))
+    order_ok = len(sample) - len({p.split("cell ")[1].split()[0] for p in problems if p.startswith("corpus_order_dependence")})
+    METRICS["H2"] = (order_ok, len(sample))
+    if not problems:
+        print(
+            f"ok    corpus: {len(cells)} cells scored, {lines} receipt lines, "
+            f"every receipt adds up; {len(sample)} cells x {shuffles} shuffles order-blind"
+        )
+    return problems
+
+
+def check_corrections(fixture: dict) -> list[str]:
+    """A correction must change the score in the direction the rules say.
+
+    M2 is the user editing a quantity or a date and watching the ranking move.
+    The panel itself is covered by the web suite; this covers the rule underneath
+    it, because a panel that faithfully re-renders a number the scorer never
+    changed passes a UI test and is still wrong.
+
+    Each case's expected direction is decided from the contract, not from a first
+    run of the scorer.
+    """
+    loaded = load_scorer()
+    if loaded is None:
+        return []
+    score_rankings, RankingRequest = loaded
+    as_of = fixture["as_of_date"]
+
+    def score(inventory: list[dict]) -> dict:
+        request = dict(fixture, inventory=inventory)
+        results = score_rankings(RankingRequest.model_validate(request)).model_dump(mode="json")["results"]
+        return {r["recipe_id"]: r for r in results}
+
+    def edit(inventory: list[dict], inventory_id: str, **patch) -> list[dict]:
+        out = []
+        for row in inventory:
+            row = dict(row)
+            if row["inventory_id"] == inventory_id:
+                row.update(patch)
+            out.append(row)
+        return out
+
+    def line(result: dict, ingredient_id: int) -> dict:
+        return next(
+            i for i in result["items"]
+            if i["ingredient_id"] == ingredient_id and i["source"] == "inventory"
+        )
+
+    base = score(fixture["inventory"])
+    problems: list[str] = []
+
+    # Recipe 101 needs 500 g of ingredient 11 and has 350 usable, so it starts short.
+    # Topping the fridge row up past the requirement must satisfy it.
+    if line(base[101], 11)["status"] != "missing":
+        problems.append(
+            f"correction_precondition: ingredient 11 should start missing, "
+            f"got {line(base[101], 11)['status']!r}"
+        )
+    topped = score(edit(fixture["inventory"], "a0000000-0000-4000-8000-000000000001", quantity=400))
+    if line(topped[101], 11)["status"] != "ok":
+        problems.append(
+            f"correction_topup: raising ingredient 11 to 400+150 g should satisfy a 500 g "
+            f"requirement, status is {line(topped[101], 11)['status']!r}"
+        )
+    if topped[101]["rank_score"] < base[101]["rank_score"]:
+        problems.append(
+            f"correction_topup_score: covering a missing ingredient lowered rank_score from "
+            f"{base[101]['rank_score']} to {topped[101]['rank_score']}"
+        )
+
+    # Correcting an expiry date backwards past as_of_date — the edit a user makes
+    # after reading the real date off the packet — must remove the usable quantity.
+    expired = score(edit(fixture["inventory"], "a0000000-0000-4000-8000-000000000002", expiration_date="2026-10-01"))
+    got = line(expired[101], 12)
+    if got["available_qty"] != 0 or got["status"] != "expired":
+        problems.append(
+            f"correction_expire: dating ingredient 12 before {as_of} should give available_qty 0 "
+            f"and status expired, got {got['available_qty']} / {got['status']!r}"
+        )
+    if expired[101]["rank_score"] > base[101]["rank_score"]:
+        problems.append(
+            f"correction_expire_score: expiring a covered ingredient raised rank_score from "
+            f"{base[101]['rank_score']} to {expired[101]['rank_score']}"
+        )
+
+    # Under decision D2 a null-unit row is unusable until the user says what the
+    # quantity is in. Supplying the unit must resolve it.
+    resolved = score(edit(fixture["inventory"], "a0000000-0000-4000-8000-000000000004", unit="L"))
+    if line(resolved[102], 15)["status"] == "unresolved_unit":
+        problems.append("correction_unit: supplying the missing unit left the line unresolved")
+
+    # Moving stock between locations changes no usable quantity, so it may not move
+    # the score. The unique constraint is per location, which makes this the edit
+    # most likely to disturb a scorer that groups by row instead of by ingredient.
+    moved = score(edit(fixture["inventory"], "a0000000-0000-4000-8000-000000000002", location="freezer"))
+    if moved[101]["rank_score"] != base[101]["rank_score"]:
+        problems.append(
+            f"correction_relocation: moving ingredient 12 from pantry to freezer changed rank_score "
+            f"from {base[101]['rank_score']} to {moved[101]['rank_score']}"
+        )
+
+    cases = 4
+    METRICS["H3"] = (cases - len({p.split(":")[0] for p in problems if p.startswith("correction_")}), cases)
+    if not problems:
+        print("ok    corrections: top-up, expiry, unit and relocation edits all move the score as the rules say")
+    return problems
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="M0 offline receipt evaluation")
     parser.add_argument("--case", help="run a single case by name")
@@ -227,6 +520,31 @@ def main() -> int:
     print(f"M0 · rule_version={RULE_VERSION} · as_of_date={fixture['as_of_date']} · {len(paths)} case(s)\n")
     ok = all([run_case(p, fixture) for p in paths])
 
+    scorer_problems = check_scorer_against_hand_values(fixture)
+    if scorer_problems:
+        print("\nFAIL  scorer-vs-hand-computed:")
+        for p in scorer_problems:
+            print(f"        {p}")
+        ok = False
+    elif load_scorer() is not None:
+        print("\nok    scorer-vs-hand-computed: the real scorer matches every hand-written value")
+
+    correction_problems = check_corrections(fixture)
+    if correction_problems:
+        print("\nFAIL  corrections:")
+        for p in correction_problems:
+            print(f"        {p}")
+        ok = False
+
+    corpus_problems = check_corpus()
+    if corpus_problems:
+        print("\nFAIL  corpus:")
+        for p in corpus_problems[:12]:
+            print(f"        {p}")
+        if len(corpus_problems) > 12:
+            print(f"        ... and {len(corpus_problems) - 12} more")
+        ok = False
+
     shuffle_problems = check_shuffle_invariance(fixture)
     if shuffle_problems:
         print("\nFAIL  shuffle-invariance:")
@@ -235,6 +553,26 @@ def main() -> int:
         ok = False
     else:
         print("\nok    shuffle-invariance: 20 inventory orderings produced identical usable quantities")
+
+    print("\n" + "-" * 72)
+    print("M0 hypotheses (see p2/eval/HYPOTHESIS.md)\n")
+    missed = False
+    for key, (claim, threshold, baseline) in THRESHOLDS.items():
+        if key not in METRICS:
+            print(f"  {key}  NOT MEASURED  {claim}")
+            missed = True
+            continue
+        got, total = METRICS[key]
+        ratio = got / total if total else 0.0
+        verdict = "MET" if ratio >= threshold else "MISSED"
+        if verdict == "MISSED":
+            missed = True
+        print(f"  {key}  {verdict:<6} {got}/{total} = {ratio:.1%}  (threshold {threshold:.0%})  {claim}")
+        print(f"      baseline: {baseline}")
+    if missed:
+        ok = False
+        print("\n  A missed threshold triggers a spiral review, not a threshold adjustment:")
+        print("  report the number, hold the review, record the decision in an issue.")
 
     print("\nPASS" if ok else "\nFAILED")
     return 0 if ok else 1
