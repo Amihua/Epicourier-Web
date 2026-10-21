@@ -1,0 +1,24 @@
+# Sidebar for the Markdown pages. Paths are relative to /docs.
+- title: Start here
+  items:
+    - { title: Home, url: / }
+    - { title: Why this exists, url: /WHY.html }
+- title: Guides
+  items:
+    - { title: Run the evaluation, url: /guides/01-run-the-evaluation.html }
+    - { title: Add a scoring rule, url: /guides/02-add-a-scoring-rule.html }
+    - { title: Change the contract, url: /guides/03-change-the-contract.html }
+    - { title: Set up locally, url: /guides/04-local-setup.html }
+- title: How it works
+  items:
+    - { title: Evaluation (M0), url: /p2/evaluation.html }
+    - { title: Scoring (M1), url: /p2/scoring.html }
+    - { title: Scoring tests, url: /p2/scoring-tests.html }
+    - { title: Shopping (M3), url: /p2/shopping.html }
+- title: API reference
+  items:
+    - { title: Backend, url: /api/backend/ }
+    - { title: receipt_scorer, url: /api/backend/receipt_scorer.html }
+    - { title: receipt_models, url: /api/backend/receipt_models.html }
+    - { title: target_math, url: /api/backend/target_math.html }
+    - { title: Web types, url: /api/web/ }
