@@ -126,9 +126,8 @@ npm run dev:full     # frontend and backend together
 npm run dev          # frontend only, http://localhost:3000
 ```
 
-`npm run dev:backend` (and therefore `dev:full`) calls `make dev`, which uses `arch -arm64` and only
-works on Apple Silicon Macs. On Linux, Windows or Intel Macs, start the backend directly in a second
-terminal instead:
+`npm run dev:backend` (and therefore `dev:full`) calls `make dev` in `backend/`. On a machine without
+`make` (plain Windows), start the backend directly in a second terminal instead:
 
 ```bash
 cd backend
