@@ -202,7 +202,7 @@ export default function ReceiptRecommendationsDialog({
             Nothing to rank yet. Add ingredients that recipes use, then try again.
           </p>
         ) : (
-          <ScrollArea className="max-h-[calc(90vh-180px)]">
+          <ScrollArea className="min-h-0 min-w-0 flex-1 [&>[data-radix-scroll-area-viewport]>div]:block!">
             <ol className="space-y-4 p-6" aria-label="Ranked recipes">
               {results.map((recipe, index) => (
                 <li key={recipe.recipe_id} className="rounded-none border-2 border-black">
