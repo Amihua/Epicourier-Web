@@ -90,7 +90,8 @@ export function inStockUnit(
   for (const row of inventory) {
     if (row.ingredient_id !== req.ingredient_id || row.unit === null) continue;
     if (!isUsable(row.expiration_date, asOf)) continue;
-    const amount = convert(row.quantity, row.unit, normalised.unit);
+    // Through the recipe's own unit, so stock in grams meets a need shown in items.
+    const amount = convert(row.quantity, row.unit, req.unit);
     if (amount === null) continue;
     held.set(row.unit, (held.get(row.unit) ?? 0) + amount);
   }
@@ -100,8 +101,8 @@ export function inStockUnit(
     ([ua, a], [ub, b]) => b - a || (ua < ub ? -1 : ua > ub ? 1 : 0)
   )[0];
   if (unit === normalised.unit) return normalised;
-  if (normalised.quantity === null) return { ...normalised, unit };
-  const quantity = convert(normalised.quantity, normalised.unit, unit);
+  if (req.quantity === null) return { ...normalised, unit };
+  const quantity = convert(req.quantity, req.unit, unit);
   return quantity === null ? normalised : { ingredient_id: req.ingredient_id, quantity, unit };
 }
 
