@@ -10,6 +10,7 @@ import {
   computePantryDelta,
   DeltaInputError,
   isIsoDate,
+  wholeItems,
   type DeltaInput,
 } from "@/lib/receipt-shopping/delta";
 import type { InventorySnapshot, RankingRequest, Requirement } from "@/types/receipt";
@@ -451,5 +452,63 @@ describe("helpers", () => {
     [0.1 + 0.2, 0.3],
   ])("ceilToCents(%p) is %p", (value, expected) => {
     expect(ceilToCents(value)).toBe(expected);
+  });
+});
+
+describe("computePantryDelta — the dataset's bracketed units (#33)", () => {
+  it("olive oil: 15% of '1 tbsp (15 ml)' is covered by 500 ml, so no line", () => {
+    const result = delta({
+      requirements: [req(2, 0.15, "1 tbsp (15 ml)")],
+      inventory: [row({ ingredient_id: 2, quantity: 500, unit: "ml" })],
+    });
+    expect(result).toEqual({ deltas: [], unresolved: [] });
+  });
+
+  it("olive oil with an empty pantry asks for 2.25 ml, not '0.03 tbsp (15 ml)'", () => {
+    expect(delta({ requirements: [req(2, 0.15, "1 tbsp (15 ml)")] }).deltas).toEqual([
+      { ingredient_id: 2, missing_qty: 2.25, unit: "ml" },
+    ]);
+  });
+
+  it("eggs: 3 large eggs against 1 counted egg asks for 2 pcs", () => {
+    const result = delta({
+      requirements: [req(3, 3, "1 large (50 g)")],
+      inventory: [row({ ingredient_id: 3, quantity: 1, unit: "pieces" })],
+    });
+    expect(result.deltas).toEqual([{ ingredient_id: 3, missing_qty: 2, unit: "pcs" }]);
+  });
+
+  it("eggs: stock kept in grams still meets a need shown in items", () => {
+    const result = delta({
+      requirements: [req(3, 3, "1 large (50 g)")],
+      inventory: [row({ ingredient_id: 3, quantity: 60, unit: "g" })],
+    });
+    // 150 g needed, 60 g held: 90 g short is 1.8 eggs, bought as 2.
+    expect(result.deltas).toEqual([{ ingredient_id: 3, missing_qty: 2, unit: "pcs" }]);
+  });
+
+  it("half an egg short is still one egg to buy", () => {
+    expect(delta({ requirements: [req(3, 0.5, "1 large (50 g)")] }).deltas).toEqual([
+      { ingredient_id: 3, missing_qty: 1, unit: "pcs" },
+    ]);
+  });
+
+  it("an egg-sized need against a volume of stock stays unresolved", () => {
+    const result = delta({
+      requirements: [req(3, 1, "1 large (50 g)")],
+      inventory: [row({ ingredient_id: 3, quantity: 200, unit: "ml" })],
+    });
+    expect(result.unresolved).toEqual([{ ingredient_id: 3, reason: "incompatible_unit" }]);
+  });
+});
+
+describe("wholeItems", () => {
+  it.each([
+    [1.8, 2],
+    [2, 2],
+    [2.0000000001, 2],
+    [0.01, 1],
+  ])("wholeItems(%p) is %p", (value, expected) => {
+    expect(wholeItems(value)).toBe(expected);
   });
 });
