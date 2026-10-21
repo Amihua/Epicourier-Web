@@ -112,14 +112,14 @@ type Need =
   | { kind: "unknown" }
   | { kind: "incompatible" }
   | { kind: "missing_unit" }
-  | { kind: "known"; quantity: number; unit: string };
+  | { kind: "known"; quantity: number; unit: string; via: string };
 
 /** Sums one ingredient's requirements into a single quantity in a display unit. */
 function totalNeed(reqs: Requirement[], servings: number): Need {
   if (reqs.some((r) => r.quantity === null)) return { kind: "unknown" };
   // Zero is zero whatever the unit says, so a unitless zero is not an unresolved line.
   if (reqs.every((r) => r.quantity === 0))
-    return { kind: "known", quantity: 0, unit: reqs[0].unit };
+    return { kind: "known", quantity: 0, unit: reqs[0].unit, via: reqs[0].unit };
   const first = toDisplayQuantity(0, reqs[0].unit);
   if (first === null) return { kind: "missing_unit" };
   let total = 0;
@@ -128,7 +128,9 @@ function totalNeed(reqs: Requirement[], servings: number): Need {
     if (q === null) return { kind: "incompatible" };
     total += q;
   }
-  return { kind: "known", quantity: total * servings, unit: first.unit };
+  // `via` is the recipe's own unit. Stock converts through it, so a pantry in grams
+  // still meets a need shown in items ("1 large (50 g)" displayed as pcs).
+  return { kind: "known", quantity: total * servings, unit: first.unit, via: reqs[0].unit };
 }
 
 /**
@@ -177,7 +179,10 @@ export function computePantryDelta(input: DeltaInput): DeltaResult {
         hasNullUnit = true;
         continue;
       }
-      const converted = convert(row.quantity, row.unit, need.unit);
+      const viaRecipeUnit = convert(row.quantity, row.unit, need.via);
+      const converted =
+        convert(row.quantity, row.unit, need.unit) ??
+        (viaRecipeUnit === null ? null : convert(viaRecipeUnit, need.via, need.unit));
       if (converted === null) {
         hasIncompatible = true;
         continue;
