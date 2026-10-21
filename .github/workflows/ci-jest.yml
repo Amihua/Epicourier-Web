@@ -53,6 +53,14 @@ jobs:
       - name: Type-check
         run: cd web && npx tsc --noEmit
 
+      # Style and format gates. ESLint uses web/eslint.config.mjs (next/core-web-vitals
+      # + next/typescript); Prettier uses web/.prettierrc. Both fail the job on any finding.
+      - name: Lint (ESLint)
+        run: cd web && npx eslint . --max-warnings=0
+
+      - name: Check formatting (Prettier)
+        run: cd web && npx prettier --check .
+
       - name: Run Jest tests
         run: cd web && npm test
 

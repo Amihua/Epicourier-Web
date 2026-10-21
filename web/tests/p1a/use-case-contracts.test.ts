@@ -6,7 +6,9 @@ const source = (relativePath: string): string =>
 
 describe("P1a high-level use-case contracts", () => {
   test("test_uc1_rejects_duplicate_registration_email", () => {
-    expect(source("src/app/signup/actions.ts")).toContain("An account with this email already exists");
+    expect(source("src/app/signup/actions.ts")).toContain(
+      "An account with this email already exists"
+    );
   });
 
   test("test_uc2_redirects_successful_sign_in_to_recipes", () => {
@@ -18,7 +20,9 @@ describe("P1a high-level use-case contracts", () => {
   });
 
   test("test_uc4_returns_not_found_for_an_unknown_recipe", () => {
-    expect(source("src/app/dashboard/recipes/[id]/page.tsx")).toContain("if (!recipeData) return notFound()");
+    expect(source("src/app/dashboard/recipes/[id]/page.tsx")).toContain(
+      "if (!recipeData) return notFound()"
+    );
   });
 
   test("test_uc5_rejects_an_empty_recommendation_goal", () => {
@@ -30,7 +34,9 @@ describe("P1a high-level use-case contracts", () => {
   });
 
   test("test_uc7_rejects_a_non_boolean_meal_status", () => {
-    expect(source("src/app/api/events/[id]/route.ts")).toContain("Invalid 'status' field; expected boolean");
+    expect(source("src/app/api/events/[id]/route.ts")).toContain(
+      "Invalid 'status' field; expected boolean"
+    );
   });
 
   test("test_uc8_reports_a_failed_nutrient_summary_request", () => {
@@ -86,7 +92,9 @@ describe("P1a high-level use-case contracts", () => {
   });
 
   test("test_uc18_requires_a_shopping_list_name", () => {
-    expect(source("src/components/shopping/CreateListModal.tsx")).toContain("Please enter a list name");
+    expect(source("src/components/shopping/CreateListModal.tsx")).toContain(
+      "Please enter a list name"
+    );
   });
 
   test("test_uc19_rejects_generation_when_no_meals_exist", () => {

@@ -82,10 +82,12 @@ describe("P1a inventory behavior derived from UC3, UC13, and UC17", () => {
       unknownCount: 1,
       totalLow: 2,
     });
-    expect(getLowStockItems([
-      { quantity: 0, min_quantity: 2 },
-      { quantity: 5, min_quantity: 2 },
-    ])).toHaveLength(1);
+    expect(
+      getLowStockItems([
+        { quantity: 0, min_quantity: 2 },
+        { quantity: 5, min_quantity: 2 },
+      ])
+    ).toHaveLength(1);
   });
 
   test("test_reports_recipe_ingredient_matches_and_missing_items", () => {

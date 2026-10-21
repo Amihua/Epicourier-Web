@@ -23,9 +23,7 @@ describe("Inventory Utilities - Expiration Calculation", () => {
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const daysUntilExp = Math.floor(
-      (tomorrow.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const daysUntilExp = Math.floor((tomorrow.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     expect(daysUntilExp).toBe(1);
   });
 

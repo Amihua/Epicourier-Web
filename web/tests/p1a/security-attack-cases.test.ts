@@ -48,7 +48,11 @@ describe("P1a non-destructive adversarial security contracts", () => {
       "export async function POST",
       "export async function DELETE"
     );
-    const shoppingUpdate = between(post, "// Mark shopping item as checked", "transferredItems.push");
+    const shoppingUpdate = between(
+      post,
+      "// Mark shopping item as checked",
+      "transferredItems.push"
+    );
     expect(shoppingUpdate).toContain('.eq("user_id", user.id)');
   });
 
@@ -56,7 +60,11 @@ describe("P1a non-destructive adversarial security contracts", () => {
     const undo = source("src/app/api/inventory/transfer/route.ts").split(
       "export async function DELETE"
     )[1];
-    const shoppingUpdate = between(undo, "// Uncheck shopping item", "// Delete or reduce inventory");
+    const shoppingUpdate = between(
+      undo,
+      "// Uncheck shopping item",
+      "// Delete or reduce inventory"
+    );
     expect(shoppingUpdate).toContain('.eq("user_id", user.id)');
   });
 
