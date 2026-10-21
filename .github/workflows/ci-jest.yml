@@ -1,6 +1,7 @@
 name: Run Jest Tests
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - "web/**"
@@ -71,6 +72,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder-anon-key"
           SUPABASE_SERVICE_ROLE_KEY: "placeholder-service-role-key"
           NEXT_PUBLIC_VAPID_PUBLIC_KEY: "BDXB2UbEvMFCx1P8O2CaK7pRgeNuL5QBa6rqlAYESC448Ly6E9GW_GQA_FeS4pmKQcD7Ufb-cVYbIDWwgBP7TBs"
+          # Dummy key generated for CI builds only; not used by any deployment.
           VAPID_PRIVATE_KEY: "1Dh1tdAu9teQc3GPXmA_FfHKlZpdw3AtEOwxxCWingI"
           VAPID_SUBJECT: "mailto:ci@example.com"
         run: cd web && npx next build --no-lint
@@ -82,3 +84,5 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: web/coverage/lcov.info
+          fail_ci_if_error: true
