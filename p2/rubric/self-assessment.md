@@ -7,7 +7,7 @@ Five rows are spot-checked at the demo, and a self-score that does not hold up c
 honest low one. So every score below is the score the evidence supports, and where the evidence is
 thin the row says 0 or 1 and says why. **Rows scored 0 are not oversights; they are work not done.**
 
-Running total: **78 / 96**, re-measured on 2026-10-21. Up from 65: both videos are recorded and inside their required durations, the teaser badge no longer 404s, and the issue tracker went from empty to six filed and five closed. Every figure was measured today.
+Running total: **79 / 96**, re-measured on 2026-10-21. T3 was re-counted by volume of work as well as by commit count, because the two disagree by a factor of four and only one of them is a fair reading of "workload".
 
 ---
 
@@ -19,25 +19,28 @@ history — `SN-F-QR` (120), `seojinseojin` (62), `Joe Zhou` (49), `lzdjohn` (33
 
 **Our own work is 147 commits since 2026-10-10:**
 
-| Member | Commits since 10-10 | Top-level directories touched |
-|---|---:|---|
-| andyyuyc | 77 | backend, web, docs, p2, supabase, scripts |
-| wenboli | 33 | backend, web, docs, p2, .github |
-| Sihao Liu | 25 | backend, docs, .github |
-| Jeffery | 7 | web only |
+| Member | Commits since 10-10 | Lines changed (generated files excluded) | Top-level directories touched |
+|---|---:|---:|---|
+| andyyuyc | 77 | 6,463 (33%) | backend, web, docs, p2, supabase, scripts |
+| wenboli | 33 | 5,177 (26%) | backend, web, docs, p2, .github |
+| Sihao Liu | 25 | 5,249 (27%) | backend, docs, .github |
+| Jeffery | 7 | 2,728 (14%) | web only |
+
+Commit count and volume of work disagree sharply here — 11× against 2.4× — and the rows below say
+which measure each one uses.
 
 Every teamwork row below is scored against **those 73**, not against 608. Quoting the repository
 total would be the single easiest thing for a marker to catch.
 
 ---
 
-## Teamwork — 15 / 21
+## Teamwork — 16 / 21
 
 | # | Row | Score | Evidence | Why this score |
 |---|---|:-:|---|---|
 | T1 | Many commits, small and frequent | **3** | [commits](https://github.com/Amihua/Epicourier-Web/commits/se26f-p2) | 89 commits since 2026-10-10 across four people, in genuinely small units — the M0 work alone is seventeen separate commits rather than one drop. The rubric calls hundreds normal for a semester; this is ten days. |
 | T2 | Commits come from different people | **3** | [contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) | All four members committed during P2: **77 / 33 / 25 / 7** since 2026-10-10. |
-| T3 | Workload spread, even if one is more productive | **1** | [contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) | **77 / 33 / 25 / 7** — the gap widened rather than closed. The top contributor has **11× the commits of the lowest** and more than the other three combined. The row explicitly tolerates one member being more productive; an 11× spread is not that, and claiming otherwise is one click to disprove. |
+| T3 | Workload spread, even if one is more productive | **2** | [contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) · [`git log --numstat`](#how-these-numbers-were-produced) | **Counted two ways, because commit count alone misleads here.** By commits it is 77 / 33 / 25 / 7, an 11× gap. By lines changed with generated files and lock files excluded it is **6,463 / 5,249 / 5,177 / 2,728 — 33% / 27% / 26% / 14%**, a 2.4× gap, and all four milestones have a distinct owner: M0 Wenbo, M1 Sihao, M2 Jeffery and Andy, M3 Andy. The work is spread; the *commits* are not, because one member commits in much smaller units. Honest 2 rather than 3: at 14% the lowest share is still thin, and the contributors graph a marker opens first shows the 11× version. |
 | T4 | Members work across many parts, not one silo each | **2** | [pull requests](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr) | Measured by top-level directory touched since 2026-10-10: three of us span the repository — `backend`, `web`, `docs`, `p2`, `.github`, `supabase` — while **Jeffery touched only `web`, 10 files**. File ownership was deliberate this sprint, so some siloing is by design, which is why this is a 2 rather than a 1. |
 | T5 | Short release cycles, prompt merges | **3** | [merged PRs](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr+is%3Amerged) | Twelve PRs merged into the integration branch, and **nine of them inside 40 minutes** — #34 to #39 and #28 all under half an hour. Two early ones took 26 and 32 hours. The outlier is mine: **#25 sat open 94 hours** while its scope grew, which is exactly what this row warns against and is named here rather than averaged away. |
 | T6 | Shared tool configs, updated by several people | **2** | `web/tsconfig.json`, `web/eslint.config.mjs`, `backend/pyproject.toml`, `.github/workflows/` | Shared and actively updated — tsconfig ES2017→ES2018, Ruff isort config, four workflows. Still a 2: nearly all of those edits come from one owner, which the sprint plan intends but the row does not reward. |
@@ -131,6 +134,9 @@ pass. The commands, so a spot-check can repeat them:
 
 ```bash
 git log origin/se26f-p2 --since=2026-10-10 --format='%an' | sort | uniq -c   # commits per person
+git log origin/se26f-p2 --since=2026-10-10 --author=X --numstat --format='' \
+  -- . ':(exclude)*.lock' ':(exclude)package-lock.json' ':(exclude)p2/eval/corpus/*' \
+     ':(exclude)docs/api/*' ':(exclude)*.pdf' ':(exclude)*.png' ':(exclude)*.svg'   # lines changed
 cd web && npx jest --silent                                                  # test counts
 gh api repos/Amihua/Epicourier-Web --jq '{has_issues,has_discussions,has_pages}'
 gh issue list --state all --limit 100                                        # 0 issues
