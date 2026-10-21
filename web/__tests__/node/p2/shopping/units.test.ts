@@ -185,3 +185,38 @@ describe("descriptive words after a known unit (#33)", () => {
     expect(parseUnit("2 fl oz")?.dimension).not.toBe("mass");
   });
 });
+
+describe("bracketed metric amounts (#33)", () => {
+  it.each([
+    ["1 tbsp (15 ml)", "volume", 15, "ml"],
+    ["each (20g)", "mass", 20, "g"],
+    ["1 large (50 g)", "mass", 50, "g"],
+    ["1 sprig (2g)", "mass", 2, "g"],
+    ["1 link (75 g)", "mass", 75, "g"],
+    ["1/2 cup (120 g)", "mass", 120, "g"],
+    ["1 medium (~150 g)", "mass", 150, "g"],
+    ["1 lemon (juice, 30 g)", "mass", 30, "g"],
+    ["1 cup (200 g cooked)", "mass", 200, "g"],
+  ])("%s is %s, %p %s", (raw, dimension, toBase, display) => {
+    expect(parseUnit(raw)).toEqual({ dimension, toBase, display });
+  });
+
+  it("uses the part outside the brackets when they hold no measure", () => {
+    expect(parseUnit("1 cup (cooked)")).toEqual(parseUnit("1 cup"));
+  });
+
+  it("does not take a count inside the brackets as the measure", () => {
+    expect(parseUnit("1 tin (2 cans)")?.dimension).toBe("other:tin");
+  });
+
+  it("lets the olive-oil example from the issue meet a pantry in ml", () => {
+    // 15% of "1 tbsp (15 ml)" against 500 ml of stock: convertible, no unresolved line.
+    expect(convert(0.15, "1 tbsp (15 ml)", "ml")).toBeCloseTo(2.25, 9);
+    expect(areCompatible("1 tbsp (15 ml)", "500 ml")).toBe(true);
+    expect(areCompatible("1 tbsp (15 ml)", "L")).toBe(true);
+  });
+
+  it("displays a bracketed unit in its metric unit", () => {
+    expect(toDisplayQuantity(0.15, "1 tbsp (15 ml)")).toEqual({ quantity: 2.25, unit: "ml" });
+  });
+});
