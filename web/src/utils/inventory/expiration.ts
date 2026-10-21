@@ -34,6 +34,15 @@ function calendarDay(value: string | Date): number | null {
 }
 
 /**
+ * `date` plus `days` calendar days, as `YYYY-MM-DD`. Pure date arithmetic: no
+ * local midnight and no `toISOString()` of one, which shifts a day east of UTC.
+ */
+export function addCalendarDays(date: string, days: number): string {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day + days)).toISOString().slice(0, 10);
+}
+
+/**
  * Calculate days until expiration from a given date
  * @param expirationDate - The expiration date (string in YYYY-MM-DD format, Date object, or null)
  * @param today - Today's date as `YYYY-MM-DD`; defaults to the shared rule in `asOfDate()`
