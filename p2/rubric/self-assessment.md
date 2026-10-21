@@ -7,7 +7,7 @@ Five rows are spot-checked at the demo, and a self-score that does not hold up c
 honest low one. So every score below is the score the evidence supports, and where the evidence is
 thin the row says 0 or 1 and says why. **Rows scored 0 are not oversights; they are work not done.**
 
-Running total: **82 / 96**, re-measured on 2026-10-21 at `d9910a1`. Four rows were stale against the branch and were re-checked: Q4, S3 and S9 rise because the work they asked for has landed (Codecov, INSTALL, third-party list); S7 keeps its 3 because ESLint and Prettier are now CI gates, not just configs. T3 was re-counted by volume of work as well as by commit count, because the two disagree by a factor of four and only one of them is a fair reading of "workload".
+Running total: **84 / 96**, re-measured on 2026-10-21 at `d9910a1`; I3 re-scored after discussion summaries were added to the closed issues. Four rows were stale against the branch and were re-checked: Q4, S3 and S9 rise because the work they asked for has landed (Codecov, INSTALL, third-party list); S7 keeps its 3 because ESLint and Prettier are now CI gates, not just configs. T3 was re-counted by volume of work as well as by commit count, because the two disagree by a factor of four and only one of them is a fair reading of "workload".
 
 ---
 
@@ -46,13 +46,13 @@ total would be the single easiest thing for a marker to catch.
 | T6 | Shared tool configs, updated by several people | **2** | `web/tsconfig.json`, `web/eslint.config.mjs`, `backend/pyproject.toml`, `.github/workflows/` | Shared and actively updated: tsconfig ES2017→ES2018, Ruff isort config, the ESLint and Prettier gates, the Codecov upload, the Pages config, the Makefile. Three of four members changed them since 2026-10-10 (Wenbo 9 commits, Sihao 9, Andy 1). Still a 2: the fourth has not, and two people did almost all of it. |
 | T7 | Any member can run and demo it on their own machine | **1** | [`docs/p2/evaluation.md`](../../docs/p2/evaluation.md) | **Honest 1.** The maintainer of this file cannot run the application: it needs Supabase credentials that have not been shared, and the backend cannot start without a model key. M0 and the web suite run anywhere; the product does not. |
 
-## Issues and discussion — 8 / 15
+## Issues and discussion — 10 / 15
 
 | # | Row | Score | Evidence | Why this score |
 |---|---|:-:|---|---|
 | I1 | Many issue reports exist | **1** | [issues](https://github.com/Amihua/Epicourier-Web/issues) | **6 filed** since Issues was enabled, by three different accounts including one from outside the four of us. Six is a start, not "many" — the rubric calls hundreds of commits normal and this tracker is two days old. |
 | I2 | Issues get closed | **2** | [closed issues](https://github.com/Amihua/Epicourier-Web/issues?q=is%3Aissue+is%3Aclosed) | **5 of 6 closed.** A high closure rate on a small, young tracker; not a 3 until there is enough volume for the rate to mean something. |
-| I3 | Issues discussed before closing | **0** | — | Discussion happens in pull requests and off-platform and is not mirrored into issues. |
+| I3 | Issues discussed before closing | **2** | [#29](https://github.com/Amihua/Epicourier-Web/issues/29) to [#33](https://github.com/Amihua/Epicourier-Web/issues/33) | Each closed issue now carries a comment summarising the discussion and the decision (what was fixed, why that way, which PR), as the rubric allows when the talk happened in chat. Not a 3: the summaries were added after the fixes, not argued out in the issue beforehand. |
 | I4 | A large share of issues concern failing cases | **3** | [closed issues](https://github.com/Amihua/Epicourier-Web/issues?q=is%3Aissue+is%3Aclosed) | **Five of six are failing cases, and they are real ones**: 267 of 448 ingredient units never resolving against a pantry unit; expiry badges one day early west of UTC; the receipt dialog clipped at phone width; README test counts not matching a real run; `make dev` broken on Linux by a hard-coded `arch -arm64`. Each opened on an observed failure and closed by a fix — the pattern this row describes. |
 | I5 | An active chat or forum, QR on the poster | **2** | [discussions](https://github.com/Amihua/Epicourier-Web/discussions) · [`p2/poster/`](../poster) | Discussions is enabled with 2 threads, and the poster carries a QR code pointing at it. Not a 3: two threads is not an active forum, and most coordination still happens off-platform where a tutor cannot see it. |
 
@@ -98,11 +98,11 @@ action: enabling Issues. Several already-written findings would become issues im
 
 ## Where the marks are, ranked by marks per hour
 
-**14 of 96 remain.** The two largest blocks closed this week: the videos and the issue tracker.
+**12 of 96 remain.** The two largest blocks closed this week: the videos and the issue tracker.
 
 | # | Work | Rows | Worth | Blocked on |
 |---|---|---|---|---|
-| 1 | **Keep the tracker moving, and discuss before closing.** Six issues with **zero comments** between them, each opened and closed by one person. I3 asks for discussion in the issue, including a summary when the talk happened in chat. | I1, I3 | **5** | the team |
+| 1 | **Keep the tracker moving, and discuss in the issue before closing.** Six issues is a start, and the discussion summaries were added after the fixes. New issues should be discussed in the issue itself. | I1, I3 | **3** | the team |
 | 2 | **Mint a Zenodo DOI for a release of this fork.** The present DOI is the upstream record's. | S8 | 1 | repo admin |
 | 3 | **Make the forum active.** Two threads is not a channel. | I5 | 1 | the team |
 | 4 | **Document the inherited code**, which is most of the repository. | D2 | 1 | nobody |

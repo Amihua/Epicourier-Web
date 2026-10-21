@@ -30,10 +30,10 @@ forked. Detailed reasoning for each row: [`p2/rubric/self-assessment.md`](https:
 |---|---|:-:|
 | Issue reports: there are many | [Issues](https://github.com/Amihua/Epicourier-Web/issues?q=is%3Aissue): 6 filed by three accounts, one from outside the team | 1 |
 | Issues are being closed | [Closed issues](https://github.com/Amihua/Epicourier-Web/issues?q=is%3Aissue+is%3Aclosed): 5 of 6 closed, each by a linked PR (#34 to #39) | 2 |
-| Issues are discussed before they are closed | Discussion happened in PRs and team chat and is not yet summarised in the issues | 0 |
+| Issues are discussed before they are closed | Every closed issue carries a summary of the discussion and the decision, e.g. [#29](https://github.com/Amihua/Epicourier-Web/issues/29), [#32](https://github.com/Amihua/Epicourier-Web/issues/32). Much of the talk happened in chat and PRs, so these are summaries added afterwards | 2 |
 | A large share of issues relate to handling failing cases | 5 of 6 are failing cases with a reproduction, e.g. [#29](https://github.com/Amihua/Epicourier-Web/issues/29) `make dev` fails on Linux, [#33](https://github.com/Amihua/Epicourier-Web/issues/33) 267 of 448 units never resolve | 3 |
 | Chat channel / discussion forum exists and is active; the poster QR points at it | [Discussions](https://github.com/Amihua/Epicourier-Web/discussions): pinned start-here thread and a Project 3 thread; poster QR points here | 2 |
-| **Subtotal** | | **8 / 15** |
+| **Subtotal** | | **10 / 15** |
 
 ## Tests
 
@@ -78,8 +78,8 @@ forked. Detailed reasoning for each row: [`p2/rubric/self-assessment.md`](https:
 | Block | Score |
 |---|:-:|
 | Teamwork | 16 / 21 |
-| Issues and discussion | 8 / 15 |
+| Issues and discussion | 10 / 15 |
 | Tests | 12 / 12 |
 | Docs | 17 / 18 |
 | Standard files and bling | 29 / 30 |
-| **Sum** | **82 / 96** |
+| **Sum** | **84 / 96** |
