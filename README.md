@@ -71,9 +71,14 @@ The harness also carries a case with four planted defects, and CI checks that it
 
 | Suite | Count | Run it |
 |---|---:|---|
-| Web (Jest) | 1,412 | `cd web && npm install && npx jest` |
-| Backend (pytest) | 98 | `cd backend && uv sync && uv run pytest tests/p2` |
+| Web (Jest) | 1,499 passing (+1 skipped) | `cd web && npm install && npx jest` |
+| Backend (pytest) | 75 passing | `cd backend && uv sync && uv run pytest tests/p2` |
 | M0 evaluation | 5 checks | `python3 p2/eval/run_eval.py` |
+
+These are executed tests, not a count of `it(`/`test(` declarations. They come from the CI runs on
+`se26f-p2` at `e2708cc` (2026-10-21): [Jest](https://github.com/Amihua/Epicourier-Web/actions/runs/39575674199)
+and [pytest](https://github.com/Amihua/Epicourier-Web/actions/runs/39575660777). The skipped Jest
+suite is `supabaseConnection.test.ts`, which needs a live database.
 
 Test code is 50.1% of the code base (30,217 test lines against 30,108 product lines). Every push to `se26f-p2` runs all of it in [GitHub Actions](https://github.com/Amihua/Epicourier-Web/actions), plus Ruff, `tsc --noEmit`, and a check that the generated docs are current.
 
