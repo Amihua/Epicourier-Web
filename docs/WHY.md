@@ -94,6 +94,6 @@ this row usable* with *was this requirement met*. The contract was fixed, not th
 | You want | Read |
 |---|---|
 | to see it run, in a minute, with nothing installed | [guides/01-run-the-evaluation.md](guides/01-run-the-evaluation.md) |
-| the rules, frozen | [`p2/contracts/receipt-v1.md`](../p2/contracts/receipt-v1.md) |
+| the rules, frozen | [`p2/contracts/receipt-v1.md`](https://github.com/Amihua/Epicourier-Web/blob/se26f-p2/p2/contracts/receipt-v1.md) |
 | what is measured and what is not | [p2/evaluation.md](p2/evaluation.md) |
 | the API reference | [api/backend/](api/backend/) and [api/web/](api/web/) |

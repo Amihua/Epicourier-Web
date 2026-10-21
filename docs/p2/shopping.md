@@ -1,6 +1,6 @@
 # M3: pantry delta, shopping preview and confirm
 
-**Owner:** Andy Yu · **Written:** 2026-10-12 · **Contract:** [`p2/contracts/receipt-v1.md`](../../p2/contracts/receipt-v1.md) §7–§9
+**Owner:** Andy Yu · **Written:** 2026-10-12 · **Contract:** [`p2/contracts/receipt-v1.md`](https://github.com/Amihua/Epicourier-Web/blob/se26f-p2/p2/contracts/receipt-v1.md) §7–§9
 
 M3 turns "this recipe" into "what I still have to buy". It subtracts the user's usable stock
 from the recipe's needs. It shows the result as a preview and writes it to a shopping list only

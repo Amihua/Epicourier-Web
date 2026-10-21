@@ -1,7 +1,7 @@
 # Receipt scoring v1
 
 **Owner:** Sihao Liu · **Rule version:** `receipt-v1` · **Contract:**
-[`p2/contracts/receipt-v1.md`](../../p2/contracts/receipt-v1.md)
+[`p2/contracts/receipt-v1.md`](https://github.com/Amihua/Epicourier-Web/blob/se26f-p2/p2/contracts/receipt-v1.md)
 
 This module ranks candidate recipes with pure Python. It does not read a database,
 call Gemini, use the network, or consult the machine clock. The caller must provide
