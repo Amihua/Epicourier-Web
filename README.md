@@ -5,7 +5,7 @@
 [![M0 Evaluation](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-m0-eval.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-m0-eval.yml)
 [![Docs](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-docs.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-docs.yml)
 [![codecov](https://codecov.io/github/Amihua/Epicourier-Web/branch/se26f-p2/graph/badge.svg)](https://codecov.io/github/Amihua/Epicourier-Web)
-[![Tests](https://img.shields.io/badge/tests-1510%20passing-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/tests-1574%20passing-brightgreen)](#testing)
 [![Test share](https://img.shields.io/badge/test%20code-50.1%25%20of%20repo-brightgreen)](#testing)
 [![ESLint](https://img.shields.io/badge/style-ESLint-4B32C3?logo=eslint&logoColor=white)](web/eslint.config.mjs)
 [![Prettier](https://img.shields.io/badge/format-Prettier-F7B93E?logo=prettier&logoColor=black)](web/.prettierrc)
