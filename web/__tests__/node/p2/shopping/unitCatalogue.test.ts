@@ -48,10 +48,10 @@ describe("dataset unit coverage (#33)", () => {
     expect(units).toHaveLength(448);
   });
 
-  it("parses at least 90% of ingredient units to mass, volume or a count", () => {
+  it("parses at least 95% of ingredient units to mass, volume or a count", () => {
     const share = (units.length - unresolved.length) / units.length;
     // On failure, show what is left so the next rule is easy to pick.
-    if (share < 0.9) console.log([...new Set(unresolved)].sort().join("\n"));
-    expect(share).toBeGreaterThanOrEqual(0.9);
+    if (share < 0.95) console.log([...new Set(unresolved)].sort().join("\n"));
+    expect(share).toBeGreaterThanOrEqual(0.95);
   });
 });
