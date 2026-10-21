@@ -60,16 +60,7 @@ export function getDaysUntilExpiration(
   return Math.round((expiry - start) / MS_PER_DAY);
 }
 
-/**
- * Get expiration status based on days until expiration
- * @param expirationDate - The expiration date (string, Date, or null)
- * @returns ExpirationStatus: 'expired' | 'critical' | 'warning' | 'good' | 'unknown'
- */
-export function getExpirationStatus(
-  expirationDate: string | Date | null | undefined
-): ExpirationStatus {
-  const daysUntil = getDaysUntilExpiration(expirationDate);
-
+function statusForDays(daysUntil: number | null): ExpirationStatus {
   if (daysUntil === null) {
     return "unknown";
   }
@@ -87,6 +78,33 @@ export function getExpirationStatus(
   }
 
   return "good"; // > 7 days
+}
+
+/**
+ * Get expiration status based on days until expiration
+ * @param expirationDate - The expiration date (string, Date, or null)
+ * @param today - Today's date as `YYYY-MM-DD`; defaults to the shared rule
+ * @returns ExpirationStatus: 'expired' | 'critical' | 'warning' | 'good' | 'unknown'
+ */
+export function getExpirationStatus(
+  expirationDate: string | Date | null | undefined,
+  today: string = asOfDate()
+): ExpirationStatus {
+  return statusForDays(getDaysUntilExpiration(expirationDate, today));
+}
+
+/**
+ * Status and day count together, as the inventory API returns them. The three
+ * inventory routes each carried their own copy of this, with the #32 bug in all three.
+ * @param expirationDate - The expiration date (string, Date, or null)
+ * @param today - Today's date as `YYYY-MM-DD`; defaults to the shared rule
+ */
+export function calculateExpirationStatus(
+  expirationDate: string | Date | null | undefined,
+  today: string = asOfDate()
+): { status: ExpirationStatus; daysUntil: number | null } {
+  const daysUntil = getDaysUntilExpiration(expirationDate, today);
+  return { status: statusForDays(daysUntil), daysUntil };
 }
 
 /**
