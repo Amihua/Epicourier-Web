@@ -1,36 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import type { UpdateInventoryItemRequest, ExpirationStatus } from "@/types/data";
-
-/**
- * Calculate expiration status based on expiration date
- */
-function calculateExpirationStatus(expirationDate: string | null): {
-  status: ExpirationStatus;
-  daysUntil: number | null;
-} {
-  if (!expirationDate) {
-    return { status: "unknown", daysUntil: null };
-  }
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const expDate = new Date(expirationDate);
-  expDate.setHours(0, 0, 0, 0);
-
-  const diffTime = expDate.getTime() - today.getTime();
-  const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (daysUntil < 0) {
-    return { status: "expired", daysUntil };
-  } else if (daysUntil <= 2) {
-    return { status: "critical", daysUntil };
-  } else if (daysUntil <= 7) {
-    return { status: "warning", daysUntil };
-  } else {
-    return { status: "good", daysUntil };
-  }
-}
+import type { UpdateInventoryItemRequest } from "@/types/data";
+import { calculateExpirationStatus } from "@/utils/inventory/expiration";
 
 interface RouteParams {
   params: Promise<{ id: string }>;

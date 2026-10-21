@@ -3,40 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import type {
   CreateInventoryItemRequest,
   InventoryLocation,
-  ExpirationStatus,
   InventoryItemWithDetails,
   InventorySummary,
 } from "@/types/data";
-
-/**
- * Calculate expiration status based on expiration date
- */
-function calculateExpirationStatus(expirationDate: string | null): {
-  status: ExpirationStatus;
-  daysUntil: number | null;
-} {
-  if (!expirationDate) {
-    return { status: "unknown", daysUntil: null };
-  }
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const expDate = new Date(expirationDate);
-  expDate.setHours(0, 0, 0, 0);
-
-  const diffTime = expDate.getTime() - today.getTime();
-  const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (daysUntil < 0) {
-    return { status: "expired", daysUntil };
-  } else if (daysUntil <= 2) {
-    return { status: "critical", daysUntil };
-  } else if (daysUntil <= 7) {
-    return { status: "warning", daysUntil };
-  } else {
-    return { status: "good", daysUntil };
-  }
-}
+import { asOfDate } from "@/lib/receipt-shopping/asOfDate";
+import { addCalendarDays, calculateExpirationStatus } from "@/utils/inventory/expiration";
 
 /**
  * GET /api/inventory
@@ -89,10 +60,11 @@ export async function GET(request: NextRequest) {
   if (expiringWithin) {
     const days = parseInt(expiringWithin, 10);
     if (!isNaN(days)) {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + days);
-      query = query.lte("expiration_date", futureDate.toISOString().split("T")[0]);
-      query = query.gte("expiration_date", new Date().toISOString().split("T")[0]);
+      // Today in the shared zone, not the UTC date, which is already tomorrow after
+      // 8 pm Eastern and would drop items that expire today.
+      const today = asOfDate();
+      query = query.lte("expiration_date", addCalendarDays(today, days));
+      query = query.gte("expiration_date", today);
     }
   }
 

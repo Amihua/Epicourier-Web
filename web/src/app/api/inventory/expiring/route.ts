@@ -1,36 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import type { ExpirationStatus } from "@/types/data";
-
-/**
- * Calculate expiration status based on expiration date
- */
-function calculateExpirationStatus(expirationDate: string | null): {
-  status: ExpirationStatus;
-  daysUntil: number | null;
-} {
-  if (!expirationDate) {
-    return { status: "unknown", daysUntil: null };
-  }
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const expDate = new Date(expirationDate);
-  expDate.setHours(0, 0, 0, 0);
-
-  const diffTime = expDate.getTime() - today.getTime();
-  const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (daysUntil < 0) {
-    return { status: "expired", daysUntil };
-  } else if (daysUntil <= 2) {
-    return { status: "critical", daysUntil };
-  } else if (daysUntil <= 7) {
-    return { status: "warning", daysUntil };
-  } else {
-    return { status: "good", daysUntil };
-  }
-}
+import { asOfDate } from "@/lib/receipt-shopping/asOfDate";
+import { addCalendarDays, calculateExpirationStatus } from "@/utils/inventory/expiration";
 
 /**
  * GET /api/inventory/expiring
@@ -61,10 +32,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Invalid days parameter" }, { status: 400 });
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const futureDate = new Date(today);
-  futureDate.setDate(futureDate.getDate() + days);
+  // Calendar dates in the shared zone, so the window matches the badges.
+  const cutoff = addCalendarDays(asOfDate(), days);
 
   // Fetch items expiring within the specified days (including already expired)
   const { data: items, error } = await supabase
@@ -77,7 +46,7 @@ export async function GET(request: NextRequest) {
     )
     .eq("user_id", user.id)
     .not("expiration_date", "is", null)
-    .lte("expiration_date", futureDate.toISOString().split("T")[0])
+    .lte("expiration_date", cutoff)
     .order("expiration_date", { ascending: true });
 
   if (error) {
