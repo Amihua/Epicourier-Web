@@ -6,7 +6,8 @@ import type {
   InventoryItemWithDetails,
   InventorySummary,
 } from "@/types/data";
-import { calculateExpirationStatus } from "@/utils/inventory/expiration";
+import { asOfDate } from "@/lib/receipt-shopping/asOfDate";
+import { addCalendarDays, calculateExpirationStatus } from "@/utils/inventory/expiration";
 
 /**
  * GET /api/inventory
@@ -59,10 +60,11 @@ export async function GET(request: NextRequest) {
   if (expiringWithin) {
     const days = parseInt(expiringWithin, 10);
     if (!isNaN(days)) {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + days);
-      query = query.lte("expiration_date", futureDate.toISOString().split("T")[0]);
-      query = query.gte("expiration_date", new Date().toISOString().split("T")[0]);
+      // Today in the shared zone, not the UTC date, which is already tomorrow after
+      // 8 pm Eastern and would drop items that expire today.
+      const today = asOfDate();
+      query = query.lte("expiration_date", addCalendarDays(today, days));
+      query = query.gte("expiration_date", today);
     }
   }
 
