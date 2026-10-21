@@ -14,16 +14,16 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17537732.svg)](https://doi.org/10.5281/zenodo.17537732)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
-<!-- TEASER VIDEO (12-30 s): uncomment and replace VIDEO_ID once uploaded.
-[![Teaser](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://youtu.be/VIDEO_ID)
--->
+[![Teaser — 28 s](https://img.youtube.com/vi/lIJQWOqHnvw/maxresdefault.jpg)](https://youtu.be/lIJQWOqHnvw)
+
+<sub>▶ **Teaser, 28 seconds** — <https://youtu.be/lIJQWOqHnvw></sub>
 
 **A recipe score you can add up yourself.**
 
 Epicourier recommends recipes from what is already in your kitchen. Until now the match score was written by a language model, and nobody could check it. This branch replaces that number with a **receipt**: one line per pantry item, the points each line earned, and a total that is exactly their sum. Disagree with a line? Correct it, and the ranking moves the way the rules say it should.
 
 📖 **Docs site:** <https://amihua.github.io/Epicourier-Web/>
-🎬 **Feature walk-through (2–5 min):** _link coming_ <!-- replace with the YouTube URL -->
+🎬 **Feature walk-through (3 min 41 s):** <https://youtu.be/NPHCkjngmlo>
 
 ---
 
