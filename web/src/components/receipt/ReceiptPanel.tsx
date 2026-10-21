@@ -114,84 +114,88 @@ export default function ReceiptPanel({
       {receipt.items.length === 0 ? (
         <p>This recipe lists nothing that could be scored.</p>
       ) : (
-        <table className="w-full border-collapse" aria-label="Receipt lines">
-          <thead>
-            <tr className="text-muted-foreground text-left text-xs uppercase">
-              <th scope="col" className="py-1 pr-2 font-medium">
-                Ingredient
-              </th>
-              <th scope="col" className="py-1 pr-2 font-medium">
-                Needed
-              </th>
-              <th scope="col" className="py-1 pr-2 font-medium">
-                Usable
-              </th>
-              <th scope="col" className="py-1 pr-2 font-medium">
-                Expires
-              </th>
-              <th scope="col" className="py-1 pr-2 font-medium">
-                Status
-              </th>
-              <th scope="col" className="py-1 text-right font-medium">
-                Points
-              </th>
-              {inventory && (
-                <th scope="col" className="py-1 pl-2">
-                  <span className="sr-only">Correct</span>
+        // The table keeps its columns and scrolls sideways on a narrow screen, so
+        // Points and Correct stay reachable instead of being cut off (#31).
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse" aria-label="Receipt lines">
+            <thead>
+              <tr className="text-muted-foreground text-left text-xs uppercase">
+                <th scope="col" className="py-1 pr-2 font-medium">
+                  Ingredient
                 </th>
-              )}
-            </tr>
-          </thead>
-          {groups.map((group) => (
-            <tbody key={group.source} data-source={group.source}>
-              <tr>
-                <th
-                  scope="rowgroup"
-                  colSpan={inventory ? 7 : 6}
-                  className="border-t pt-2 pb-1 text-left text-xs font-semibold"
-                >
-                  {group.label}
+                <th scope="col" className="py-1 pr-2 font-medium">
+                  Needed
                 </th>
+                <th scope="col" className="py-1 pr-2 font-medium">
+                  Usable
+                </th>
+                <th scope="col" className="py-1 pr-2 font-medium">
+                  Expires
+                </th>
+                <th scope="col" className="py-1 pr-2 font-medium">
+                  Status
+                </th>
+                <th scope="col" className="py-1 text-right font-medium">
+                  Points
+                </th>
+                {inventory && (
+                  <th scope="col" className="py-1 pl-2">
+                    <span className="sr-only">Correct</span>
+                  </th>
+                )}
               </tr>
-              {group.items.map((item) => {
-                const index = receipt.items.indexOf(item);
-                const key = keyOf(item, index);
-                const rows =
-                  inventory && item.source === "inventory" ? rowsForLine(item, inventory) : [];
-                const open = editing === key;
-                return (
-                  <LineRows
-                    key={key}
-                    item={item}
-                    name={nameOf(item)}
-                    rows={rows}
-                    correctable={Boolean(inventory)}
-                    open={open}
-                    busy={reranking}
-                    onOpen={() => {
-                      setNotice(null);
-                      setEditing(open ? null : key);
-                    }}
-                    onClose={() => setEditing(null)}
-                    onCorrect={onCorrect}
-                    onSaved={(message) => setNotice(message)}
-                  />
-                );
-              })}
-            </tbody>
-          ))}
-          <tfoot>
-            <tr className="border-t font-medium">
-              <th scope="row" colSpan={5} className="py-1 pr-2 text-left">
-                Lines add up to
-              </th>
-              <td className="py-1 text-right" data-testid="line-total">
-                {formatPoints(sums.lineTotal)}
-              </td>
-              {inventory && <td />}
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            {groups.map((group) => (
+              <tbody key={group.source} data-source={group.source}>
+                <tr>
+                  <th
+                    scope="rowgroup"
+                    colSpan={inventory ? 7 : 6}
+                    className="border-t pt-2 pb-1 text-left text-xs font-semibold"
+                  >
+                    {group.label}
+                  </th>
+                </tr>
+                {group.items.map((item) => {
+                  const index = receipt.items.indexOf(item);
+                  const key = keyOf(item, index);
+                  const rows =
+                    inventory && item.source === "inventory" ? rowsForLine(item, inventory) : [];
+                  const open = editing === key;
+                  return (
+                    <LineRows
+                      key={key}
+                      item={item}
+                      name={nameOf(item)}
+                      rows={rows}
+                      correctable={Boolean(inventory)}
+                      open={open}
+                      busy={reranking}
+                      onOpen={() => {
+                        setNotice(null);
+                        setEditing(open ? null : key);
+                      }}
+                      onClose={() => setEditing(null)}
+                      onCorrect={onCorrect}
+                      onSaved={(message) => setNotice(message)}
+                    />
+                  );
+                })}
+              </tbody>
+            ))}
+            <tfoot>
+              <tr className="border-t font-medium">
+                <th scope="row" colSpan={5} className="py-1 pr-2 text-left">
+                  Lines add up to
+                </th>
+                <td className="py-1 text-right" data-testid="line-total">
+                  {formatPoints(sums.lineTotal)}
+                </td>
+                {inventory && <td />}
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       )}
 
       <p role={sums.matches ? undefined : "alert"} className="flex items-center gap-2">

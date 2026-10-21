@@ -173,7 +173,7 @@ export default function ReceiptRecommendationsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-3xl gap-0 overflow-hidden rounded-none border-2 border-black p-0 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+      <DialogContent className="flex max-h-[90vh] max-w-[min(48rem,calc(100%-1rem))] flex-col gap-0 overflow-hidden rounded-none border-2 border-black p-0 shadow-[4px_4px_0_0_rgba(0,0,0,1)] sm:max-w-[min(48rem,calc(100%-1rem))]">
         <div className="border-b-2 border-black p-6">
           <DialogHeader>
             <DialogTitle className="text-xl">Recipes ranked by your pantry</DialogTitle>
@@ -202,7 +202,7 @@ export default function ReceiptRecommendationsDialog({
             Nothing to rank yet. Add ingredients that recipes use, then try again.
           </p>
         ) : (
-          <ScrollArea className="max-h-[calc(90vh-180px)]">
+          <ScrollArea className="min-h-0 min-w-0 flex-1 [&>[data-radix-scroll-area-viewport]>div]:block!">
             <ol className="space-y-4 p-6" aria-label="Ranked recipes">
               {results.map((recipe, index) => (
                 <li key={recipe.recipe_id} className="rounded-none border-2 border-black">
