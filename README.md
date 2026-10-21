@@ -3,139 +3,116 @@
 [![Web CI](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-jest.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-jest.yml)
 [![Backend CI](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-pytest.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-pytest.yml)
 [![M0 Evaluation](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-m0-eval.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-m0-eval.yml)
-[![codecov](https://codecov.io/github/Amihua/Epicourier-Web/graph/badge.svg)](https://codecov.io/github/Amihua/Epicourier-Web)
-[![Tests](https://img.shields.io/badge/tests-1510%20passing-brightgreen)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-jest.yml)
+[![Docs](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-docs.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-docs.yml)
+[![codecov](https://codecov.io/github/Amihua/Epicourier-Web/branch/se26f-p2/graph/badge.svg)](https://codecov.io/github/Amihua/Epicourier-Web)
+[![Tests](https://img.shields.io/badge/tests-1510%20passing-brightgreen)](#testing)
 [![Test share](https://img.shields.io/badge/test%20code-50.1%25%20of%20repo-brightgreen)](#testing)
 [![ESLint](https://img.shields.io/badge/style-ESLint-4B32C3?logo=eslint&logoColor=white)](web/eslint.config.mjs)
 [![Prettier](https://img.shields.io/badge/format-Prettier-F7B93E?logo=prettier&logoColor=black)](web/.prettierrc)
 [![Ruff](https://img.shields.io/badge/python-Ruff-D7FF64?logo=ruff&logoColor=black)](backend/pyproject.toml)
 [![TypeScript](https://img.shields.io/badge/types-tsc%20strict-3178C6?logo=typescript&logoColor=white)](web/tsconfig.json)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17537732.svg)](https://doi.org/10.5281/zenodo.17537732)
-[![Project Status: Active](https://img.shields.io/badge/status-active-brightgreen.svg)](#)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
-**YOUR NUTRITION, YOUR CONTROL. AI-POWERED MEAL PLANNING FOR WELLNESS AND SUSTAINABILITY.**
+<!-- TEASER VIDEO (12-30 s): uncomment and replace VIDEO_ID once uploaded.
+[![Teaser](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://youtu.be/VIDEO_ID)
+-->
 
-Epicourier is a comprehensive, full-stack web ecosystem designed to modernize the culinary lifestyle. It seamlessly integrates AI-driven recipe generation with advanced inventory management. While the platform automates the logic of meal planning, our latest expansion focuses on the execution: tracking nutrition, gamifying consistency, and optimizing grocery logistics to reduce waste and enhance user engagement.
+**A recipe score you can add up yourself.**
 
----
+Epicourier recommends recipes from what is already in your kitchen. Until now the match score was written by a language model, and nobody could check it. This branch replaces that number with a **receipt**: one line per pantry item, the points each line earned, and a total that is exactly their sum. Disagree with a line? Correct it, and the ranking moves the way the rules say it should.
 
-## 🎬 Demo Video
-
-**Watch our project demonstration on YouTube:**
-
-<div align="center">
-  
-[![Epicourier Demo Video](https://img.youtube.com/vi/qbFYmMTnb5M/maxresdefault.jpg)](https://youtu.be/qbFYmMTnb5M)
-
-**[▶️ Watch on YouTube](https://youtu.be/qbFYmMTnb5M)** | Full Features Demo
-
-</div>
+📖 **Docs site:** <https://amihua.github.io/Epicourier-Web/>
+🎬 **Feature walk-through (2–5 min):** _link coming_ <!-- replace with the YouTube URL -->
 
 ---
 
-## ✨ New Features (Phase 2 Expansion)
+## Try it in one minute
 
-### 📊 1. Nutrient Command Center
+No install, no API key, no database:
 
-_Data-driven health insights._
+```bash
+git clone https://github.com/Amihua/Epicourier-Web.git
+cd Epicourier-Web
+python3 p2/eval/run_eval.py
+```
 
-- **Interactive Analytics**: A fully responsive dashboard powered by **Recharts** to visualize daily, weekly, and monthly macro trends.
-- **Goal Setting**: Users can define and track custom daily nutrient targets stored via immutable database indexing.
-- **Portability**: Full support for data export (CSV/Text reports) for healthcare or personal archiving.
-
-### 🎮 2. Gamified Wellness Architecture
-
-_Making healthy habits addictive._
-
-- **Streak System**: Visual "flame" intensity scales based on consistency, complete with "At Risk" warnings to prevent habit breaking.
-- **Challenges & Badges**: A robust engine for Weekly/Monthly challenges. Users unlock tier-based badges tracked via a dedicated achievement schema.
-- **Social & Engagement**: Real-time progress bars and participation UI to keep motivation high.
-
-### 🛒 3. AI Smart Cart & Inventory Manager
-
-_Reduce waste, save money._
-
-- **Intelligent Inventory**: Track pantry/fridge items with automatic expiration color-coding (Green/Yellow/Red alerts).
-- **Gemini-Powered Suggestions**: Our Python API utilizes **Google Gemini 2.5 Flash** to recommend recipes based specifically on ingredients expiring soon to minimize waste.
-- **Seamless Logistics**: One-click generation of shopping lists from meal plans, with automatic transfer flow from "Shopping List" to "User Inventory" upon purchase.
-
-**Tests**: 1,130+ automated test cases covering UI interactions, gamification logic, and backend AI services (Jest/Pytest). Pipelines: End-to-end GitHub Actions workflows for instant formatting (Ruff/Prettier), linting, and unit verification.
+You should see the three M0 claims checked against their thresholds and a final `PASS`.
+[Guide: run the evaluation](docs/guides/01-run-the-evaluation.md)
 
 ---
 
-## 🚀 Getting Started
+## What Project 2 built
 
-Ready to cook? Follow these guides to set up your environment.
+Four merged milestones, each built against one frozen contract ([`receipt-v1`](p2/contracts/receipt-v1.md)) so four people could work in parallel.
 
-- **📥 Installation**: Step-by-step setup guide. 👉 [INSTALL.md](INSTALL.md)
-- **🤝 Contribution**: Join the team! 👉 [CONTRIBUTING.md](CONTRIBUTING.md)
-- **🤖 Agent Guide**: For AI agents working on this repo. 👉 [AGENT-PLAN/00-QUICK-START.md](AGENT-PLAN/00-QUICK-START.md)
+| | Milestone | What it delivers | Owner | PRs |
+|---|---|---|---|---|
+| **M0** | Contract and evaluation | Frozen JSON contract, 500-cell corpus, offline harness in CI that scores against hand-written expectations | Wenbo Li | [#20](https://github.com/Amihua/Epicourier-Web/pull/20), [#25](https://github.com/Amihua/Epicourier-Web/pull/25) |
+| **M1** | Deterministic scorer | Pure Python function from pantry + recipe to receipt, with boundary, mutation and differential tests | Sihao Liu | [#23](https://github.com/Amihua/Epicourier-Web/pull/23), [#24](https://github.com/Amihua/Epicourier-Web/pull/24) |
+| **M2** | Receipt panel | Expand a recommendation to see its lines, correct an item, watch the list re-rank; corrections persist | Jeffery | [#22](https://github.com/Amihua/Epicourier-Web/pull/22) |
+| **M3** | Shopping from the gap | Preview exactly what is missing, confirm once; a replayed request applies only once | Andy | [#21](https://github.com/Amihua/Epicourier-Web/pull/21) |
 
----
+### M0: the risk-killer eval
 
-## 🧩 Tech Stack
+The product rides on one claim: the ranking can be made **reproducible and auditable**. M0 tests it before anything else was built. Full statement in [`p2/eval/HYPOTHESIS.md`](p2/eval/HYPOTHESIS.md).
 
-### 🌐 Web App (Frontend)
+| | Claim | Threshold | Result | Old recommender |
+|---|---|---|---|---|
+| **H1** | Every displayed total is the sum of its displayed parts | 100% | **500/500** | 0/300 (its schema cannot decompose a score) |
+| **H2** | The same pantry gives the same answer (20 shuffles per cell) | 100% | **25/25** | not collected yet (needs 30 live model calls) |
+| **H3** | A correction moves the score the way the rules predict | 4/4 | **4/4** | no correction loop exists |
 
-Built with a modern TypeScript-based stack for reliability, scalability, and developer productivity.
-
-| Category            | Tools                                                                                                             |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Framework           | [![Next.js](https://img.shields.io/badge/Next.js-black?logo=next.js&logoColor=white)](#)                          |
-| Styling             | [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-%2338B2AC.svg?logo=tailwind-css&logoColor=white)](#) |
-| Language            | [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](#)                  |
-| Code Syntax Checker | [![ESLint](https://img.shields.io/badge/ESLint-3A33D1?logo=eslint&logoColor=fff)](#)                              |
-| Code Style Checker  | [![Prettier](https://img.shields.io/badge/Prettier-1A2C34?logo=prettier&logoColor=F7BA3E)](#)                     |
-| Testing             | [![Jest](https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=fff)](#)                                    |
-| Visualization       | [![Recharts](https://img.shields.io/badge/Recharts-22b5bf?style=flat&logo=recharts&logoColor=white)](#)           |
+The harness also carries a case with four planted defects, and CI checks that it is **rejected** on every run. So the eval can fail, and a green badge means it can still see a broken receipt.
 
 ---
 
-### ⚙️ Backend (FastAPI Service)
+## Testing
 
-Serves model inference, powered by FastAPI.
+| Suite | Count | Run it |
+|---|---:|---|
+| Web (Jest) | 1,412 | `cd web && npm install && npx jest` |
+| Backend (pytest) | 98 | `cd backend && uv sync && uv run pytest tests/p2` |
+| M0 evaluation | 5 checks | `python3 p2/eval/run_eval.py` |
 
-| Category                | Tools                                                                                                                                                                                                        |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Language                | [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#)                                                                                                                         |
-| Framework               | [![FastAPI](https://img.shields.io/badge/FastAPI-009485.svg?logo=fastapi&logoColor=white)](#)                                                                                                                |
-| Database                | [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)](#) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?logo=postgresql&logoColor=white)](#)              |
-| Model                   | ![Google Gemini](https://img.shields.io/badge/google%20gemini-8E75B2?logo=google%20gemini&logoColor=white) ![HuggingFace](https://img.shields.io/badge/-HuggingFace-FDEE21?logo=HuggingFace&logoColor=black) |
-| Testing                 | [![Pytest](https://img.shields.io/badge/Pytest-fff?logo=pytest&logoColor=000)](#)                                                                                                                            |
-| Automated Analysis Tool | [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)                                                 |
+Test code is 50.1% of the code base (30,217 test lines against 30,108 product lines). Every push to `se26f-p2` runs all of it in [GitHub Actions](https://github.com/Amihua/Epicourier-Web/actions), plus Ruff, `tsc --noEmit`, and a check that the generated docs are current.
 
 ---
 
-## 🧪 Coverage
+## Documentation
 
-Code coverage is automatically tracked via **Codecov**:
+| | |
+|---|---|
+| **Why** | [Why this project exists](docs/WHY.md) |
+| **How** | [Run the evaluation](docs/guides/01-run-the-evaluation.md) · [Add a scoring rule](docs/guides/02-add-a-scoring-rule.md) · [Change the contract](docs/guides/03-change-the-contract.md) · [Local setup](docs/guides/04-local-setup.md) |
+| **What** | [Backend API](docs/api/backend/) (from docstrings) · [Web types](https://amihua.github.io/Epicourier-Web/api/web/) (TypeDoc) |
+| **Contribute** | [INSTALL.md](INSTALL.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · [THIRD_PARTY_LIBRARIES.md](THIRD_PARTY_LIBRARIES.md) |
+| **AI use** | [AGENT-PLAN/](AGENT-PLAN/) · prompt and model comparisons in [`p1b/prompts/`](p1b/prompts/) · [.coderabbit.yaml](.coderabbit.yaml) |
 
-[![codecov](https://codecov.io/github/Amihua/Epicourier-Web/graph/badge.svg)](https://codecov.io/github/Amihua/Epicourier-Web)
-
----
-
-## 📊 Dataset
-
-For details about dataset construction and preprocessing, please refer to:
-👉 [data/README.md](data/README.md)
-
----
-
-## 📜 Citation
-
-If you use this repository or dataset in your work, please cite it as:
-
-> Epicourier Team. (2025). _Epicourier-Web_ [Computer software]. Zenodo.  
-> [https://doi.org/10.5281/zenodo.17537732](https://doi.org/10.5281/zenodo.17537732)
+Browse it all as a site: <https://amihua.github.io/Epicourier-Web/>
 
 ---
 
-## 📎 License
+## Tech stack
 
-This project is released under the [MIT License](LICENSE.md).
+| | Web app | Backend |
+|---|---|---|
+| Language | TypeScript | Python 3.11 |
+| Framework | Next.js, Tailwind CSS | FastAPI |
+| Data | Supabase (PostgreSQL) | Supabase, Google Gemini, Hugging Face |
+| Tests | Jest, Testing Library | pytest, Hypothesis |
+| Quality | ESLint, Prettier, `tsc` strict | Ruff (lint + format) |
 
 ---
 
-## 📘 Documentation
+## Where this came from
 
-More details and technical notes are available in the [Wiki Documentation](https://github.com/epicourier-team/Epicourier-Web/wiki).
+Epicourier was started by the Fall '25 CSC 510 team ([sdxshuai/Epicourier-Web](https://github.com/sdxshuai/Epicourier-Web)), who built the meal planning, nutrition dashboard, gamification and inventory features. This fork, by the Fall '26 team, adds the receipt-based ranking described above. Their original demo: [youtu.be/qbFYmMTnb5M](https://youtu.be/qbFYmMTnb5M).
+
+The DOI above is the original project's Zenodo record. If you use this work, please cite:
+
+> Epicourier Team. (2025). _Epicourier-Web_ [Computer software]. Zenodo. <https://doi.org/10.5281/zenodo.17537732>
+
+## License
+
+[MIT](LICENSE.md)
