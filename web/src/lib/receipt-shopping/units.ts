@@ -153,7 +153,11 @@ export function parseUnit(raw: string | null | undefined): ParsedUnit | null {
   }
   if (!(factor > 0) || !Number.isFinite(factor)) return null;
 
-  const known = KNOWN[name];
+  // A known unit followed by words that only describe the food: "100 g peeled",
+  // "5 g cooked", "1 cup chopped". The words do not change the amount.
+  const [first, ...described] = name.split(/[\s,]+/);
+  const known =
+    KNOWN[name] ?? (described.every((w) => /^[a-z]+$/.test(w)) ? KNOWN[first] : undefined);
   if (known) {
     return { dimension: known.dimension, toBase: known.toBase * factor, display: known.display };
   }
