@@ -75,7 +75,51 @@ define(["piece", "pieces", "pc", "pcs", "unit", "units", "each", "item", "items"
   display: "pcs",
 });
 
-const PREFIX = /^(\d+(?:\.\d+)?)\s*(.*)$/;
+const UNICODE_FRACTIONS: Record<string, number> = {
+  "½": 1 / 2,
+  "⅓": 1 / 3,
+  "⅔": 2 / 3,
+  "¼": 1 / 4,
+  "¾": 3 / 4,
+  "⅛": 1 / 8,
+};
+const UNICODE_FRACTION = /^([½⅓⅔¼¾⅛])\s*/;
+const SLASH_FRACTION = /^(\d+)\s*\/\s*(\d+)\s*/;
+const NUMBER = /^(\d+(?:\.\d+)?)\s*/;
+
+/**
+ * Reads a leading amount: "100", "0.5", "1/2", "1 1/2", "½", "1½" or "~5" (an
+ * approximate amount is taken at face value). Returns null when there is none.
+ */
+export function leadingAmount(text: string): { amount: number; rest: string } | null {
+  let rest = text.replace(/^~\s*/, "");
+  let amount = 0;
+  let found = false;
+
+  const slash = SLASH_FRACTION.exec(rest);
+  if (slash) {
+    return { amount: Number(slash[1]) / Number(slash[2]), rest: rest.slice(slash[0].length) };
+  }
+  const number = NUMBER.exec(rest);
+  if (number) {
+    amount = Number(number[1]);
+    rest = rest.slice(number[0].length);
+    found = true;
+    // A mixed number: "1 1/2 cup".
+    const mixed = SLASH_FRACTION.exec(rest);
+    if (mixed) {
+      amount += Number(mixed[1]) / Number(mixed[2]);
+      rest = rest.slice(mixed[0].length);
+    }
+  }
+  const unicode = UNICODE_FRACTION.exec(rest);
+  if (unicode) {
+    amount += UNICODE_FRACTIONS[unicode[1]];
+    rest = rest.slice(unicode[0].length);
+    found = true;
+  }
+  return found ? { amount, rest } : null;
+}
 
 /** Lower-cases, trims, collapses spaces and drops a trailing period ("tbsp." -> "tbsp"). */
 function normaliseWord(raw: string): string {
@@ -88,7 +132,8 @@ function singular(word: string): string {
 }
 
 /**
- * Parses a unit string, including a numeric prefix such as "100g" or "1 cup".
+ * Parses a unit string, including a numeric prefix such as "100g", "1 cup",
+ * "1/2 tsp" or "½ cup".
  * Returns `null` for null, empty, or zero-sized units ("0g"), which callers
  * report as `missing_unit`.
  */
@@ -99,10 +144,10 @@ export function parseUnit(raw: string | null | undefined): ParsedUnit | null {
 
   let factor = 1;
   let name = text;
-  const match = PREFIX.exec(text);
-  if (match) {
-    factor = Number(match[1]);
-    name = normaliseWord(match[2]);
+  const lead = leadingAmount(text);
+  if (lead) {
+    factor = lead.amount;
+    name = normaliseWord(lead.rest);
     // A bare number ("100") names a count of 100 things, not a unit we can trust.
     if (name === "") name = "piece";
   }
