@@ -23,6 +23,12 @@ export interface ParsedUnit {
   toBase: number;
   /** Unit name to show the user, without any numeric prefix ("100g" -> "g"). */
   display: string;
+  /**
+   * For a bracketed unit counted in items ("1 large (50 g)", "2 cloves (6 g)"):
+   * what one item weighs or holds, in the base of `dimension`. It lets a pantry
+   * that counts eggs or cloves convert to and from a unit stated by weight.
+   */
+  perItem?: number;
 }
 
 interface KnownUnit {
@@ -158,6 +164,59 @@ function parseSimple(text: string): ParsedUnit | null {
 
 const PARENTHETICAL = /^(.*?)\(([^)]*)\)(.*)$/;
 
+/** Words that make the part outside the brackets a count of items. */
+const COUNTABLE = new Set([
+  "each",
+  "piece",
+  "pieces",
+  "pc",
+  "pcs",
+  "whole",
+  "item",
+  "items",
+  "small",
+  "medium",
+  "large",
+  "clove",
+  "cloves",
+  "slice",
+  "slices",
+  "fillet",
+  "fillets",
+  "breast",
+  "breasts",
+  "link",
+  "links",
+  "egg",
+  "eggs",
+  "yolk",
+  "yolks",
+  "stalk",
+  "stalks",
+  "head",
+  "heads",
+  "sprig",
+  "sprigs",
+  "leaf",
+  "leaves",
+  "half",
+  "halves",
+  "cube",
+  "cubes",
+  "can",
+  "cans",
+  "jar",
+  "jars",
+]);
+
+/** How many items the part outside the brackets counts, or null if it is not a count. */
+function itemCount(outside: string): number | null {
+  const lead = leadingAmount(outside);
+  const name = lead ? normaliseWord(lead.rest) : outside;
+  const amount = lead ? lead.amount : 1;
+  return COUNTABLE.has(name.split(/[\s,]+/)[0]) && amount > 0 ? amount : null;
+}
+
 /**
  * The first part of a parenthetical that is an amount of mass or volume:
  * "15 ml", "20g", "~5 g", "5 g cooked", or the "30 g" in "juice, 30 g".
@@ -192,24 +251,27 @@ export function parseUnit(raw: string | null | undefined): ParsedUnit | null {
 
   const bracketed = PARENTHETICAL.exec(text);
   if (bracketed) {
-    const measured = measureIn(bracketed[2]);
-    if (measured) return measured;
     const outside = normaliseWord(`${bracketed[1]} ${bracketed[3]}`);
+    const measured = measureIn(bracketed[2]);
+    if (measured) {
+      const items = itemCount(outside);
+      return items === null ? measured : { ...measured, perItem: measured.toBase / items };
+    }
     if (outside !== "") return parseSimple(outside);
   }
   return parseSimple(text);
 }
 
-/** True when both units parse and share a dimension. */
+/** True when both units parse and one converts to the other. */
 export function areCompatible(a: string | null | undefined, b: string | null | undefined) {
-  const pa = parseUnit(a);
-  const pb = parseUnit(b);
-  return pa !== null && pb !== null && pa.dimension === pb.dimension;
+  return convert(1, a, b) !== null;
 }
 
 /**
  * Converts `quantity` from one unit to another. Returns `null` when either unit
- * is missing or the two are in different dimensions — never a guess.
+ * is missing or the two are in different dimensions — never a guess. The one
+ * bridge between dimensions is a count of items against a bracketed unit that
+ * says what one item weighs: 6 pieces of "1 large (50 g)" is 300 g.
  */
 export function convert(
   quantity: number,
@@ -218,13 +280,22 @@ export function convert(
 ): number | null {
   const pf = parseUnit(from);
   const pt = parseUnit(to);
-  if (pf === null || pt === null || pf.dimension !== pt.dimension) return null;
-  return (quantity * pf.toBase) / pt.toBase;
+  if (pf === null || pt === null) return null;
+  if (pf.dimension === pt.dimension) return (quantity * pf.toBase) / pt.toBase;
+  if (pf.dimension === "count" && pt.perItem !== undefined) {
+    return (quantity * pf.toBase * pt.perItem) / pt.toBase;
+  }
+  if (pt.dimension === "count" && pf.perItem !== undefined) {
+    return (quantity * pf.toBase) / pf.perItem / pt.toBase;
+  }
+  return null;
 }
 
 /**
  * Re-expresses a quantity stated in a prefixed base unit in its display unit:
- * 2.5 of "100g" becomes 250 of "g". Unprefixed units pass through unchanged.
+ * 2.5 of "100g" becomes 250 of "g". Unprefixed units pass through unchanged. A
+ * unit counted in items displays as items: 2 of "1 large (50 g)" is 2 pcs, which
+ * is how a shopping list buys eggs.
  */
 export function toDisplayQuantity(
   quantity: number,
@@ -232,6 +303,9 @@ export function toDisplayQuantity(
 ): { quantity: number; unit: string } | null {
   const parsed = parseUnit(unit);
   if (parsed === null) return null;
+  if (parsed.perItem !== undefined) {
+    return { quantity: (quantity * parsed.toBase) / parsed.perItem, unit: "pcs" };
+  }
   const displayUnit = parseUnit(parsed.display);
   // `display` is always parseable, but guard so a future edit cannot divide by zero.
   if (displayUnit === null || displayUnit.dimension !== parsed.dimension) return null;

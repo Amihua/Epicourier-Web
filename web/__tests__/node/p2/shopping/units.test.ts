@@ -198,7 +198,7 @@ describe("bracketed metric amounts (#33)", () => {
     ["1 lemon (juice, 30 g)", "mass", 30, "g"],
     ["1 cup (200 g cooked)", "mass", 200, "g"],
   ])("%s is %s, %p %s", (raw, dimension, toBase, display) => {
-    expect(parseUnit(raw)).toEqual({ dimension, toBase, display });
+    expect(parseUnit(raw)).toMatchObject({ dimension, toBase, display });
   });
 
   it("uses the part outside the brackets when they hold no measure", () => {

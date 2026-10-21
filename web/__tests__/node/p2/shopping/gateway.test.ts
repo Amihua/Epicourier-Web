@@ -563,14 +563,24 @@ describe("inStockUnit (#33)", () => {
     ).toEqual({ ingredient_id: 2, quantity: 2.25, unit: "ml" });
   });
 
-  it("keeps the display unit when the stock is in another dimension", () => {
+  it("bridges a pantry that counts eggs with a unit stated by weight", () => {
     expect(
       inStockUnit(
         { ingredient_id: 3, quantity: 0.5, unit: "1 large (50 g)" },
         [stock("a", 3, 6, "pieces")],
         AS_OF
       )
-    ).toEqual({ ingredient_id: 3, quantity: 25, unit: "g" });
+    ).toEqual({ ingredient_id: 3, quantity: 0.5, unit: "pieces" });
+  });
+
+  it("keeps the display unit when the stock cannot be compared at all", () => {
+    expect(
+      inStockUnit(
+        { ingredient_id: 3, quantity: 1, unit: "1 tbsp (15 ml)" },
+        [stock("a", 3, 2, "pieces")],
+        AS_OF
+      )
+    ).toEqual({ ingredient_id: 3, quantity: 15, unit: "ml" });
   });
 
   it("ignores rows with no unit and expired rows", () => {
