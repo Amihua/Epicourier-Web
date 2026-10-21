@@ -165,3 +165,23 @@ describe("leadingAmount", () => {
     expect(leadingAmount("pinch")).toBeNull();
   });
 });
+
+describe("descriptive words after a known unit (#33)", () => {
+  it.each([
+    ["100 g peeled", "mass", 100, "g"],
+    ["5 g cooked", "mass", 5, "g"],
+    ["40 g florets", "mass", 40, "g"],
+    ["1 cup chopped", "volume", 236.5882365, "cup"],
+    ["2 pieces diced", "count", 2, "pcs"],
+  ])("%s", (raw, dimension, toBase, display) => {
+    expect(parseUnit(raw)).toEqual({ dimension, toBase, display });
+  });
+
+  it("does not guess when the first word is not a unit", () => {
+    expect(parseUnit("1 large egg")?.dimension).toBe("other:large egg");
+  });
+
+  it("does not treat a two-word unit like 'fl oz' as ounces of mass", () => {
+    expect(parseUnit("2 fl oz")?.dimension).not.toBe("mass");
+  });
+});
