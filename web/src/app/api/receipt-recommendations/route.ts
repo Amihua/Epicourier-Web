@@ -100,7 +100,10 @@ export async function POST(req: Request) {
       .select(MAP_COLUMNS)
       .in("recipe_id", candidateIds);
     if (mapError) throw new DataAccessError("Failed to read recipe ingredients", mapError);
-    const candidates = buildCandidates(candidateIds, (mapRows ?? []) as CandidateMapRow[]);
+    const candidates = buildCandidates(candidateIds, (mapRows ?? []) as CandidateMapRow[], {
+      inventory,
+      asOf: as_of_date,
+    });
 
     const { data: goals, error: goalsError } = await supabase
       .from("nutrient_goals")

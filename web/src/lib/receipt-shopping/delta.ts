@@ -18,6 +18,7 @@
  *    cover the gap, so subtracting without them would be a guess.
  * 6. Otherwise the shortfall is rounded *up* to 0.01 — a shopping list should never
  *    under-buy — and reported in the requirement's display unit ("100g" -> "g").
+ *    A shortfall counted in items rounds up to whole items: nobody buys 0.8 of an egg.
  */
 
 import {
@@ -70,6 +71,11 @@ export function ceilToCents(value: number): number {
   return Math.ceil(Math.round(value * 1e6) / 1e4) / 100;
 }
 
+/** Rounds a count up to whole items, ignoring float noise so 2.0000000001 stays 2. */
+export function wholeItems(value: number): number {
+  return Math.ceil(Math.round(value * 1e6) / 1e6);
+}
+
 function validate(input: DeltaInput): number {
   if (!isIsoDate(input.as_of_date)) {
     throw new DeltaInputError(`as_of_date must be a YYYY-MM-DD date, got ${input.as_of_date}`);
@@ -112,14 +118,14 @@ type Need =
   | { kind: "unknown" }
   | { kind: "incompatible" }
   | { kind: "missing_unit" }
-  | { kind: "known"; quantity: number; unit: string };
+  | { kind: "known"; quantity: number; unit: string; via: string };
 
 /** Sums one ingredient's requirements into a single quantity in a display unit. */
 function totalNeed(reqs: Requirement[], servings: number): Need {
   if (reqs.some((r) => r.quantity === null)) return { kind: "unknown" };
   // Zero is zero whatever the unit says, so a unitless zero is not an unresolved line.
   if (reqs.every((r) => r.quantity === 0))
-    return { kind: "known", quantity: 0, unit: reqs[0].unit };
+    return { kind: "known", quantity: 0, unit: reqs[0].unit, via: reqs[0].unit };
   const first = toDisplayQuantity(0, reqs[0].unit);
   if (first === null) return { kind: "missing_unit" };
   let total = 0;
@@ -128,7 +134,9 @@ function totalNeed(reqs: Requirement[], servings: number): Need {
     if (q === null) return { kind: "incompatible" };
     total += q;
   }
-  return { kind: "known", quantity: total * servings, unit: first.unit };
+  // `via` is the recipe's own unit. Stock converts through it, so a pantry in grams
+  // still meets a need shown in items ("1 large (50 g)" displayed as pcs).
+  return { kind: "known", quantity: total * servings, unit: first.unit, via: reqs[0].unit };
 }
 
 /**
@@ -177,7 +185,10 @@ export function computePantryDelta(input: DeltaInput): DeltaResult {
         hasNullUnit = true;
         continue;
       }
-      const converted = convert(row.quantity, row.unit, need.unit);
+      const viaRecipeUnit = convert(row.quantity, row.unit, need.via);
+      const converted =
+        convert(row.quantity, row.unit, need.unit) ??
+        (viaRecipeUnit === null ? null : convert(viaRecipeUnit, need.via, need.unit));
       if (converted === null) {
         hasIncompatible = true;
         continue;
@@ -185,7 +196,9 @@ export function computePantryDelta(input: DeltaInput): DeltaResult {
       usable += converted;
     }
 
-    const missing = ceilToCents(Math.max(need.quantity - usable, 0));
+    const shortfall = Math.max(need.quantity - usable, 0);
+    const missing =
+      parseUnit(need.unit)?.dimension === "count" ? wholeItems(shortfall) : ceilToCents(shortfall);
     if (missing <= 0) continue;
     if (hasNullUnit) {
       flag(ingredientId, "missing_unit");

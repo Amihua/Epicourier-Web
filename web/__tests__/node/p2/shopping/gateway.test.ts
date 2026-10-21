@@ -6,6 +6,7 @@ import { POST as RECOMMEND } from "@/app/api/receipt-recommendations/route";
 import { asOfDate } from "@/lib/receipt-shopping/asOfDate";
 import {
   buildCandidates,
+  inStockUnit,
   callRanker,
   normaliseRequirement,
   pickCandidateIds,
@@ -506,9 +507,113 @@ describe("POST /api/receipt-recommendations", () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
+  it("states requirements in the unit the caller's stock is kept in (#33)", async () => {
+    const t = tables();
+    t.user_inventory[0] = { ...t.user_inventory[0], quantity: "0.2", unit: "kg" };
+    withFake({ tables: t });
+    await call({});
+    expect(sentRequest().candidates[0].requirements[0]).toEqual({
+      ingredient_id: 1,
+      quantity: 0.25,
+      unit: "kg",
+    });
+  });
+
   it("returns 500 when goals cannot be read, rather than silently dropping them", async () => {
     withFake({ failTables: { nutrient_goals: "boom" } });
     expect((await call({})).status).toBe(500);
     expect(mockFetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("inStockUnit (#33)", () => {
+  const AS_OF = "2026-10-21";
+  const stock = (
+    id: string,
+    ingredient_id: number,
+    quantity: number,
+    unit: string | null,
+    expiration_date: string | null = null
+  ): InventorySnapshot => ({
+    inventory_id: id,
+    ingredient_id,
+    quantity,
+    unit,
+    location: "pantry",
+    expiration_date,
+  });
+
+  it("restates grams as the kilograms the pantry is kept in", () => {
+    expect(
+      inStockUnit(
+        { ingredient_id: 1, quantity: 2.5, unit: "100g" },
+        [stock("a", 1, 1, "kg")],
+        AS_OF
+      )
+    ).toEqual({ ingredient_id: 1, quantity: 0.25, unit: "kg" });
+  });
+
+  it("restates the issue's olive oil, 15% of '1 tbsp (15 ml)', for a pantry in ml", () => {
+    expect(
+      inStockUnit(
+        { ingredient_id: 2, quantity: 0.15, unit: "1 tbsp (15 ml)" },
+        [stock("a", 2, 500, "ml")],
+        AS_OF
+      )
+    ).toEqual({ ingredient_id: 2, quantity: 2.25, unit: "ml" });
+  });
+
+  it("bridges a pantry that counts eggs with a unit stated by weight", () => {
+    expect(
+      inStockUnit(
+        { ingredient_id: 3, quantity: 0.5, unit: "1 large (50 g)" },
+        [stock("a", 3, 6, "pieces")],
+        AS_OF
+      )
+    ).toEqual({ ingredient_id: 3, quantity: 0.5, unit: "pieces" });
+  });
+
+  it("keeps the display unit when the stock cannot be compared at all", () => {
+    expect(
+      inStockUnit(
+        { ingredient_id: 3, quantity: 1, unit: "1 tbsp (15 ml)" },
+        [stock("a", 3, 2, "pieces")],
+        AS_OF
+      )
+    ).toEqual({ ingredient_id: 3, quantity: 15, unit: "ml" });
+  });
+
+  it("ignores rows with no unit and expired rows", () => {
+    const rows = [stock("a", 1, 5, null), stock("b", 1, 2, "kg", "2026-10-01")];
+    expect(inStockUnit({ ingredient_id: 1, quantity: 2.5, unit: "100g" }, rows, AS_OF)).toEqual({
+      ingredient_id: 1,
+      quantity: 250,
+      unit: "g",
+    });
+  });
+
+  it("picks the unit holding the most usable stock", () => {
+    const rows = [stock("a", 1, 200, "g"), stock("b", 1, 1, "kg")];
+    expect(inStockUnit({ ingredient_id: 1, quantity: 3, unit: "100g" }, rows, AS_OF).unit).toBe(
+      "kg"
+    );
+  });
+
+  it("keeps an unknown requirement unknown while still matching the unit", () => {
+    expect(
+      inStockUnit(
+        { ingredient_id: 1, quantity: null, unit: "100g" },
+        [stock("a", 1, 1, "kg")],
+        AS_OF
+      )
+    ).toEqual({ ingredient_id: 1, quantity: null, unit: "kg" });
+  });
+
+  it("buildCandidates uses the stock's unit when given the stock", () => {
+    const [candidate] = buildCandidates([3], [mapRow(3, 1, 250)], {
+      inventory: [stock("a", 1, 1, "kg")],
+      asOf: AS_OF,
+    });
+    expect(candidate.requirements).toEqual([{ ingredient_id: 1, quantity: 0.25, unit: "kg" }]);
   });
 });
