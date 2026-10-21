@@ -220,3 +220,43 @@ describe("bracketed metric amounts (#33)", () => {
     expect(toDisplayQuantity(0.15, "1 tbsp (15 ml)")).toEqual({ quantity: 2.25, unit: "ml" });
   });
 });
+
+describe("counted items against a unit stated by weight (#33)", () => {
+  it.each([
+    ["1 large (50 g)", 50],
+    ["each (20g)", 20],
+    ["2 cloves (6 g)", 3],
+    ["1 breast (200 g)", 200],
+  ])("%s weighs %p g per item", (raw, grams) => {
+    expect(parseUnit(raw)?.perItem).toBe(grams);
+  });
+
+  it("does not give a household measure a per-item weight", () => {
+    expect(parseUnit("1 tbsp (15 ml)")?.perItem).toBeUndefined();
+    expect(parseUnit("1/2 cup (120 g)")?.perItem).toBeUndefined();
+  });
+
+  it("converts 6 pieces to 300 g of large eggs, and back", () => {
+    expect(convert(6, "pieces", "1 large (50 g)")).toBe(6);
+    expect(convert(6, "1 large (50 g)", "g")).toBe(300);
+    expect(convert(2, "1 large (50 g)", "pieces")).toBe(2);
+  });
+
+  it("converts cloves of garlic counted singly", () => {
+    expect(convert(4, "pcs", "2 cloves (6 g)")).toBe(2);
+  });
+
+  it("treats a counted unit as compatible with a count but not with a volume", () => {
+    expect(areCompatible("pieces", "1 large (50 g)")).toBe(true);
+    expect(areCompatible("ml", "1 large (50 g)")).toBe(false);
+  });
+
+  it("still refuses a count against a plain weight", () => {
+    expect(convert(6, "pieces", "g")).toBeNull();
+  });
+
+  it("displays a counted unit as items", () => {
+    expect(toDisplayQuantity(2, "1 large (50 g)")).toEqual({ quantity: 2, unit: "pcs" });
+    expect(toDisplayQuantity(1, "2 cloves (6 g)")).toEqual({ quantity: 2, unit: "pcs" });
+  });
+});
