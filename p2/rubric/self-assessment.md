@@ -17,14 +17,14 @@ Running total: **78 / 96**, re-measured on 2026-10-21. Up from 65: both videos a
 history — `SN-F-QR` (120), `seojinseojin` (62), `Joe Zhou` (49), `lzdjohn` (33), `hkc619` (31),
 `Kushal Patel` (24) — are the upstream team whose project we inherited in Project 1a.
 
-**Our own work is 73 commits since 2026-10-10:**
+**Our own work is 147 commits since 2026-10-10:**
 
-| Member | Commits since 10-10 | Distinct files touched, all time |
-|---|---:|---:|
-| andyyuyc | 35 | 122 |
-| Sihao Liu | 16 | 66 |
-| wenboli | 12 | 39 |
-| Jeffery | 7 | 65 |
+| Member | Commits since 10-10 | Top-level directories touched |
+|---|---:|---|
+| andyyuyc | 77 | backend, web, docs, p2, supabase, scripts |
+| wenboli | 33 | backend, web, docs, p2, .github |
+| Sihao Liu | 25 | backend, docs, .github |
+| Jeffery | 7 | web only |
 
 Every teamwork row below is scored against **those 73**, not against 608. Quoting the repository
 total would be the single easiest thing for a marker to catch.
@@ -36,10 +36,10 @@ total would be the single easiest thing for a marker to catch.
 | # | Row | Score | Evidence | Why this score |
 |---|---|:-:|---|---|
 | T1 | Many commits, small and frequent | **3** | [commits](https://github.com/Amihua/Epicourier-Web/commits/se26f-p2) | 89 commits since 2026-10-10 across four people, in genuinely small units — the M0 work alone is seventeen separate commits rather than one drop. The rubric calls hundreds normal for a semester; this is ten days. |
-| T2 | Commits come from different people | **3** | [insights/contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) | All four members committed during P2: 35 / 16 / 12 / 7. |
-| T3 | Workload spread, even if one is more productive | **2** | [contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) | 35 / 25 / 17 / 7 since 2026-10-10 — closer than it was, and still a 5× gap between top and bottom. Honest 2; the row allows one member to be more productive, not one to be five times the least. |
-| T4 | Members work across many parts, not one silo each | **2** | [PRs #20–#25](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr) | File ownership was deliberate this sprint — the plan assigns one owner per file to avoid conflicts — so some siloing is by design. Against that, andyyuyc touched 122 files and Jeffery 65, and cross-module review happened in PR comments. |
-| T5 | Short release cycles, prompt merges | **2** | [merged PRs](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr+is%3Amerged) | Seven PRs merged into the integration branch. #20 and #21 went in within hours. Not a 3: #25 sat open four days while its scope grew, which is the pattern this row warns about. |
+| T2 | Commits come from different people | **3** | [contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) | All four members committed during P2: **77 / 33 / 25 / 7** since 2026-10-10. |
+| T3 | Workload spread, even if one is more productive | **1** | [contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) | **77 / 33 / 25 / 7** — the gap widened rather than closed. The top contributor has **11× the commits of the lowest** and more than the other three combined. The row explicitly tolerates one member being more productive; an 11× spread is not that, and claiming otherwise is one click to disprove. |
+| T4 | Members work across many parts, not one silo each | **2** | [pull requests](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr) | Measured by top-level directory touched since 2026-10-10: three of us span the repository — `backend`, `web`, `docs`, `p2`, `.github`, `supabase` — while **Jeffery touched only `web`, 10 files**. File ownership was deliberate this sprint, so some siloing is by design, which is why this is a 2 rather than a 1. |
+| T5 | Short release cycles, prompt merges | **3** | [merged PRs](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr+is%3Amerged) | Twelve PRs merged into the integration branch, and **nine of them inside 40 minutes** — #34 to #39 and #28 all under half an hour. Two early ones took 26 and 32 hours. The outlier is mine: **#25 sat open 94 hours** while its scope grew, which is exactly what this row warns against and is named here rather than averaged away. |
 | T6 | Shared tool configs, updated by several people | **2** | `web/tsconfig.json`, `web/eslint.config.mjs`, `backend/pyproject.toml`, `.github/workflows/` | Shared and actively updated — tsconfig ES2017→ES2018, Ruff isort config, four workflows. Still a 2: nearly all of those edits come from one owner, which the sprint plan intends but the row does not reward. |
 | T7 | Any member can run and demo it on their own machine | **1** | [`docs/p2/evaluation.md`](../../docs/p2/evaluation.md) | **Honest 1.** The maintainer of this file cannot run the application: it needs Supabase credentials that have not been shared, and the backend cannot start without a model key. M0 and the web suite run anywhere; the product does not. |
 
