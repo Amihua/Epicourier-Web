@@ -81,8 +81,10 @@ npm test
 
 ## 3. Backend
 
-> **The backend will not start without a Gemini key.** `api/recommender.py` creates the Gemini
-> client when it is imported, so a missing `GEMINI_KEY` fails at startup, not at the first request.
+> **The backend starts without a Gemini key, and the receipt ranker (`POST /receipt/rank`) needs
+> none.** Only the older recommender endpoints (`/recommender`, `/inventory-recommend`) need
+> `GEMINI_KEY`: they import `api/recommender.py` on first use, and that module creates the Gemini
+> client when it is imported, so without a key those requests fail with a 500.
 
 ### Install
 
@@ -113,7 +115,8 @@ uv run pytest tests/p2
 ```
 
 `tests/p2` runs without any key. The older suites (`tests/test_recommender.py`,
-`tests/test_inventory_recommender.py`) need `GEMINI_KEY` set, for the reason above.
+`tests/test_inventory_recommender.py`) need `GEMINI_KEY` set, because they import
+`api/recommender.py` directly.
 
 ---
 
@@ -142,6 +145,5 @@ uv run uvicorn api.index:app --reload --host 0.0.0.0 --port 8000
 |---|---|
 | `npm ci` fails with missing `@swc/core` binaries | Use `npm install`. |
 | `tsc` errors on image imports in landing components | Run `npx next typegen` first. |
-| Backend exits at startup mentioning Gemini or an API key | `GEMINI_KEY` is missing from `backend/.env`. |
-| `make: arch: command not found` | You are not on Apple Silicon. Use the `uvicorn` command above. |
+| `/recommender` or `/inventory-recommend` returns 500, log mentions "Missing key inputs" | `GEMINI_KEY` is missing from `backend/.env`. The rest of the backend, including `/receipt/rank`, works without it. |
 | `next build` fails during page-data collection | `SUPABASE_SERVICE_ROLE_KEY` or a VAPID variable is missing from `web/.env.local`. |

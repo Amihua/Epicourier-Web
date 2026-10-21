@@ -7,7 +7,7 @@ Five rows are spot-checked at the demo, and a self-score that does not hold up c
 honest low one. So every score below is the score the evidence supports, and where the evidence is
 thin the row says 0 or 1 and says why. **Rows scored 0 are not oversights; they are work not done.**
 
-Running total: **84 / 96**, re-measured on 2026-10-21 at `d9910a1`; I3 re-scored after discussion summaries were added to the closed issues. Four rows were stale against the branch and were re-checked: Q4, S3 and S9 rise because the work they asked for has landed (Codecov, INSTALL, third-party list); S7 keeps its 3 because ESLint and Prettier are now CI gates, not just configs. T3 was re-counted by volume of work as well as by commit count, because the two disagree by a factor of four and only one of them is a fair reading of "workload".
+Running total: **84 / 96**, re-measured on 2026-10-21 at `0eb4d7e`. Since the last pass two rows moved in opposite directions and the total is unchanged: I2 rises to 3 because all six issues are now closed, and I5 falls to 1 because the two Discussions threads have no replies. I3 holds at 2 now that every closed issue, #37 included, carries a decision summary. Stale counts were also corrected (commits, lines, PR timings, badge count, coverage), and T7 and S3 no longer claim the backend cannot start without a model key: it starts, and only the older recommender endpoints need one. T3 is counted by volume of work as well as by commit count, because the two disagree by a factor of six and only one of them is a fair reading of "workload".
 
 ---
 
@@ -17,19 +17,19 @@ Running total: **84 / 96**, re-measured on 2026-10-21 at `d9910a1`; I3 re-scored
 history — `SN-F-QR` (120), `seojinseojin` (62), `Joe Zhou` (49), `lzdjohn` (33), `hkc619` (31),
 `Kushal Patel` (24) — are the upstream team whose project we inherited in Project 1a.
 
-**Our own work is 147 commits since 2026-10-10:**
+**Our own work is 150 commits since 2026-10-10:**
 
 | Member | Commits since 10-10 | Lines changed (generated files excluded) | Top-level directories touched |
 |---|---:|---:|---|
-| andyyuyc | 77 | 6,463 (33%) | backend, web, docs, p2, supabase, scripts |
-| wenboli | 39 | 5,177 (26%) | backend, web, docs, p2, .github |
-| Sihao Liu | 25 | 5,249 (27%) | backend, docs, .github |
+| andyyuyc | 77 | 6,463 (32%) | backend, web, docs, p2, supabase, scripts |
+| Sihao Liu | 29 | 5,631 (28%) | backend, web, docs, p2, .github |
+| wenboli | 39 | 5,323 (26%) | backend, web, docs, p2, .github |
 | Feiyang Zheng | 5 | 2,728 (14%) | web only |
 
 Commit count and volume of work disagree sharply here — 15× against 2.4× — and the rows below say
 which measure each one uses.
 
-Every teamwork row below is scored against **those 147**, not against 608. Quoting the repository
+Every teamwork row below is scored against **those 150**, not against 608. Quoting the repository
 total would be the single easiest thing for a marker to catch.
 
 ---
@@ -38,26 +38,27 @@ total would be the single easiest thing for a marker to catch.
 
 | # | Row | Score | Evidence | Why this score |
 |---|---|:-:|---|---|
-| T1 | Many commits, small and frequent | **3** | [commits](https://github.com/Amihua/Epicourier-Web/commits/se26f-p2) | 147 commits authored since 2026-10-10 across four people (no merges), in genuinely small units — the M0 work alone is seventeen separate commits rather than one drop. The rubric calls hundreds normal for a semester; this is eleven days. |
-| T2 | Commits come from different people | **3** | [contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) | All four members committed during P2: **77 / 39 / 25 / 5** since 2026-10-10. |
-| T3 | Workload spread, even if one is more productive | **2** | [contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) · [`git log --numstat`](#how-these-numbers-were-produced) | **Counted two ways, because commit count alone misleads here.** By commits it is 77 / 39 / 25 / 5, a 15× gap. By lines changed with generated files and lock files excluded it is **6,463 / 5,249 / 5,177 / 2,728 — 33% / 27% / 26% / 14%**, a 2.4× gap, and all four milestones have a distinct owner: M0 Wenbo, M1 Sihao, M2 Feiyang and Andy, M3 Andy. The work is spread; the *commits* are not, because one member commits in much smaller units. Honest 2 rather than 3: at 14% the lowest share is still thin, and the contributors graph a marker opens first shows the 11× version. |
+| T1 | Many commits, small and frequent | **3** | [commits](https://github.com/Amihua/Epicourier-Web/commits/se26f-p2) | 150 commits authored since 2026-10-10 across four people (no merges), in genuinely small units — the M0 work alone is seventeen separate commits rather than one drop. The rubric calls hundreds normal for a semester; this is twelve days. |
+| T2 | Commits come from different people | **3** | [contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) | All four members committed during P2: **77 / 39 / 29 / 5** (Andy / Wenbo / Sihao / Feiyang) since 2026-10-10. Sihao's count includes one commit made as `Amihua`. |
+| T3 | Workload spread, even if one is more productive | **2** | [contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors) · [`git log --numstat`](#how-these-numbers-were-produced) | **Counted two ways, because commit count alone misleads here.** By commits it is 77 / 39 / 29 / 5, a 15× gap. By lines changed with generated files and lock files excluded it is **6,463 / 5,631 / 5,323 / 2,728 — 32% / 28% / 26% / 14%** (Andy / Sihao / Wenbo / Feiyang), a 2.4× gap, and all four milestones have a distinct owner: M0 Wenbo, M1 Sihao, M2 Feiyang and Andy, M3 Andy. The work is spread; the *commits* are not, because one member commits in much smaller units. Honest 2 rather than 3: at 14% the lowest share is still thin, and the contributors graph a marker opens first shows the 15× version. |
 | T4 | Members work across many parts, not one silo each | **2** | [pull requests](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr) | Measured by top-level directory touched since 2026-10-10: three of us span the repository — `backend`, `web`, `docs`, `p2`, `.github`, `supabase` — while **Feiyang touched only `web`, 10 files**. File ownership was deliberate this sprint, so some siloing is by design, which is why this is a 2 rather than a 1. |
-| T5 | Short release cycles, prompt merges | **3** | [merged PRs](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr+is%3Amerged) | Twelve PRs merged into the integration branch, and **nine of them inside 40 minutes** — #34 to #39 and #28 all under half an hour. Two early ones took 26 and 32 hours. The outlier is mine: **#25 sat open 94 hours** while its scope grew, which is exactly what this row warns against and is named here rather than averaged away. |
+| T5 | Short release cycles, prompt merges | **3** | [merged PRs](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr+is%3Amerged+base%3Ase26f-p2) | Thirteen PRs merged into the integration branch; **median time open 19 minutes**, and eight of them inside half an hour (#23, #24, #28, #34, #35, #36, #38, #39). #40 took 2.4 hours; two early ones took 26 and 32 hours. The outlier is mine: **#25 sat open 94 hours** while its scope grew, which is exactly what this row warns against and is named here rather than averaged away. |
 | T6 | Shared tool configs, updated by several people | **2** | `web/tsconfig.json`, `web/eslint.config.mjs`, `backend/pyproject.toml`, `.github/workflows/` | Shared and actively updated: tsconfig ES2017→ES2018, Ruff isort config, the ESLint and Prettier gates, the Codecov upload, the Pages config, the Makefile. Three of four members changed them since 2026-10-10 (Wenbo 9 commits, Sihao 9, Andy 1). Still a 2: the fourth has not, and two people did almost all of it. |
-| T7 | Any member can run and demo it on their own machine | **1** | [`docs/p2/evaluation.md`](../../docs/p2/evaluation.md) | **Honest 1.** The maintainer of this file cannot run the application: it needs Supabase credentials that have not been shared, and the backend cannot start without a model key. M0 and the web suite run anywhere; the product does not. |
+| T7 | Any member can run and demo it on their own machine | **1** | [`docs/p2/evaluation.md`](../../docs/p2/evaluation.md) | **Honest 1.** Not every member can run the full application yet: it needs Supabase credentials that have not been shared with everyone. The backend itself starts without a model key, and the receipt ranker needs none; only the older recommender endpoints need `GEMINI_KEY`. M0 and both test suites run anywhere; the full product does not, for everyone. |
 
 ## Issues and discussion — 10 / 15
 
 | # | Row | Score | Evidence | Why this score |
 |---|---|:-:|---|---|
 | I1 | Many issue reports exist | **1** | [issues](https://github.com/Amihua/Epicourier-Web/issues) | **6 filed** since Issues was enabled, by three different accounts including one from outside the four of us. Six is a start, not "many" — the rubric calls hundreds of commits normal and this tracker is two days old. |
-| I2 | Issues get closed | **2** | [closed issues](https://github.com/Amihua/Epicourier-Web/issues?q=is%3Aissue+is%3Aclosed) | **5 of 6 closed.** A high closure rate on a small, young tracker; not a 3 until there is enough volume for the rate to mean something. |
-| I3 | Issues discussed before closing | **2** | [#29](https://github.com/Amihua/Epicourier-Web/issues/29) to [#33](https://github.com/Amihua/Epicourier-Web/issues/33) | Each closed issue now carries a comment summarising the discussion and the decision (what was fixed, why that way, which PR), as the rubric allows when the talk happened in chat. Not a 3: the summaries were added after the fixes, not argued out in the issue beforehand. |
+| I2 | Issues get closed | **3** | [closed issues](https://github.com/Amihua/Epicourier-Web/issues?q=is%3Aissue+is%3Aclosed) | **6 of 6 closed**, each by a linked, merged PR: #29 by #34, #30 by #38, #31 by #39, #32 by #35, #33 by #36, #37 by #40. Volume is scored in I1; this row asks whether issues get closed, and all of them did. |
+| I3 | Issues discussed before closing | **2** | [#29](https://github.com/Amihua/Epicourier-Web/issues/29) to [#33](https://github.com/Amihua/Epicourier-Web/issues/33), [#37](https://github.com/Amihua/Epicourier-Web/issues/37) | Each of the six closed issues carries a comment summarising the discussion and the decision (what was fixed, why that way, which PR), as the rubric allows when the talk happened in chat. Not a 3: the summaries were added after the fixes, not argued out in the issue beforehand. |
 | I4 | A large share of issues concern failing cases | **3** | [closed issues](https://github.com/Amihua/Epicourier-Web/issues?q=is%3Aissue+is%3Aclosed) | **Five of six are failing cases, and they are real ones**: 267 of 448 ingredient units never resolving against a pantry unit; expiry badges one day early west of UTC; the receipt dialog clipped at phone width; README test counts not matching a real run; `make dev` broken on Linux by a hard-coded `arch -arm64`. Each opened on an observed failure and closed by a fix — the pattern this row describes. |
-| I5 | An active chat or forum, QR on the poster | **2** | [discussions](https://github.com/Amihua/Epicourier-Web/discussions) · [`p2/poster/`](../poster) | Discussions is enabled with 2 threads, and the poster carries a QR code pointing at it. Not a 3: two threads is not an active forum, and most coordination still happens off-platform where a tutor cannot see it. |
+| I5 | An active chat or forum, QR on the poster | **1** | [discussions](https://github.com/Amihua/Epicourier-Web/discussions) · [`p2/poster/`](../poster) | Discussions is enabled and the poster's Forum QR code decodes to it, but its 2 threads, both opened on 2026-10-21, have **no replies**. That is a forum that exists, not one that is active, so 1. Most coordination happens off-platform where a tutor cannot see it; screenshots of the team chat would be the evidence to raise this. |
 
-**This block is the cheapest four marks available to the team**, and it is blocked on one admin
-action: enabling Issues. Several already-written findings would become issues immediately.
+**What is left in this block is volume and an active forum.** Issues was enabled on 2026-10-20 and
+every issue filed so far is closed with a summary; the remaining marks need more issues discussed in
+the issue itself (I1, I3) and replies in Discussions or evidence of the team chat (I5).
 
 ## Tests — 12 / 12
 
@@ -65,8 +66,8 @@ action: enabling Issues. Several already-written findings would become issues im
 |---|---|:-:|---|---|
 | Q1 | Tests exist, expected and failure cases, 50 good / 100 better | **3** | `web/__tests__`, `web/tests`, `backend/tests` | **1,578 tests pass** — 1,503 Jest (plus 1 skipped suite) and 75 pytest, well past "100 is better", re-run on `se26f-p2` at `d9910a1` (2026-10-21; Jest: `cd web && npx jest`; earlier CI runs: [Jest](https://github.com/Amihua/Epicourier-Web/actions/runs/39575674199), [pytest](https://github.com/Amihua/Epicourier-Web/actions/runs/39575660777)). **Updated 2026-10-21** after the fixes for #29, #32 and #33 added tests; before them the run gave 1,405 Jest and 75 pytest. **Corrected 2026-10-20:** this row previously said 1,510 from 1,412 Jest, which counted `it(`/`test(` declarations by grep rather than executed tests; the figures above are from an actual run. Failure cases are a deliberate category: `p2/eval/cases/corrupted.json` must fail, and the P1a adversarial suite exists to expose gaps. |
 | Q2 | Tests are a serious share of the codebase, ~30% common | **3** | measured 2026-10-16 | **50.1%** — 30,217 lines of test against 30,108 of product code. |
-| Q3 | Tests run automatically on every commit via CI | **3** | [Actions](https://github.com/Amihua/Epicourier-Web/actions) | Five jobs on every push to `se26f-p2` and every PR to it: M0 evaluation, pytest, Ruff, docs-freshness, and the web job (typegen → type-check → Jest → build → coverage). None carries `continue-on-error`. |
-| Q4 | Coverage measured and shown on a badge | **3** | [Codecov](https://app.codecov.io/github/Amihua/Epicourier-Web) | **89.8% line coverage** of the web app (5,038 of 5,609 lines) on `se26f-p2`, uploaded by the web job on every push with `fail_ci_if_error: true`, so a failed upload turns CI red instead of passing silently. The README badge shows the same number. Backend coverage is not uploaded yet. |
+| Q3 | Tests run automatically on every commit via CI | **3** | [Actions](https://github.com/Amihua/Epicourier-Web/actions) | Five jobs on every push to `se26f-p2` and every PR to it that touches the code they test (path filters skip docs-only commits): M0 evaluation, pytest, Ruff, docs-freshness, and the web job (typegen → type-check → Jest → build → coverage). None carries `continue-on-error`. |
+| Q4 | Coverage measured and shown on a badge | **3** | [Codecov](https://app.codecov.io/github/Amihua/Epicourier-Web) | **90.06% line coverage** of the web app on `se26f-p2` (Codecov, 2026-10-21), uploaded by the web job on every push with `fail_ci_if_error: true`, so a failed upload turns CI red instead of passing silently. The README badge shows the same number. Backend coverage is not uploaded yet. |
 
 ## Docs — 17 / 18
 
@@ -83,9 +84,9 @@ action: enabling Issues. Several already-written findings would become issues im
 
 | # | Row | Score | Evidence | Why this score |
 |---|---|:-:|---|---|
-| S1 | README with all badges, each working when clicked | **3** | `README.md` | Fourteen badges and the teaser thumbnail, **all returning 200**, all pointing at this repository. The teaser was the one 404 and is now a real 28-second video. Each URL is fetched before being committed; a badge that merely renders is what this row is about. |
+| S1 | README with all badges, each working when clicked | **3** | `README.md` | Thirteen badges and the teaser thumbnail, **all returning 200**, all pointing at this repository. The teaser was the one 404 and is now a real 28-second video. Each URL is fetched before being committed; a badge that merely renders is what this row is about. |
 | S2 | `.gitignore` keeps out what must not be committed | **3** | `.gitignore`, `web/.gitignore` | Covers env files, build output, node_modules; `web/.env.local` is confirmed ignored. No secret is tracked. |
-| S3 | `INSTALL.md` | **3** | [`INSTALL.md`](../../INSTALL.md) | Ordered by how little you need: the evaluation with Python only, the web app and its tests, the backend and its tests, then the full application. States that the backend cannot start without `GEMINI_KEY` and why, lists every variable for `web/.env.local` and `backend/.env`, and ends with a troubleshooting table. The Apple-Silicon-only `make dev` it once had to work around was fixed in #29. |
+| S3 | `INSTALL.md` | **3** | [`INSTALL.md`](../../INSTALL.md) | Ordered by how little you need: the evaluation with Python only, the web app and its tests, the backend and its tests, then the full application. States which parts need `GEMINI_KEY` (the older recommender endpoints and their tests) and which do not (the backend's startup and the receipt ranker), lists every variable for `web/.env.local` and `backend/.env`, and ends with a troubleshooting table. The Apple-Silicon-only `make dev` it once had to work around was fixed in #29. |
 | S4 | `LICENSE.md` | **3** | `LICENSE.md` | Present. |
 | S5 | `CODE-OF-CONDUCT.md` | **3** | `CODE_OF_CONDUCT.md` | Present. |
 | S6 | `CONTRIBUTING.md`, with standards and how to extend safely | **3** | [`CONTRIBUTING.md`](../../CONTRIBUTING.md) | Renamed to the name the rubric asks for, and extended with both halves it asks for: coding standards with the config that enforces each and the command to run it, and how to extend safely — contract first, the six scoring rules that look like details, and how to write a test that can fail. |
@@ -104,12 +105,12 @@ action: enabling Issues. Several already-written findings would become issues im
 |---|---|---|---|---|
 | 1 | **Keep the tracker moving, and discuss in the issue before closing.** Six issues is a start, and the discussion summaries were added after the fixes. New issues should be discussed in the issue itself. | I1, I3 | **3** | the team |
 | 2 | **Mint a Zenodo DOI for a release of this fork.** The present DOI is the upstream record's. | S8 | 1 | repo admin |
-| 3 | **Make the forum active.** Two threads is not a channel. | I5 | 1 | the team |
+| 3 | **Make the forum active**, or add screenshots of the team chat as evidence. Two threads with no replies is not a channel. | I5 | 2 | the team |
 | 4 | **Document the inherited code**, which is most of the repository. | D2 | 1 | nobody |
 
 ## Rows that cannot honestly reach 3
 
-Stated so nobody spends time trying. **T3** is 77 / 39 / 25 / 5 commits, a 15× gap between top and bottom, and inflating it is one click to disprove. **T4** is deliberately siloed because the sprint plan assigns one owner per file. **T7** stays at 1 until the maintainer of this sheet can run the application, which needs credentials. **T6** is shared config edited by three of four members, but almost all of it by two.
+Stated so nobody spends time trying. **T3** is 77 / 39 / 29 / 5 commits, a 15× gap between top and bottom, and inflating it is one click to disprove. **T4** is deliberately siloed because the sprint plan assigns one owner per file. **T7** stays at 1 until every member has run the full application, which needs shared Supabase credentials or the local database route. **T6** is shared config edited by three of four members, but almost all of it by two.
 
 
 ## Rows a spot-check would most likely pick, and what to open
@@ -120,13 +121,13 @@ Stated so nobody spends time trying. **T3** is 77 / 39 / 25 / 5 commits, a 15× 
 | Q3 | any `se26f-p2` Actions run, five workflows green (web, backend, M0, docs, Pages) |
 | S10 | `p1b/result/claude/06-disagreement-with-codex.md`, then any derivation record's caught-error table |
 | T7 | this assessment — the honest 1 is the answer, and the reason is written down |
-| Q4 / S1 | the Codecov dashboard (89.8% on `se26f-p2`) and the README badges, each of which opens its source |
+| Q4 / S1 | the Codecov dashboard (90.06% on `se26f-p2`) and the README badges, each of which opens its source |
 
 ---
 
 ## How these numbers were produced
 
-Every figure was measured on 2026-10-20 against `origin/se26f-p2`, not carried over from an earlier
+Every figure was measured on 2026-10-21 against `origin/se26f-p2`, not carried over from an earlier
 pass. The commands, so a spot-check can repeat them:
 
 ```bash
@@ -136,8 +137,8 @@ git log origin/se26f-p2 --since=2026-10-10 --author=X --numstat --format='' \
      ':(exclude)docs/api/*' ':(exclude)*.pdf' ':(exclude)*.png' ':(exclude)*.svg'   # lines changed
 cd web && npx jest --silent                                                  # test counts
 gh api repos/Amihua/Epicourier-Web --jq '{has_issues,has_discussions,has_pages}'
-gh issue list --state all --limit 100                                        # 0 issues
-curl -o /dev/null -w '%{http_code}' <each badge URL>                         # 13 x 200, 1 x 404
+gh issue list --state all --limit 100                                        # 6 issues, all closed
+curl -o /dev/null -w '%{http_code}' <each badge URL>                         # 14 x 200 (13 badges + teaser)
 ```
 
 The totals in this document are computed from the table by script rather than typed. Three earlier
