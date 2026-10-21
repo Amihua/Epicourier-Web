@@ -18,6 +18,7 @@
  *    cover the gap, so subtracting without them would be a guess.
  * 6. Otherwise the shortfall is rounded *up* to 0.01 — a shopping list should never
  *    under-buy — and reported in the requirement's display unit ("100g" -> "g").
+ *    A shortfall counted in items rounds up to whole items: nobody buys 0.8 of an egg.
  */
 
 import {
@@ -68,6 +69,11 @@ export function isIsoDate(value: unknown): value is IsoDate {
 /** Rounds up to two decimals, ignoring float noise so 150.0000000001 stays 150. */
 export function ceilToCents(value: number): number {
   return Math.ceil(Math.round(value * 1e6) / 1e4) / 100;
+}
+
+/** Rounds a count up to whole items, ignoring float noise so 2.0000000001 stays 2. */
+export function wholeItems(value: number): number {
+  return Math.ceil(Math.round(value * 1e6) / 1e6);
 }
 
 function validate(input: DeltaInput): number {
@@ -190,7 +196,9 @@ export function computePantryDelta(input: DeltaInput): DeltaResult {
       usable += converted;
     }
 
-    const missing = ceilToCents(Math.max(need.quantity - usable, 0));
+    const shortfall = Math.max(need.quantity - usable, 0);
+    const missing =
+      parseUnit(need.unit)?.dimension === "count" ? wholeItems(shortfall) : ceilToCents(shortfall);
     if (missing <= 0) continue;
     if (hasNullUnit) {
       flag(ingredientId, "missing_unit");
