@@ -3,7 +3,7 @@
 - **Project:** Epicourier, receipt-based recipe ranking
 - **Repository:** <https://github.com/Amihua/Epicourier-Web> (branch `se26f-p2`)
 - **Docs site:** <https://amihua.github.io/Epicourier-Web/>
-- **Team:** Yichen (Andy) Yu, Wenbo Li, Sihao Liu, Feiyang (Jeffery)
+- **Team:** Yichen (Andy) Yu, Wenbo Li, Sihao Liu, Feiyang Zheng
 - **Measured:** 2026-10-21 at commit `d9910a1`
 - **Scale:** 0 = none, 1 = a little, 2 = somewhat, 3 = a lot
 

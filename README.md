@@ -50,7 +50,7 @@ Four merged milestones, each built against one frozen contract ([`receipt-v1`](p
 |---|---|---|---|---|
 | **M0** | Contract and evaluation | Frozen JSON contract, 500-cell corpus, offline harness in CI that scores against hand-written expectations | Wenbo Li | [#20](https://github.com/Amihua/Epicourier-Web/pull/20), [#25](https://github.com/Amihua/Epicourier-Web/pull/25) |
 | **M1** | Deterministic scorer | Pure Python function from pantry + recipe to receipt, with boundary, mutation and differential tests | Sihao Liu | [#23](https://github.com/Amihua/Epicourier-Web/pull/23), [#24](https://github.com/Amihua/Epicourier-Web/pull/24) |
-| **M2** | Receipt panel | Expand a recommendation to see its lines, correct an item, watch the list re-rank; corrections persist | Feiyang | [#22](https://github.com/Amihua/Epicourier-Web/pull/22) |
+| **M2** | Receipt panel | Expand a recommendation to see its lines, correct an item, watch the list re-rank; corrections persist | Feiyang Zheng | [#22](https://github.com/Amihua/Epicourier-Web/pull/22) |
 | **M3** | Shopping from the gap | Preview exactly what is missing, confirm once; a replayed request applies only once | Andy | [#21](https://github.com/Amihua/Epicourier-Web/pull/21) |
 
 ### M0: the risk-killer eval

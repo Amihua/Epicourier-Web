@@ -24,7 +24,7 @@ history — `SN-F-QR` (120), `seojinseojin` (62), `Joe Zhou` (49), `lzdjohn` (33
 | andyyuyc | 77 | 6,463 (33%) | backend, web, docs, p2, supabase, scripts |
 | wenboli | 39 | 5,177 (26%) | backend, web, docs, p2, .github |
 | Sihao Liu | 25 | 5,249 (27%) | backend, docs, .github |
-| Feiyang | 5 | 2,728 (14%) | web only |
+| Feiyang Zheng | 5 | 2,728 (14%) | web only |
 
 Commit count and volume of work disagree sharply here — 15× against 2.4× — and the rows below say
 which measure each one uses.
