@@ -1,0 +1,39 @@
+# GitHub Pages config for the docs site (source: /docs on se26f-p2).
+# index.html is a hand-built landing page; every Markdown page uses _layouts/default.html.
+title: Epicourier docs
+baseurl: /Epicourier-Web
+repo: Amihua/Epicourier-Web
+branch: se26f-p2
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+plugins:
+  - jekyll-relative-links
+  - jekyll-optional-front-matter
+  - jekyll-titles-from-headings
+  - jekyll-readme-index
+
+relative_links:
+  enabled: true
+  collections: false
+
+titles_from_headings:
+  enabled: true
+  strip_title: false
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+  # TypeDoc output is complete HTML; serve it untouched.
+  - scope:
+      path: "api/web"
+    values:
+      layout: null
+
+exclude:
+  - generate_backend_api.py
