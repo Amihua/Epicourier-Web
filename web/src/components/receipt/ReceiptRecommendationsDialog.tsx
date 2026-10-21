@@ -173,7 +173,7 @@ export default function ReceiptRecommendationsDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-3xl gap-0 overflow-hidden rounded-none border-2 border-black p-0 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+      <DialogContent className="flex max-h-[90vh] max-w-[min(48rem,calc(100%-1rem))] flex-col gap-0 overflow-hidden rounded-none border-2 border-black p-0 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
         <div className="border-b-2 border-black p-6">
           <DialogHeader>
             <DialogTitle className="text-xl">Recipes ranked by your pantry</DialogTitle>
