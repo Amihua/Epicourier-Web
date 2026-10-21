@@ -42,7 +42,33 @@ For each ingredient the recipe uses:
    `incompatible_unit`. Those rows might cover the gap, so subtracting without them would be
    a guess.
 6. Otherwise the shortfall is **rounded up** to 0.01, because a list should never under-buy.
-   It is reported in the requirement's display unit.
+   It is reported in the requirement's display unit. A shortfall counted in items rounds up to
+   whole items, so 1.8 eggs short buys 2.
+
+## How units are read (#33)
+
+`Ingredient.unit` in the shipped dataset is usually a household measure with its metric amount
+in brackets. `units.ts` reads it in this order:
+
+| Form | Example | Read as |
+|---|---|---|
+| bracketed metric amount | `1 tbsp (15 ml)`, `1/2 cup (120 g)`, `1 lemon (juice, 30 g)` | 15 ml, 120 g, 30 g |
+| bracketed amount on a counted item | `1 large (50 g)`, `each (20g)`, `2 cloves (6 g)` | 50 g, 20 g, 6 g — and one item weighs 50, 20 or 3 g |
+| brackets with no amount | `1 cup (cooked)` | the part outside: 1 cup |
+| fractions and approximations | `1/2 cup`, `1 1/2 cup`, `½ tsp`, `~5 g` | 0.5 cup, 1.5 cup, 0.5 tsp, 5 g |
+| descriptive words after a unit | `100 g peeled`, `5 g cooked` | 100 g, 5 g |
+
+A counted item converts to and from a pantry that counts pieces: 6 pieces of `1 large (50 g)`
+is 300 g. Such needs display as `pcs`. No other pair of dimensions converts. Mass never becomes
+volume, because density is unknown.
+
+Coverage over the 448 dataset units went from 181 (40.4%) to 441 (98.4%). The seven left are
+`to taste`, `few drops`, `serving` and four leaf or sprig counts with no weight. They stay
+unresolved on purpose. `unitCatalogue.test.ts` fails CI if coverage drops below 95%.
+
+The ranker (Python) matches units by exact string. The gateway therefore states each requirement
+in the unit the user's stock is kept in when the two convert: 250 g becomes 0.25 kg for a pantry
+in kg, and half an egg becomes 0.5 pieces for a pantry that counts eggs.
 
 Output is ordered by `ingredient_id`, so input order never changes the answer. The property
 tests check this over 25 generated cases × 20 shuffles.
@@ -215,9 +241,10 @@ The full web suite was also run on 2026-10-12, so the old tests still pass:
   `web/src/types/supabase.ts`.
 - **No Python endpoint yet.** The gateway is tested against a stubbed ranker. It returns 502
   until `/receipt/rank` exists.
-- **Unit coverage is deliberately narrow.** Only metric mass and volume, US kitchen volume
-  (tsp, tbsp, cup), oz, lb and counts convert. Anything else matches only itself, and mass
-  never converts to volume, because density is unknown. An unknown pairing is reported as
-  `incompatible_unit` rather than guessed.
+- **Units convert within one dimension, plus the counted-item bridge.** Metric mass and volume,
+  US kitchen volume (tsp, tbsp, cup), oz, lb and counts convert. Mass never converts to volume,
+  because density is unknown. An unknown pairing is reported as `incompatible_unit` rather than
+  guessed. Very small amounts, such as 0.25 g of parsley, are shown as computed and not as "a
+  pinch".
 - **One line per confirm.** Confirm adds new list lines. It does not merge them into an existing
   line for the same ingredient, which would change a row the user may have edited.
