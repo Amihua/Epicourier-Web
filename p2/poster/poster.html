@@ -55,7 +55,7 @@ footer{font-size:5.8pt;color:#5a6b61;display:flex;justify-content:space-between;
  <p><b>So what.</b> The ranking became measurable, so it became improvable — each claim stated as a threshold <i>before</i> the code existed, and each met.</p>
  <div class="kpis">
   <div class="kpi"><div class="n">0 → 100%</div><div class="l">scores that decompose<br>into line items</div></div>
-  <div class="kpi"><div class="n">1,510</div><div class="l">tests · 1,412 Jest<br>+ 98 pytest</div></div>
+  <div class="kpi"><div class="n">1,481</div><div class="l">tests run green<br>1,406 Jest + 75 pytest</div></div>
   <div class="kpi"><div class="n">50.1%</div><div class="l">of the codebase<br>is test code</div></div>
   <div class="kpi"><div class="n">5</div><div class="l">CI gates per push,<br>none faked</div></div>
  </div>
@@ -88,8 +88,16 @@ footer{font-size:5.8pt;color:#5a6b61;display:flex;justify-content:space-between;
   </div>
 
   <div class="box dark" style="flex:1">
-   <div class="h">The system running — M0 on a clean checkout, no key, no network</div>
-   <pre>$ python3 p2/eval/run_eval.py
+   <div class="h">The system running — real captures, clean checkout, no key, no network</div>
+   <pre>$ cd web && npx jest --silent
+Test Suites: 1 skipped, 81 passed, 81 of 82 total
+Tests:       1 skipped, 1405 passed, 1406 total
+Time:        2.5 s
+
+$ cd backend && uv run pytest tests/p2 -q      # in CI, offline
+75 passed in 2.08s
+
+$ python3 p2/eval/run_eval.py
 ok    hand-computed: 3 receipts, no violations
 ok    scorer-vs-hand-computed: the real scorer matches every hand-written value
 ok    corrections: top-up, expiry, unit and relocation edits all move the score as the rules say

@@ -1,0 +1,7 @@
+$ cd web && npx jest --silent
+Test Suites: 1 skipped, 81 passed, 81 of 82 total
+Tests:       1 skipped, 1405 passed, 1406 total
+Time:        2.5 s
+
+$ cd backend && uv run pytest tests/p2 -q      # in CI, offline
+75 passed in 2.08s
