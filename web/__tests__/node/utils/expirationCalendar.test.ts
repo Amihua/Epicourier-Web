@@ -8,7 +8,11 @@
  * The clock is pinned, so these hold on any machine, whatever its time zone.
  */
 
-import { calculateExpirationStatus, getDaysUntilExpiration } from "@/utils/inventory/expiration";
+import {
+  addCalendarDays,
+  calculateExpirationStatus,
+  getDaysUntilExpiration,
+} from "@/utils/inventory/expiration";
 
 describe("getDaysUntilExpiration counts calendar days in one named zone (#32)", () => {
   const originalZone = process.env.RECEIPT_TIME_ZONE;
@@ -108,5 +112,22 @@ describe("calculateExpirationStatus, the shape the inventory API returns (#32)",
     } finally {
       jest.useRealTimers();
     }
+  });
+});
+
+describe("addCalendarDays", () => {
+  it.each([
+    ["2026-10-21", 7, "2026-10-28"],
+    ["2026-10-28", 7, "2026-11-04"],
+    ["2026-12-30", 3, "2027-01-02"],
+    ["2028-02-28", 1, "2028-02-29"],
+    ["2026-10-21", 0, "2026-10-21"],
+    ["2026-10-21", -1, "2026-10-20"],
+  ])("%s + %p days is %s", (date, days, expected) => {
+    expect(addCalendarDays(date, days)).toBe(expected);
+  });
+
+  it("crosses the November daylight-saving change on the right date", () => {
+    expect(addCalendarDays("2026-10-31", 7)).toBe("2026-11-07");
   });
 });
