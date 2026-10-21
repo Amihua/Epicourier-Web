@@ -2,21 +2,22 @@ import { asOfDate } from "@/lib/receipt-shopping/asOfDate";
 import { ExpirationStatus } from "@/types/data";
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
-const ISO_DATE_PREFIX = /^(\d{4})-(\d{2})-(\d{2})/;
+const ISO_DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 /**
  * The calendar date of an expiration value, as a UTC timestamp of that date.
  *
- * A `YYYY-MM-DD` string is read by its digits. `new Date("2026-10-23")` would read
- * it as UTC midnight, which is still 2026-10-22 anywhere west of UTC (#32). A Date
- * object is read in the shared time zone, the same one "today" comes from.
+ * A date-only `YYYY-MM-DD` string is read by its digits: `new Date("2026-10-23")`
+ * would read it as UTC midnight, which is still 2026-10-22 anywhere west of UTC (#32).
+ * A Date, or a string with a time, is an instant, and is read in the shared time
+ * zone, the same one "today" comes from.
  */
 function calendarDay(value: string | Date): number | null {
   let year: number;
   let month: number;
   let day: number;
 
-  const match = typeof value === "string" ? ISO_DATE_PREFIX.exec(value.trim()) : null;
+  const match = typeof value === "string" ? ISO_DATE_ONLY.exec(value.trim()) : null;
   if (match) {
     [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
   } else {

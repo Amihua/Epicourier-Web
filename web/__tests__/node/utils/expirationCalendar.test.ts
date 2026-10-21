@@ -61,9 +61,11 @@ describe("getDaysUntilExpiration counts calendar days in one named zone (#32)", 
     expect(getDaysUntilExpiration("2026-10-23")).toBe(1);
   });
 
-  it("reads only the date part of a timestamp string", () => {
+  it("reads a string with a time as an instant, in the shared zone", () => {
     jest.setSystemTime(new Date("2026-10-21T14:00:00-04:00"));
-    expect(getDaysUntilExpiration("2026-10-23T00:00:00+00:00")).toBe(2);
+    // 03:00 UTC on the 23rd is still the evening of the 22nd in New York.
+    expect(getDaysUntilExpiration("2026-10-23T03:00:00Z")).toBe(1);
+    expect(getDaysUntilExpiration("2026-10-23T12:00:00Z")).toBe(2);
   });
 
   it("rejects an impossible calendar date instead of rolling it over", () => {
