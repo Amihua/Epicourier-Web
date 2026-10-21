@@ -131,17 +131,8 @@ function singular(word: string): string {
   return word.length > 2 && word.endsWith("s") && !word.endsWith("ss") ? word.slice(0, -1) : word;
 }
 
-/**
- * Parses a unit string, including a numeric prefix such as "100g", "1 cup",
- * "1/2 tsp" or "½ cup".
- * Returns `null` for null, empty, or zero-sized units ("0g"), which callers
- * report as `missing_unit`.
- */
-export function parseUnit(raw: string | null | undefined): ParsedUnit | null {
-  if (raw === null || raw === undefined) return null;
-  const text = normaliseWord(raw);
-  if (text === "") return null;
-
+/** One plain unit with an optional amount: "100g", "1/2 cup", "100 g peeled", "clove". */
+function parseSimple(text: string): ParsedUnit | null {
   let factor = 1;
   let name = text;
   const lead = leadingAmount(text);
@@ -163,6 +154,50 @@ export function parseUnit(raw: string | null | undefined): ParsedUnit | null {
   }
   const key = singular(name);
   return { dimension: `other:${key}`, toBase: factor, display: name };
+}
+
+const PARENTHETICAL = /^(.*?)\(([^)]*)\)(.*)$/;
+
+/**
+ * The first part of a parenthetical that is an amount of mass or volume:
+ * "15 ml", "20g", "~5 g", "5 g cooked", or the "30 g" in "juice, 30 g".
+ */
+function measureIn(inner: string): ParsedUnit | null {
+  for (const segment of inner.split(/[,;]/)) {
+    const text = normaliseWord(segment);
+    if (leadingAmount(text) === null) continue;
+    const parsed = parseSimple(text);
+    if (parsed && (parsed.dimension === "mass" || parsed.dimension === "volume")) return parsed;
+  }
+  return null;
+}
+
+/**
+ * Parses a unit string, including a numeric prefix such as "100g", "1 cup",
+ * "1/2 tsp" or "½ cup".
+ *
+ * The dataset often states a household measure with its metric equivalent in
+ * brackets: "1 tbsp (15 ml)", "each (20g)", "1 large (50 g)". The bracketed amount
+ * is what the whole unit weighs or holds, so it wins: "1 tbsp (15 ml)" is 15 ml and
+ * compares with a pantry stored in ml or L. When the brackets hold no measure
+ * ("1 cup (cooked)"), the part outside them is read instead.
+ *
+ * Returns `null` for null, empty, or zero-sized units ("0g"), which callers
+ * report as `missing_unit`.
+ */
+export function parseUnit(raw: string | null | undefined): ParsedUnit | null {
+  if (raw === null || raw === undefined) return null;
+  const text = normaliseWord(raw);
+  if (text === "") return null;
+
+  const bracketed = PARENTHETICAL.exec(text);
+  if (bracketed) {
+    const measured = measureIn(bracketed[2]);
+    if (measured) return measured;
+    const outside = normaliseWord(`${bracketed[1]} ${bracketed[3]}`);
+    if (outside !== "") return parseSimple(outside);
+  }
+  return parseSimple(text);
 }
 
 /** True when both units parse and share a dimension. */
