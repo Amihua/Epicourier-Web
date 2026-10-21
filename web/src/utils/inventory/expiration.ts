@@ -1,43 +1,62 @@
+import { asOfDate } from "@/lib/receipt-shopping/asOfDate";
 import { ExpirationStatus } from "@/types/data";
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+const ISO_DATE_PREFIX = /^(\d{4})-(\d{2})-(\d{2})/;
+
+/**
+ * The calendar date of an expiration value, as a UTC timestamp of that date.
+ *
+ * A `YYYY-MM-DD` string is read by its digits. `new Date("2026-10-23")` would read
+ * it as UTC midnight, which is still 2026-10-22 anywhere west of UTC (#32). A Date
+ * object is read in the shared time zone, the same one "today" comes from.
+ */
+function calendarDay(value: string | Date): number | null {
+  let year: number;
+  let month: number;
+  let day: number;
+
+  const match = typeof value === "string" ? ISO_DATE_PREFIX.exec(value.trim()) : null;
+  if (match) {
+    [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  } else {
+    const date = typeof value === "string" ? new Date(value) : value;
+    if (isNaN(date.getTime())) return null;
+    [year, month, day] = asOfDate(date).split("-").map(Number);
+  }
+
+  const utc = Date.UTC(year, month - 1, day);
+  const check = new Date(utc);
+  // Reject dates that Date.UTC would roll over, such as 2026-02-30.
+  if (check.getUTCFullYear() !== year || check.getUTCMonth() !== month - 1) return null;
+  return utc;
+}
 
 /**
  * Calculate days until expiration from a given date
  * @param expirationDate - The expiration date (string in YYYY-MM-DD format, Date object, or null)
+ * @param today - Today's date as `YYYY-MM-DD`; defaults to the shared rule in `asOfDate()`
+ *   (America/New_York unless RECEIPT_TIME_ZONE is set), so the server, the browser and the
+ *   receipt all agree whatever clock the machine has.
  * @returns Number of days until expiration (negative if expired), or null if no date provided
  */
 export function getDaysUntilExpiration(
-  expirationDate: string | Date | null | undefined
+  expirationDate: string | Date | null | undefined,
+  today: string = asOfDate()
 ): number | null {
   if (!expirationDate) {
     return null;
   }
 
-  const expDate = typeof expirationDate === "string" ? new Date(expirationDate) : expirationDate;
-
-  // Check for invalid date
-  if (isNaN(expDate.getTime())) {
+  const expiry = calendarDay(expirationDate);
+  const start = calendarDay(today);
+  if (expiry === null || start === null) {
     return null;
   }
 
-  const today = new Date();
-  // Reset time to start of day for accurate day comparison
-  today.setHours(0, 0, 0, 0);
-  const expDateNormalized = new Date(expDate);
-  expDateNormalized.setHours(0, 0, 0, 0);
-
-  // Count calendar days, not elapsed milliseconds. Both ends are normalised to
-  // local midnight, but a span that crosses a daylight-saving boundary is 24h
-  // out — 14 days becomes 14 days and one hour, and Math.ceil rounds it to 15.
-  // Date.UTC on the normalised components removes the offset entirely, so the
-  // result is the number of dates between the two days whatever the timezone does.
-  const diffTime =
-    Date.UTC(
-      expDateNormalized.getFullYear(),
-      expDateNormalized.getMonth(),
-      expDateNormalized.getDate()
-    ) - Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-
-  return Math.round(diffTime / (1000 * 60 * 60 * 24));
+  // Both ends are UTC midnights of calendar dates, so the difference is a whole
+  // number of days even across a daylight-saving change.
+  return Math.round((expiry - start) / MS_PER_DAY);
 }
 
 /**
