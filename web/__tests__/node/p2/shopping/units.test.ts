@@ -2,7 +2,13 @@
  * @jest-environment node
  */
 
-import { areCompatible, convert, parseUnit, toDisplayQuantity } from "@/lib/receipt-shopping/units";
+import {
+  areCompatible,
+  convert,
+  leadingAmount,
+  parseUnit,
+  toDisplayQuantity,
+} from "@/lib/receipt-shopping/units";
 
 describe("parseUnit", () => {
   it.each([
@@ -114,5 +120,48 @@ describe("toDisplayQuantity", () => {
 
   it("returns null for an empty unit", () => {
     expect(toDisplayQuantity(1, "")).toBeNull();
+  });
+});
+
+describe("fractions and approximate amounts (#33)", () => {
+  it.each([
+    ["1/2 cup", 0.5],
+    ["1 1/2 cup", 1.5],
+    ["½ cup", 0.5],
+    ["1½ cups", 1.5],
+    ["¼ cup", 0.25],
+    ["3/4 cup", 0.75],
+  ])("%s is %p cups", (raw, cups) => {
+    const parsed = parseUnit(raw)!;
+    expect(parsed.dimension).toBe("volume");
+    expect(parsed.toBase).toBeCloseTo(236.5882365 * cups, 6);
+    expect(parsed.display).toBe("cup");
+  });
+
+  it("reads '1/4 tsp' as a quarter teaspoon", () => {
+    expect(parseUnit("1/4 tsp")!.toBase).toBeCloseTo(4.92892159375 / 4, 9);
+  });
+
+  it("takes an approximate amount at face value", () => {
+    expect(parseUnit("~5 g")).toEqual({ dimension: "mass", toBase: 5, display: "g" });
+  });
+
+  it("still rejects a zero fraction", () => {
+    expect(parseUnit("0/2 cup")).toBeNull();
+  });
+});
+
+describe("leadingAmount", () => {
+  it.each([
+    ["100 g", 100, "g"],
+    ["1/2 cup", 0.5, "cup"],
+    ["2 ½ tbsp", 2.5, "tbsp"],
+    ["~3 cloves", 3, "cloves"],
+  ])("%s", (text, amount, rest) => {
+    expect(leadingAmount(text)).toEqual({ amount, rest });
+  });
+
+  it("returns null without an amount", () => {
+    expect(leadingAmount("pinch")).toBeNull();
   });
 });
