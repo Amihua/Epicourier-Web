@@ -8,7 +8,7 @@
  * The clock is pinned, so these hold on any machine, whatever its time zone.
  */
 
-import { getDaysUntilExpiration } from "@/utils/inventory/expiration";
+import { calculateExpirationStatus, getDaysUntilExpiration } from "@/utils/inventory/expiration";
 
 describe("getDaysUntilExpiration counts calendar days in one named zone (#32)", () => {
   const originalZone = process.env.RECEIPT_TIME_ZONE;
@@ -71,5 +71,42 @@ describe("getDaysUntilExpiration counts calendar days in one named zone (#32)", 
   it("rejects an impossible calendar date instead of rolling it over", () => {
     jest.setSystemTime(new Date("2026-02-20T12:00:00-05:00"));
     expect(getDaysUntilExpiration("2026-02-30")).toBeNull();
+  });
+});
+
+describe("calculateExpirationStatus, the shape the inventory API returns (#32)", () => {
+  const TODAY = "2026-10-21";
+
+  it.each([
+    ["2026-10-20", "expired", -1],
+    ["2026-10-21", "critical", 0],
+    ["2026-10-23", "critical", 2],
+    ["2026-10-24", "warning", 3],
+    ["2026-10-28", "warning", 7],
+    ["2026-10-29", "good", 8],
+  ])("%s is %s with %p days left", (date, status, daysUntil) => {
+    expect(calculateExpirationStatus(date, TODAY)).toEqual({ status, daysUntil });
+  });
+
+  it("is unknown with no date", () => {
+    expect(calculateExpirationStatus(null, TODAY)).toEqual({ status: "unknown", daysUntil: null });
+  });
+
+  it("is unknown for a date that does not exist", () => {
+    expect(calculateExpirationStatus("2026-13-01", TODAY)).toEqual({
+      status: "unknown",
+      daysUntil: null,
+    });
+  });
+
+  it("defaults today to the shared rule", () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2026-10-21T23:30:00-04:00"));
+    try {
+      delete process.env.RECEIPT_TIME_ZONE;
+      expect(calculateExpirationStatus("2026-10-23").daysUntil).toBe(2);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });
