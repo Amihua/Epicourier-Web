@@ -5,7 +5,7 @@
 [![M0 Evaluation](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-m0-eval.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-m0-eval.yml)
 [![Docs](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-docs.yml/badge.svg?branch=se26f-p2)](https://github.com/Amihua/Epicourier-Web/actions/workflows/ci-docs.yml)
 [![codecov](https://codecov.io/github/Amihua/Epicourier-Web/branch/se26f-p2/graph/badge.svg)](https://codecov.io/github/Amihua/Epicourier-Web)
-[![Tests](https://img.shields.io/badge/tests-1574%20passing-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/tests-1578%20passing-brightgreen)](#testing)
 [![Test share](https://img.shields.io/badge/test%20code-50.1%25%20of%20repo-brightgreen)](#testing)
 [![ESLint](https://img.shields.io/badge/style-ESLint-4B32C3?logo=eslint&logoColor=white)](web/eslint.config.mjs)
 [![Prettier](https://img.shields.io/badge/format-Prettier-F7B93E?logo=prettier&logoColor=black)](web/.prettierrc)
@@ -71,12 +71,12 @@ The harness also carries a case with four planted defects, and CI checks that it
 
 | Suite | Count | Run it |
 |---|---:|---|
-| Web (Jest) | 1,499 passing (+1 skipped) | `cd web && npm install && npx jest` |
+| Web (Jest) | 1,503 passing (+1 skipped) | `cd web && npm install && npx jest` |
 | Backend (pytest) | 75 passing | `cd backend && uv sync && uv run pytest tests/p2` |
 | M0 evaluation | 5 checks | `python3 p2/eval/run_eval.py` |
 
-These are executed tests, not a count of `it(`/`test(` declarations. They come from the CI runs on
-`se26f-p2` at `e2708cc` (2026-10-21): [Jest](https://github.com/Amihua/Epicourier-Web/actions/runs/39575674199)
+These are executed tests, not a count of `it(`/`test(` declarations. Jest was re-run on
+`se26f-p2` at `d9910a1` (2026-10-21); earlier CI runs: [Jest](https://github.com/Amihua/Epicourier-Web/actions/runs/39575674199)
 and [pytest](https://github.com/Amihua/Epicourier-Web/actions/runs/39575660777). The skipped Jest
 suite is `supabaseConnection.test.ts`, which needs a live database.
 
