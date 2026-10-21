@@ -14,16 +14,16 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17537732.svg)](https://doi.org/10.5281/zenodo.17537732)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
-<!-- TEASER VIDEO (12-30 s): uncomment and replace VIDEO_ID once uploaded.
-[![Teaser](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://youtu.be/VIDEO_ID)
--->
+[![Teaser — 28 s](https://img.youtube.com/vi/lIJQWOqHnvw/maxresdefault.jpg)](https://youtu.be/lIJQWOqHnvw)
+
+<sub>▶ **Teaser, 28 seconds** — <https://youtu.be/lIJQWOqHnvw></sub>
 
 **A recipe score you can add up yourself.**
 
 Epicourier recommends recipes from what is already in your kitchen. Until now the match score was written by a language model, and nobody could check it. This branch replaces that number with a **receipt**: one line per pantry item, the points each line earned, and a total that is exactly their sum. Disagree with a line? Correct it, and the ranking moves the way the rules say it should.
 
 📖 **Docs site:** <https://amihua.github.io/Epicourier-Web/>
-🎬 **Feature walk-through (2–5 min):** _link coming_ <!-- replace with the YouTube URL -->
+🎬 **Feature walk-through (3 min 41 s):** <https://youtu.be/NPHCkjngmlo>
 
 ---
 
@@ -50,7 +50,7 @@ Four merged milestones, each built against one frozen contract ([`receipt-v1`](p
 |---|---|---|---|---|
 | **M0** | Contract and evaluation | Frozen JSON contract, 500-cell corpus, offline harness in CI that scores against hand-written expectations | Wenbo Li | [#20](https://github.com/Amihua/Epicourier-Web/pull/20), [#25](https://github.com/Amihua/Epicourier-Web/pull/25) |
 | **M1** | Deterministic scorer | Pure Python function from pantry + recipe to receipt, with boundary, mutation and differential tests | Sihao Liu | [#23](https://github.com/Amihua/Epicourier-Web/pull/23), [#24](https://github.com/Amihua/Epicourier-Web/pull/24) |
-| **M2** | Receipt panel | Expand a recommendation to see its lines, correct an item, watch the list re-rank; corrections persist | Jeffery | [#22](https://github.com/Amihua/Epicourier-Web/pull/22) |
+| **M2** | Receipt panel | Expand a recommendation to see its lines, correct an item, watch the list re-rank; corrections persist | Feiyang | [#22](https://github.com/Amihua/Epicourier-Web/pull/22) |
 | **M3** | Shopping from the gap | Preview exactly what is missing, confirm once; a replayed request applies only once | Andy | [#21](https://github.com/Amihua/Epicourier-Web/pull/21) |
 
 ### M0: the risk-killer eval

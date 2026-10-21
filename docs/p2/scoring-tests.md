@@ -21,7 +21,7 @@ failure modes.
 | Null requirement is unknown; zero remains zero | golden case and validation boundaries | randomized null/zero requirements; M0 detects the planted zero-to-100 defect |
 | Negative/non-finite quantities and invalid dates fail clearly | model validation parametrization | API and live HTTP assert structured `422` responses |
 | Inventory, expiry, nutrition and total remain auditable | line/subtotal sum test; hand receipt | M0 validates both sums; expiry-sign mutation is killed |
-| Scores are ranking points, not percentages | API asserts `rank_score` and absence of `match_score` | Jeffery UI review confirms the value is labelled “ranking points” |
+| Scores are ranking points, not percentages | API asserts `rank_score` and absence of `match_score` | Feiyang UI review confirms the value is labelled “ranking points” |
 | Ties use ascending `recipe_id` | fixed tie and arbitrary unique ID properties | mutation reverses the tie key and is killed |
 | Input ordering cannot change output | Hypothesis inventory permutations | M0 performs 20 seeded shuffles |
 | Remaining and overage are both preserved | fixed partial/full/over-target cases | 150 randomized target cases against an independent oracle; reversed-overage mutation is killed |

@@ -35,10 +35,11 @@ Both point at real gaps rather than being dressed up:
 - **Screenshots of the running app.** It needs Supabase credentials that have not been shared within
   the team. The poster says so in the Screens box, and the terminal panel opposite is a genuine
   capture of `p2/eval/run_eval.py` rather than a mock-up.
-- **The forum and walkthrough QR codes.** Issues and Discussions are disabled on the repository and
-  the walkthrough video is not recorded, so those two QR codes resolve to the repository's
-  discussions tab and README anchor. **Re-generate them once the real targets exist** — a QR that
-  lands nowhere is worse than one that is missing, and the rubric asks for both to be live.
+- ~~The forum and walkthrough QR codes.~~ **Resolved 2026-10-21.** Discussions is enabled and the
+  walk-through is recorded, so both codes point at real targets. All three were decoded from the
+  rendered SVG to confirm what they actually carry rather than that they look like QR codes:
+  `repo` → `github.com/Amihua/Epicourier-Web`, `forum` → `…/discussions`,
+  `video` → `youtu.be/NPHCkjngmlo`.
 
 ## Submission
 

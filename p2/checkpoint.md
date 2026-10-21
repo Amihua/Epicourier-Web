@@ -12,7 +12,7 @@ figure with no run behind it says so rather than appearing as a result.
 | **M0** — contract, CI, offline evaluation | Wenbo | **Done**, with two scoped gaps below | [#20](https://github.com/Amihua/Epicourier-Web/pull/20) → `8d61430` | `python3 p2/eval/run_eval.py`; `m0-results` artifact on any `se26f-p2` run |
 | **M0a** — evaluation wired to the real scorer | Wenbo | **In review** | [#25](https://github.com/Amihua/Epicourier-Web/pull/25) | same command; the `scorer-vs-hand-computed` line |
 | **M1** — deterministic scoring | Sihao | **Done** | [#23](https://github.com/Amihua/Epicourier-Web/pull/23) → `bacf4fa`, [#24](https://github.com/Amihua/Epicourier-Web/pull/24) → `4cdaf6b` | `backend/api/receipt_scorer.py`, `receipt_models.py`, `target_math.py`; `backend/tests/p2/` |
-| **M2** — receipt panel and corrections | Jeffery | **Done** | [#22](https://github.com/Amihua/Epicourier-Web/pull/22) → `4a68e53` | `web/src/components/receipt/`, `web/src/hooks/useReceiptRanking.ts`, `web/__tests__/jsdom/p2/` |
+| **M2** — receipt panel and corrections | Feiyang | **Done** | [#22](https://github.com/Amihua/Epicourier-Web/pull/22) → `4a68e53` | `web/src/components/receipt/`, `web/src/hooks/useReceiptRanking.ts`, `web/__tests__/jsdom/p2/` |
 | **M3** — pantry delta, preview and confirm | Andy | **Done** | [#21](https://github.com/Amihua/Epicourier-Web/pull/21) → `25ae44c` | `web/src/app/api/receipt-shopping/{preview,confirm}/route.ts`, `web/src/lib/receipt-shopping/`, `web/__tests__/node/p2/` |
 
 Two migrations landed with M3: `20261012000000_receipt_shopping_delta.sql` and
@@ -84,7 +84,7 @@ Stated here so no one copies them out of an earlier document as results.
 |---|---|---|
 | M0 | Wenbo | `python3 p2/eval/run_eval.py` live; the corrupted case; the `m0-results` artifact |
 | M1 | Sihao | the rule version, the same input twice, the tie rule, the order-perturbation and boundary tests |
-| M2 | Jeffery | a receipt expanded, an inventory item corrected and re-ranked, persistence across a refresh, narrow screen |
+| M2 | Feiyang | a receipt expanded, an inventory item corrected and re-ranked, persistence across a refresh, narrow screen |
 | M3 | Andy | the 500 − 200 = 300 example, cancel writing nothing, confirm writing, a replayed `request_id` applying once, permission failure |
 
 ## 7. Open decisions

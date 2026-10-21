@@ -22,7 +22,7 @@ missing = max(required − available_usable, 0)
 | Preview API | `web/src/app/api/receipt-shopping/preview/route.ts` | Read-only. Computes the delta and stores it as a preview. |
 | Confirm API | `web/src/app/api/receipt-shopping/confirm/route.ts` | Detects staleness, then makes the atomic, idempotent write. |
 | Gateway | `web/src/app/api/receipt-recommendations/route.ts` | Builds a server-side `RankingRequest` and forwards it to the Python ranker. |
-| UI | `web/src/components/shopping/ReceiptShoppingPreview.tsx` | Shows the preview, Confirm and Cancel. For Jeffery to mount. |
+| UI | `web/src/components/shopping/ReceiptShoppingPreview.tsx` | Shows the preview, Confirm and Cancel. For Feiyang to mount. |
 | Schema | `supabase/migrations/20261012000000_receipt_shopping_delta.sql` | Preview and confirmation tables, plus `apply_receipt_shopping_delta`. |
 | Schema | `supabase/migrations/20261012000100_nutrient_goals_confirmed_at.sql` | `nutrient_goals.confirmed_at` (contract §6). |
 
@@ -165,7 +165,7 @@ a `RankingResponse`. When `RECEIPT_INTERNAL_TOKEN` is set in its environment, it
 missing or wrong `X-Internal-Token` header. Both values are environment variables, so the path
 can change without code changes.
 
-## For Jeffery: mounting the preview
+## For Feiyang: mounting the preview
 
 ```tsx
 import ReceiptShoppingPreview from "@/components/shopping/ReceiptShoppingPreview";
