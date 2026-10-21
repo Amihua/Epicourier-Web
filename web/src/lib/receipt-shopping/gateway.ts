@@ -22,7 +22,7 @@ import {
   type Requirement,
 } from "@/types/receipt";
 import { toRequirements, type RecipeIngredientRow } from "./requirements";
-import { toDisplayQuantity } from "./units";
+import { convert, toDisplayQuantity } from "./units";
 
 export const MAX_CANDIDATES = 50;
 export const DEFAULT_CANDIDATES = 20;
@@ -73,16 +73,55 @@ export function pickCandidateIds(
     .map(([id]) => id);
 }
 
-/** Groups map rows into one candidate per recipe id, in the order given. */
+/**
+ * Re-expresses a requirement in the unit the user's stock of that ingredient is
+ * stored in, when the two convert. The ranker matches units by exact string, so
+ * "250 g" against a pantry kept in "kg" would otherwise be unresolved (#33). With
+ * usable stock in several convertible units, the unit holding the most wins, ties
+ * by name. Without any, the display unit from `normaliseRequirement` is kept.
+ */
+export function inStockUnit(
+  req: Requirement,
+  inventory: InventorySnapshot[],
+  asOf: IsoDate
+): Requirement {
+  const normalised = normaliseRequirement(req);
+  const held = new Map<string, number>();
+  for (const row of inventory) {
+    if (row.ingredient_id !== req.ingredient_id || row.unit === null) continue;
+    if (!isUsable(row.expiration_date, asOf)) continue;
+    const amount = convert(row.quantity, row.unit, normalised.unit);
+    if (amount === null) continue;
+    held.set(row.unit, (held.get(row.unit) ?? 0) + amount);
+  }
+  if (held.size === 0) return normalised;
+
+  const [unit] = [...held.entries()].sort(
+    ([ua, a], [ub, b]) => b - a || (ua < ub ? -1 : ua > ub ? 1 : 0)
+  )[0];
+  if (unit === normalised.unit) return normalised;
+  if (normalised.quantity === null) return { ...normalised, unit };
+  const quantity = convert(normalised.quantity, normalised.unit, unit);
+  return quantity === null ? normalised : { ingredient_id: req.ingredient_id, quantity, unit };
+}
+
+/**
+ * Groups map rows into one candidate per recipe id, in the order given. With the
+ * user's stock, each requirement is stated in the unit that stock uses.
+ */
 export function buildCandidates(
   recipeIds: number[],
-  mapRows: CandidateMapRow[]
+  mapRows: CandidateMapRow[],
+  stock?: { inventory: InventorySnapshot[]; asOf: IsoDate }
 ): RecipeCandidate[] {
+  const restate = stock
+    ? (req: Requirement) => inStockUnit(req, stock.inventory, stock.asOf)
+    : normaliseRequirement;
   return recipeIds.map((recipe_id) => ({
     recipe_id,
     servings: 1,
     requirements: toRequirements(mapRows.filter((r) => Number(r.recipe_id) === recipe_id)).map(
-      normaliseRequirement
+      restate
     ),
   }));
 }
