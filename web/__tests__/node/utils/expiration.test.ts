@@ -9,6 +9,17 @@ import {
   getExpiredItems,
 } from "@/utils/inventory/expiration";
 
+// These cases build dates at the machine's local midnight, so "today" is counted in
+// the machine's zone too. Fixed-zone behaviour is pinned in expirationCalendar.test.ts.
+const originalZone = process.env.RECEIPT_TIME_ZONE;
+beforeAll(() => {
+  process.env.RECEIPT_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
+});
+afterAll(() => {
+  if (originalZone === undefined) delete process.env.RECEIPT_TIME_ZONE;
+  else process.env.RECEIPT_TIME_ZONE = originalZone;
+});
+
 // Helper to create dates relative to today
 const addDays = (days: number): Date => {
   const date = new Date();
