@@ -25,10 +25,19 @@ export function getDaysUntilExpiration(
   const expDateNormalized = new Date(expDate);
   expDateNormalized.setHours(0, 0, 0, 0);
 
-  const diffTime = expDateNormalized.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  // Count calendar days, not elapsed milliseconds. Both ends are normalised to
+  // local midnight, but a span that crosses a daylight-saving boundary is 24h
+  // out — 14 days becomes 14 days and one hour, and Math.ceil rounds it to 15.
+  // Date.UTC on the normalised components removes the offset entirely, so the
+  // result is the number of dates between the two days whatever the timezone does.
+  const diffTime =
+    Date.UTC(
+      expDateNormalized.getFullYear(),
+      expDateNormalized.getMonth(),
+      expDateNormalized.getDate()
+    ) - Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
 
-  return diffDays;
+  return Math.round(diffTime / (1000 * 60 * 60 * 24));
 }
 
 /**

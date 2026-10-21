@@ -1,0 +1,22 @@
+        expired_counted_as_available: recipe 101 ingredient 13 expired 2026-10-09 but reports available_qty 50
+        expired_wrong_status: recipe 101 ingredient 13 expired 2026-10-09 but status is 'ok'
+        zero_requirement_defaulted: recipe 101 ingredient 13 requires 0 but the receipt claims 100
+ok    hand-computed: 3 receipts, no violations
+
+ok    scorer-vs-hand-computed: the real scorer matches every hand-written value
+ok    corrections: top-up, expiry, unit and relocation edits all move the score as the rules say
+ok    corpus: 500 cells scored, 6120 receipt lines, every receipt adds up; 25 cells x 20 shuffles order-blind
+
+ok    shuffle-invariance: 20 inventory orderings produced identical usable quantities
+
+------------------------------------------------------------------------
+M0 hypotheses (see p2/eval/HYPOTHESIS.md)
+
+  H1  MET    500/500 = 100.0%  (threshold 100%)  every displayed total is the sum of its displayed parts
+      baseline: 0/300 (old path cannot decompose at all)
+  H2  MET    25/25 = 100.0%  (threshold 100%)  identical input produces identical output
+      baseline: X — NOT COLLECTED
+  H3  MET    4/4 = 100.0%  (threshold 100%)  a correction moves the score the way the rules say
+      baseline: n/a — no correction loop in the old path
+
+PASS
