@@ -4,7 +4,7 @@
 - **Repository:** <https://github.com/Amihua/Epicourier-Web> (branch `se26f-p2`)
 - **Docs site:** <https://amihua.github.io/Epicourier-Web/>
 - **Team:** Yichen (Andy) Yu, Wenbo Li, Sihao Liu, Feiyang Zheng
-- **Measured:** 2026-10-21 at commit `d9910a1`
+- **Measured:** 2026-10-21 at commit `0eb4d7e`
 - **Scale:** 0 = none, 1 = a little, 2 = somewhat, 3 = a lot
 
 Every score is the one the linked evidence supports. Commit counts cover our own P2 work since
@@ -15,13 +15,13 @@ forked. Detailed reasoning for each row: [`p2/rubric/self-assessment.md`](https:
 
 | Item | Evidence | Score 0-3 |
 |---|---|:-:|
-| Many commits: hundreds by the end is normal for teams that commit small | [Commits on se26f-p2](https://github.com/Amihua/Epicourier-Web/commits/se26f-p2): 147 commits since 2026-10-10 (no merges), in small units | 3 |
-| Commits come from different people | [Contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors): all four members committed in P2 (77 / 39 / 25 / 5, no merges) | 3 |
+| Many commits: hundreds by the end is normal for teams that commit small | [Commits on se26f-p2](https://github.com/Amihua/Epicourier-Web/commits/se26f-p2): 150 commits since 2026-10-10 (no merges), in small units | 3 |
+| Commits come from different people | [Contributors](https://github.com/Amihua/Epicourier-Web/graphs/contributors): all four members committed in P2 (77 / 39 / 29 / 5, no merges) | 3 |
 | Workload is spread over the whole team | Same graph. Three members are close by volume of work; the fourth is well behind by commit count | 2 |
 | Team members work across many parts of the code, not one silo each | [Merged PRs](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr+is%3Amerged): three members touched `backend`, `web`, `docs`, `p2`, `.github` or `supabase`; one stayed in `web` | 2 |
-| Short release cycles: frequent small commits, merged promptly | [Merged PRs](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr+is%3Amerged): 12 PRs merged, #34 to #39 each within 30 minutes of opening | 3 |
+| Short release cycles: frequent small commits, merged promptly | [Merged PRs](https://github.com/Amihua/Epicourier-Web/pulls?q=is%3Apr+is%3Amerged+base%3Ase26f-p2): 13 PRs merged into `se26f-p2`, median 19 minutes from opening to merge; #34 to #39 each within 30 minutes | 3 |
 | Whole team uses the same tools: config files in the repo, updated by many different people | [`ci-jest.yml` history](https://github.com/Amihua/Epicourier-Web/commits/se26f-p2/.github/workflows/ci-jest.yml), `web/tsconfig.json`, `web/eslint.config.mjs`, `web/.prettierrc`, `backend/pyproject.toml`: edited by three of four members | 2 |
-| Whole team can run the system | Demo. The M0 eval and both test suites run on any machine with no key; the full app needs Supabase and Gemini credentials not yet set up on every machine | 1 |
+| Whole team can run the system | Demo. The M0 eval and both test suites run on any machine with no key; the full app needs Supabase credentials not yet set up on every machine (a Gemini key only for the older recommender endpoints) | 1 |
 | **Subtotal** | | **16 / 21** |
 
 ## Issues and discussion
@@ -29,10 +29,10 @@ forked. Detailed reasoning for each row: [`p2/rubric/self-assessment.md`](https:
 | Item | Evidence | Score 0-3 |
 |---|---|:-:|
 | Issue reports: there are many | [Issues](https://github.com/Amihua/Epicourier-Web/issues?q=is%3Aissue): 6 filed by three accounts, one from outside the team | 1 |
-| Issues are being closed | [Closed issues](https://github.com/Amihua/Epicourier-Web/issues?q=is%3Aissue+is%3Aclosed): 5 of 6 closed, each by a linked PR (#34 to #39) | 2 |
-| Issues are discussed before they are closed | Every closed issue carries a summary of the discussion and the decision, e.g. [#29](https://github.com/Amihua/Epicourier-Web/issues/29), [#32](https://github.com/Amihua/Epicourier-Web/issues/32). Much of the talk happened in chat and PRs, so these are summaries added afterwards | 2 |
+| Issues are being closed | [Closed issues](https://github.com/Amihua/Epicourier-Web/issues?q=is%3Aissue+is%3Aclosed): 6 of 6 closed, each by a linked, merged PR (#34 to #40) | 3 |
+| Issues are discussed before they are closed | Every closed issue carries a summary of the discussion and the decision, e.g. [#29](https://github.com/Amihua/Epicourier-Web/issues/29), [#32](https://github.com/Amihua/Epicourier-Web/issues/32), [#37](https://github.com/Amihua/Epicourier-Web/issues/37). Much of the talk happened in chat and PRs, so these are summaries added afterwards | 2 |
 | A large share of issues relate to handling failing cases | 5 of 6 are failing cases with a reproduction, e.g. [#29](https://github.com/Amihua/Epicourier-Web/issues/29) `make dev` fails on Linux, [#33](https://github.com/Amihua/Epicourier-Web/issues/33) 267 of 448 units never resolve | 3 |
-| Chat channel / discussion forum exists and is active; the poster QR points at it | [Discussions](https://github.com/Amihua/Epicourier-Web/discussions): pinned start-here thread and a Project 3 thread; poster QR points here | 2 |
+| Chat channel / discussion forum exists and is active; the poster QR points at it | [Discussions](https://github.com/Amihua/Epicourier-Web/discussions): a start-here thread and a Project 3 thread, both opened 2026-10-21 and with no replies yet; poster QR points here. Exists, not yet active | 1 |
 | **Subtotal** | | **10 / 15** |
 
 ## Tests
@@ -41,8 +41,8 @@ forked. Detailed reasoning for each row: [`p2/rubric/self-assessment.md`](https:
 |---|---|:-:|
 | Tests exist: 50 is good, 100 is better; expected cases and failure cases both | [README, Testing](https://github.com/Amihua/Epicourier-Web/tree/se26f-p2#testing): 1,578 tests pass (1,503 Jest plus 1 skipped, 75 pytest). Failure cases are deliberate: [`corrupted.json`](https://github.com/Amihua/Epicourier-Web/blob/se26f-p2/p2/eval/cases/corrupted.json) must be rejected | 3 |
 | Tests are a serious share of the code base (30 percent is common) | 50.1%: 30,217 lines of test against 30,108 of product code | 3 |
-| Tests run automatically on every commit (CI) | [Actions](https://github.com/Amihua/Epicourier-Web/actions): every push runs Jest, pytest, M0 eval, Ruff, ESLint, Prettier, `tsc` and a docs check | 3 |
-| Coverage is measured; the badge shows the number | [Codecov](https://app.codecov.io/github/Amihua/Epicourier-Web): 89.8% of web app lines on `se26f-p2`; README badge shows it | 3 |
+| Tests run automatically on every commit (CI) | [Actions](https://github.com/Amihua/Epicourier-Web/actions): every push and PR that touches code runs Jest, pytest, M0 eval, Ruff, ESLint, Prettier, `tsc` and a docs check (path filters skip docs-only commits) | 3 |
+| Coverage is measured; the badge shows the number | [Codecov](https://app.codecov.io/github/Amihua/Epicourier-Web): 90.06% of web app lines on `se26f-p2` (2026-10-21); README badge shows it | 3 |
 | **Subtotal** | | **12 / 12** |
 
 ## Docs
